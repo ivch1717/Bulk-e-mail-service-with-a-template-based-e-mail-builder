@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConstructorEntities", "LetterConstructor\ConstructorEntities\ConstructorEntities.csproj", "{27063555-FCFF-4BE1-871F-99F01DE5B2E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConstructorUseCases", "LetterConstructor\ConstructorUseCases\ConstructorUseCases.csproj", "{12F6152E-814A-4A2F-A43A-BBDE073124AD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{27063555-FCFF-4BE1-871F-99F01DE5B2E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27063555-FCFF-4BE1-871F-99F01DE5B2E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27063555-FCFF-4BE1-871F-99F01DE5B2E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27063555-FCFF-4BE1-871F-99F01DE5B2E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12F6152E-814A-4A2F-A43A-BBDE073124AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12F6152E-814A-4A2F-A43A-BBDE073124AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12F6152E-814A-4A2F-A43A-BBDE073124AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12F6152E-814A-4A2F-A43A-BBDE073124AD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
