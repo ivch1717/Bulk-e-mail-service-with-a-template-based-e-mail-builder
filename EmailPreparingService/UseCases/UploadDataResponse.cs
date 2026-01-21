@@ -4,5 +4,5 @@ namespace UseCases;
 
 public sealed record UploadDataResponse (
     IReadOnlyList<string> emails,
-    IReadOnlyList<IFormFile> text
+    IReadOnlyList<string> text
 );
