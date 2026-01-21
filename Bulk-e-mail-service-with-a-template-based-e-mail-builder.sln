@@ -4,6 +4,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConstructorEntities", "Lett
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConstructorUseCases", "LetterConstructor\ConstructorUseCases\ConstructorUseCases.csproj", "{12F6152E-814A-4A2F-A43A-BBDE073124AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConstructorInfrastructure", "LetterConstructor\ConstructorInfrastructure\ConstructorInfrastructure.csproj", "{23D3B74E-905C-44D4-82F1-345C56612A08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConstructorPresentation", "LetterConstructor\ConstructorPresentation\ConstructorPresentation.csproj", "{391B9619-33B3-40C3-958E-1645CE6C2443}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConstructorApi", "LetterConstructor\ConstructorApi\ConstructorApi.csproj", "{BE10FC77-313E-434C-ACFB-6ECC3299E7E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +24,17 @@ Global
 		{12F6152E-814A-4A2F-A43A-BBDE073124AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12F6152E-814A-4A2F-A43A-BBDE073124AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12F6152E-814A-4A2F-A43A-BBDE073124AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23D3B74E-905C-44D4-82F1-345C56612A08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23D3B74E-905C-44D4-82F1-345C56612A08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23D3B74E-905C-44D4-82F1-345C56612A08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23D3B74E-905C-44D4-82F1-345C56612A08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{391B9619-33B3-40C3-958E-1645CE6C2443}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{391B9619-33B3-40C3-958E-1645CE6C2443}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{391B9619-33B3-40C3-958E-1645CE6C2443}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{391B9619-33B3-40C3-958E-1645CE6C2443}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE10FC77-313E-434C-ACFB-6ECC3299E7E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE10FC77-313E-434C-ACFB-6ECC3299E7E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE10FC77-313E-434C-ACFB-6ECC3299E7E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE10FC77-313E-434C-ACFB-6ECC3299E7E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
