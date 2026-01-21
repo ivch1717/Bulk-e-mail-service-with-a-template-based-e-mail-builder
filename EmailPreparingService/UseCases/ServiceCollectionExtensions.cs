@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITemplateParser, TemplateParser>();
         services.AddScoped<IDataParser, DataParser>();
         services.AddScoped<IUploadDataRequestHandler, UploadDataRequestHandler>();
-
+        services.AddScoped<IUploadTemplateRequestHandler, UploadTemplateRequestHandler>();
         return services;
     }
 }
