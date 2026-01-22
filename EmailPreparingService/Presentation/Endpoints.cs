@@ -22,9 +22,16 @@ public class Endpoints : ControllerBase
         return Ok(_uploadDataRequestHandler.Handle(request));
     }
 
+    /// <summary>
+    /// Загрузка html шаблона письма, для обнаружения подстановочных переменных.
+    /// </summary>
+    /// <param name="request">html шаблон.</param>
+    /// <returns>Список названий подстановочных переменных, обнаруженных в шаблоне.</returns>
     [HttpPost("UploadTemplate")]
     public IActionResult UploadTemplate([FromForm] UploadTemplateRequest request)
     {
         return Ok(_uploadTemplateRequestHandler.Handle(request));
     }
+    
+    
 }
