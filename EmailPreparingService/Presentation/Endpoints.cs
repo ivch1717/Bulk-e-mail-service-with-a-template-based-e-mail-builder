@@ -7,20 +7,22 @@ namespace Presentation;
 [Route("")]
 public class Endpoints : ControllerBase
 {
-    IUploadDataRequestHandler _uploadDataRequestHandler;
+    // IUploadDataRequestHandler _uploadDataRequestHandler;
     IUploadTemplateRequestHandler _uploadTemplateRequestHandler;
+    IProcessEmailCreationRequestHandler _processEmailCreationRequestHandler;
     
-    public Endpoints(IUploadDataRequestHandler  uploadDataRequestHandler, IUploadTemplateRequestHandler uploadTemplateRequestHandler)
+    public Endpoints( IUploadTemplateRequestHandler uploadTemplateRequestHandler, IProcessEmailCreationRequestHandler processEmailCreationRequestHandler )
     {
-        _uploadDataRequestHandler = uploadDataRequestHandler;
+        // _uploadDataRequestHandler = uploadDataRequestHandler;
         _uploadTemplateRequestHandler = uploadTemplateRequestHandler;
+        _processEmailCreationRequestHandler = processEmailCreationRequestHandler;
     }
     
-    [HttpPost("UploadData")]
-    public IActionResult UploadData([FromForm] UploadDataRequest request)
-    {
-        return Ok(_uploadDataRequestHandler.Handle(request));
-    }
+    // [HttpPost("UploadData")]
+    // public IActionResult UploadData([FromForm] UploadDataRequest request)
+    // {
+    //     return Ok(_uploadDataRequestHandler.Handle(request));
+    // }
 
     /// <summary>
     /// Загрузка html шаблона письма, для обнаружения подстановочных переменных.
@@ -32,6 +34,10 @@ public class Endpoints : ControllerBase
     {
         return Ok(_uploadTemplateRequestHandler.Handle(request));
     }
-    
-    
+
+    [HttpPost("ProcessEmailCreation")]
+    public IActionResult ProcessEmailCreation([FromForm] ProcessEmailCreationRequest request)
+    {
+        return Ok(_processEmailCreationRequestHandler.Handle(request));
+    }
 }
