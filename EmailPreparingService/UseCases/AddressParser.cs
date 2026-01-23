@@ -1,5 +1,6 @@
 using System.Net.Mail;
 using Microsoft.AspNetCore.Http;
+using NPOI.OpenXmlFormats.Dml;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
@@ -7,28 +8,24 @@ namespace UseCases;
 
 public class AddressParser : IAddressParser
 {
-    public List<string> Parse(IFormFile data)
+    ITableExtracter _tableExtracter;
+
+    public AddressParser(ITableExtracter tableExtracter)
     {
-        List<string> result = [];
-        using var stream = data.OpenReadStream();
-        IWorkbook workbook = new XSSFWorkbook(stream);
-        ISheet sheet = workbook.GetSheetAt(0);
-        IRow emails = sheet.GetRow(1);
-        for (int i = 0; i < emails.LastCellNum; i++)
+        _tableExtracter = tableExtracter;
+    }
+    
+    public List<string> Parse(IFormFile data, TableInfo tableInfo)
+    {
+        List<string> candidates = _tableExtracter.Extract(data, tableInfo);
+        foreach (var candidate in candidates)
         {
-            ICell? cell = emails.GetCell(i);
-            if (cell == null)
+            if (!isEmail(candidate))
             {
-                break;
+                throw new InvalidDataException($"Invalid email address {candidate}");
             }
-            string value = cell.StringCellValue;
-            if (string.IsNullOrEmpty(value) || !isEmail(value))
-            {
-                break;
-            }
-            result.Add(value);
         }
-        return result;
+        return candidates;
     }
 
     private bool isEmail(string value)

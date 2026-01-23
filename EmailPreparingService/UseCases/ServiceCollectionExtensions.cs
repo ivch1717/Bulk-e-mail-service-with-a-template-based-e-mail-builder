@@ -10,8 +10,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAddressParser, AddressParser>();
         services.AddScoped<ITemplateParser, TemplateParser>();
         services.AddScoped<IDataParser, DataParser>();
-        services.AddScoped<IUploadDataRequestHandler, UploadDataRequestHandler>();
+        // services.AddScoped<IUploadDataRequestHandler, UploadDataRequestHandler>();
         services.AddScoped<IUploadTemplateRequestHandler, UploadTemplateRequestHandler>();
+        services.AddScoped<ITableExtracter, TableExtracter>();
+        services.AddScoped<IProcessEmailCreationRequestHandler, ProcessEmailCreationRequestHandler>();
         return services;
     }
 }

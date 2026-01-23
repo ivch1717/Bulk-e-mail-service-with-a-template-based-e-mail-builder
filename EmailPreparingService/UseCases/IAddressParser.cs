@@ -4,5 +4,5 @@ namespace UseCases;
 
 public interface IAddressParser
 {
-    List<string> Parse(IFormFile data);
+    List<string> Parse(IFormFile data, TableInfo tableInfo);
 }
