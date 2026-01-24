@@ -29,7 +29,7 @@ public class Endpoints : ControllerBase
     /// </summary>
     /// <param name="request">html шаблон.</param>
     /// <returns>Список названий подстановочных переменных, обнаруженных в шаблоне.</returns>
-    [HttpPost("UploadTemplate")]
+    [HttpPost("api/UploadTemplate")]
     public IActionResult UploadTemplate([FromForm] UploadTemplateRequest request)
     {
         return Ok(_uploadTemplateRequestHandler.Handle(request));
