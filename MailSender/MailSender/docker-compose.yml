@@ -1,0 +1,38 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  sender:
+    build: .
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBIT__HOST: rabbitmq
+      RABBIT__PORT: "5672"
+      RABBIT__USER: guest
+      RABBIT__PASS: guest
+      RABBIT__EXCHANGE: mail.send
+      RABBIT__QUEUE: mail.send.q
+      RABBIT__ROUTINGKEY: send
+      RABBIT__CONSUMERS: "5"
+      RABBIT__PREFETCH: "10"
+      
+      
+      SMTP_HOST: smtp.example.com
+      SMTP_PORT: "587"
+      SMTP_USER: user
+      SMTP_PASS: pass
+      SMTP_FROM_NAME: pass
+      SMTP_FROM_EMAIL: pass
+      SMTP_USE_STARTTLS: "true"
+      
+      IDEM_FILE: data/processed-ids.log
+
+    volumes:
+      - sender-data:/app/data
+
+volumes:
+  sender-data:
