@@ -15,7 +15,7 @@ public static class ExportBlockEndpoint
             try
             {
                 var response = handler.Handle(request);
-                return Results.File(response.Content, response.ContentType);
+                return Results.File(response.Content, response.ContentType, response.FileName);
             }
             catch (ValidationException ex)
             {
