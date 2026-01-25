@@ -18,8 +18,17 @@ button:disabled {
 }
 
 div {
+  margin: 40px auto;
+  max-width: 300px;
+  min-height: 300px;
+  width: 100%;
+  background-color: #EEEEEE;
+  border: 1px solid darkgrey;
+  border-radius: 12px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
   gap: 16px;
 }
