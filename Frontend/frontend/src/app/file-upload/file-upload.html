@@ -1,4 +1,15 @@
-<input type="file" (change)="fileSelected($event)">
-<button (click)="upload()">Загрузить</button>
-<p> {{result}}</p>
+<input type="file" #fileInput (change)="fileSelected($event)" hidden>
+<div>
+  <button (click)="fileInput.click()">Выбрать файл</button>
+
+  @if (file == null) {
+    <p>Файл не выбран</p>
+  } @else {
+    <p>Выбран файл: {{file.name}}</p>
+  }
+
+  <button (click)="upload()" [disabled]="file == null">
+    Загрузить
+  </button>
+</div>
 
