@@ -12,7 +12,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ConstructorEntities\ConstructorEntities.csproj" />
       <ProjectReference Include="..\ConstructorPresentation\ConstructorPresentation.csproj" />
       <ProjectReference Include="..\ConstructorInfrastructure\ConstructorInfrastructure.csproj" />
     </ItemGroup>

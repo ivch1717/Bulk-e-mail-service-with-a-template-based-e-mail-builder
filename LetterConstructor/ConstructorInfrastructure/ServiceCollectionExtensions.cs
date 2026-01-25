@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ConstructorUseCases.Common;
 using ConstructorUseCases.ExportTemplate;
+using ConstructorUseCases.ExportBlock;
 using ConstructureInfrastructure.Data.Validators;
 namespace ConstructureInfrastructure;
 
@@ -11,8 +11,8 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services
         )
     {
-        services.AddScoped<IHtmlValidatorBody, HtmlValidatorBody>();
-        services.AddScoped<IHtmlValidatorTemplate, HtmlValidatorTemplate>();
+        services.AddScoped<IParseHtmlBock, ParseHtmlBock>();
+        services.AddScoped<IParserHtmlTemplate, ParserHtmlTemplate>();
 
         return services;
     }

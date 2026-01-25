@@ -26,7 +26,7 @@ public static class ExportBlockEndpoint
         .WithSummary("Export block")
         .WithDescription("Экспортировать html блок")
         .WithOpenApi()
-        .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status200OK, contentType: "text/html")
         .Produces(StatusCodes.Status400BadRequest);
         return group;
     }
