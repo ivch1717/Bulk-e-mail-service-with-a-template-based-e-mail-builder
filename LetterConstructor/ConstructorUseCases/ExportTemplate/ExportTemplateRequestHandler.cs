@@ -1,18 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text;
-using ConstructorUseCases.Common;
 
 namespace ConstructorUseCases.ExportTemplate;
 
 public class ExportTemplateRequestHandler : IExportTemplateRequestHandler
 {
-    public IHtmlValidatorBody _htmlValidatorBody;
-    public IHtmlValidatorTemplate _htmlValidatorTemplate;
+    public IParserHtmlTemplate _parserHtmlTemplate;
 
-    public ExportTemplateRequestHandler(IHtmlValidatorBody htmlValidatorBody,  IHtmlValidatorTemplate htmlValidatorTemplate)
+    public ExportTemplateRequestHandler(IParserHtmlTemplate parserHtmlTemplate)
     {
-        _htmlValidatorBody = htmlValidatorBody;
-        _htmlValidatorTemplate = htmlValidatorTemplate;
+        _parserHtmlTemplate = parserHtmlTemplate;
     }
     
     public ExportTemplateResponse Handle(ExportTemplateRequest request)
@@ -21,24 +18,20 @@ public class ExportTemplateRequestHandler : IExportTemplateRequestHandler
         {
             throw new ValidationException("Invalid html");
         }
-        
-        if (!_htmlValidatorTemplate.IsValid(request.Html))
+        string? html = _parserHtmlTemplate.Parse(request.Html);
+        if (html is null)
         {
             throw new ValidationException("Invalid html");
         }
-
-        var bodyInnerHtml = ExtractBodyInnerHtm(request.Html);
+        
+        
+        var bodyInnerHtml = ExtractBodyInnerHtm(html);
         if (bodyInnerHtml is null)
         {
             throw new ValidationException("Invalid html");
         }
-
-        if (!_htmlValidatorBody.IsValid(bodyInnerHtml))
-        {
-            throw new ValidationException("Invalid html");
-        }
         
-        var bytes = Encoding.UTF8.GetBytes(request.Html);
+        var bytes = Encoding.UTF8.GetBytes(html);
         var stream = new MemoryStream(bytes);
 
         return new ExportTemplateResponse(

@@ -1,16 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text;
-using ConstructorUseCases.Common;
 
 namespace ConstructorUseCases.ExportBlock;
 
 public class ExportBlockRequestHandler : IExportBlockRequestHandler
 {
-    public IHtmlValidatorBody _htmlValidatorBody;
+    public IParseHtmlBock _parserHtmlBock;
 
-    public ExportBlockRequestHandler(IHtmlValidatorBody htmlValidatorBody)
+    public ExportBlockRequestHandler(IParseHtmlBock parserHtmlBock)
     {
-        _htmlValidatorBody = htmlValidatorBody;
+        _parserHtmlBock = parserHtmlBock;
     }
     
     public ExportBlockResponse Handle(ExportBlockRequest request)
@@ -19,13 +18,20 @@ public class ExportBlockRequestHandler : IExportBlockRequestHandler
         {
             throw new ValidationException("Invalid html");
         }
-        if (!_htmlValidatorBody.IsValid(request.Html))
+        
+        string? html = _parserHtmlBock.Parse(request.Html);
+        if (html is null)
         {
             throw new ValidationException("Invalid html");
         }
         
-        var bytes = Encoding.UTF8.GetBytes(request.Html);
+        if (string.IsNullOrWhiteSpace(html))
+            throw new ValidationException("Parsed html is empty");
+
+        
+        var bytes = Encoding.UTF8.GetBytes(html);
         var stream = new MemoryStream(bytes);
+        stream.Position = 0;
 
         return new ExportBlockResponse(
             Content: stream,
