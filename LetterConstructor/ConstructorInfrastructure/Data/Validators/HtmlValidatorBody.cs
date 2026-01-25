@@ -1,11 +1,22 @@
-using ConstructorUseCases.Common;
+using AngleSharp.Html.Parser;
+using ConstructorUseCases.ExportTemplate;
 
 namespace ConstructureInfrastructure.Data.Validators;
 
-public class HtmlValidatorBody : IHtmlValidatorBody
+public class HtmlValidatorTemplate : IHtmlValidatorTemplate
 {
+    private readonly HtmlParser _parser = new();
+
     public bool IsValid(string html)
     {
-        return true;
+        try
+        {
+            var doc = _parser.ParseDocument(html);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }
