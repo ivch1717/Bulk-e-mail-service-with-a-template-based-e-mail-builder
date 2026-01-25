@@ -8,7 +8,6 @@ import {Component, EventEmitter, Output} from '@angular/core';
 })
 export class FileUpload {
   file: File | null = null;
-  result: string | null = null;
 
   @Output()
   outputFile: EventEmitter<File> = new EventEmitter<File>();
@@ -23,7 +22,6 @@ export class FileUpload {
 
   upload() {
     if (!this.file) {
-      this.result = "Файл не выбран"
       return;
     }
     this.outputFile.emit(this.file);
