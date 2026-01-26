@@ -1,6 +1,9 @@
 <app-file-upload (outputFile)="templateReceived($event)" [title]="templateTitle"></app-file-upload>
 <app-file-upload (outputFile)="dataReceived($event)" [title]="dataTitle"></app-file-upload>
 
-@for (placeholder of placeholders; track $index) {
-  <app-placeholder [placeholder]="placeholder"></app-placeholder>
+@for (config of configs; track $index) {
+  <app-placeholder [config]="config"></app-placeholder>
 }
+
+<button (click)="console()">КРАСНАЯ КНОПКА</button>
+<pre>{{result }}</pre>
