@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
   selector: 'app-file-upload',
@@ -12,6 +12,8 @@ export class FileUpload {
   @Output()
   outputFile: EventEmitter<File> = new EventEmitter<File>();
 
+  @Input()
+  title: string = ""
 
   fileSelected(event: Event) {
     const element = event.target as HTMLInputElement;
