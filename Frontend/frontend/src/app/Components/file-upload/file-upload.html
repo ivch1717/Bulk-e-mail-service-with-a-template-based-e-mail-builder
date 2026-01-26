@@ -1,5 +1,6 @@
 <input type="file" #fileInput (change)="fileSelected($event)" hidden>
 <div>
+  <p>{{title}}</p>
   <button (click)="fileInput.click()">Выбрать файл</button>
 
   @if (file == null) {
