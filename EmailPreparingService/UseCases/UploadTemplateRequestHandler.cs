@@ -9,6 +9,7 @@ public class UploadTemplateRequestHandler : IUploadTemplateRequestHandler
     {
         var list = Regex.Matches(ReadText(request.template), @"\[\[(.*?)\]\]");
         List<string> result = [];
+        result.Add("email");
         foreach (var match in list)
         {
             result.Add(match.ToString().Substring(2, match.ToString().Length - 4));
