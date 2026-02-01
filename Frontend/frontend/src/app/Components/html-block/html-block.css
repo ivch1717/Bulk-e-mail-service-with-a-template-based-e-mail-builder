@@ -1,0 +1,29 @@
+.code {
+  width: 700px;
+  min-height: 100px;
+  max-height: 600px;
+  border: 3px solid #0088ba;
+
+  resize: none;
+  overflow-y: auto;
+  overflow-x: auto;
+  white-space: pre;
+  word-wrap: normal;
+  overflow-wrap: normal;
+
+  font-family: ui-monospace, monospace;
+  font-size: 15px;
+  line-height: 1.5;
+
+  padding: 12px 12px 12px 20px;
+  border-radius: 12px;
+}
+
+.code:hover {
+  border-color: #0066ba;
+}
+
+.code:focus{
+  border: 4px solid #001fba;
+  outline: none;
+}
