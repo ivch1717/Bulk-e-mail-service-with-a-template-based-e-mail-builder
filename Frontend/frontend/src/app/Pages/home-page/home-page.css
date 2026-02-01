@@ -7,10 +7,12 @@
 
 .btn:hover{
   background-color: #0054ba;
+  cursor: pointer;
 }
 
 .btn:active{
   background-color: #000fba;
+  cursor: pointer;
 }
 
 .action{

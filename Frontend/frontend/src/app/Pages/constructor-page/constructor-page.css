@@ -1,0 +1,80 @@
+.btn{
+  border-radius: 12px;
+  font-size: 18px;
+  padding: 10px 14px;
+  border: none;
+}
+
+.btn:hover{
+  cursor: pointer;
+}
+
+.btn:active{
+  cursor: pointer;
+}
+
+.btn-add{
+  background-color: #22c55e;
+  color: #ffffff;
+}
+
+.btn-add:hover{
+  background-color: #16a34a;
+}
+
+.btn-add:active{
+  background-color: #15803d;
+}
+
+.btn-delete{
+  background-color: #ef4444;
+  color: #ffffff;
+}
+.btn-delete:hover{
+  background-color: #dc2626;
+
+}
+
+.btn-delete:active{
+  background-color: #b91c1c;
+}
+
+.layout {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  background: #fff;
+  padding: 16px 20px;
+
+  scrollbar-gutter: stable;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+}
+
+.blocks-scroll {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+
+.blocks {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+}
