@@ -1,3 +1,15 @@
+Общий frontend проект
+
+Для запуска без прокси 
+
+ng serve
+
+Для запуска с прокси (иначе без CORS на бэке не доходят запросы)
+
+npm start 
+
+из frontend директории
+
 # Frontend
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.0.
