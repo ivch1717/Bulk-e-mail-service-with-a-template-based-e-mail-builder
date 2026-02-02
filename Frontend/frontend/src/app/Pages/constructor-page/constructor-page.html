@@ -3,7 +3,19 @@
     <button class="btn btn-add" type="button" (click)="addBlock()">
       Добавить пустой блок
     </button>
-    <button class="btn btn-delete"   (pointerdown)="$event.preventDefault(); deleteBlock()"> Удалить блок </button>
+    <button class="btn btn-import" (click)="importBlock()">
+       Импортировать блок
+    </button>
+    <input
+      #fileInput
+      type="file"
+      accept=".html"
+      (change)="onFileSelected($event)"
+      hidden
+    />
+    <button class="btn btn-delete"   (pointerdown)="$event.preventDefault(); deleteBlock()">
+      Удалить блок
+    </button>
   </div>
 
   <div class="blocks-scroll">
@@ -11,6 +23,7 @@
       @for (block of blocks; track block.id) {
         <app-html-block
           [id]="block.id"
+          [text]="block.html"
           (focused)="activeBlockId = block.id"
           (blurred)="activeBlockId = null">
         </app-html-block>
