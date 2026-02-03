@@ -1,4 +1,4 @@
-@ConstructorApi_HostAddress = http://localhost:5200
+@ConstructorApi_HostAddress = http://localhost:4200
 
 GET {{ConstructorApi_HostAddress}}/weatherforecast/
 Accept: application/json
