@@ -2,6 +2,7 @@ import {ChangeDetectorRef, Component, ElementRef, ViewChild} from '@angular/core
 import {NgForOf} from '@angular/common';
 import {HtmlBlock} from '../../Components/html-block/html-block';
 import { HttpClient } from '@angular/common/http';
+import {Router} from '@angular/router';
 
 type Block = { id: number, html: string };
 
@@ -16,11 +17,15 @@ type Block = { id: number, html: string };
 export class ConstructorPage {
   constructor(
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   blocks: Block[] = [];
   private nextId = 1;
+  back(){
+    this.router.navigate(['/']);
+  }
   addBlock() {
     this.blocks.push({ id: this.nextId++, html: '' });
   }

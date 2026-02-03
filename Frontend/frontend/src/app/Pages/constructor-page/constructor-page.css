@@ -72,6 +72,9 @@
   background-color: #b45309;
 }
 
+.btn-back{
+  margin-right: auto;
+}
 
 .layout {
   height: 100vh;
