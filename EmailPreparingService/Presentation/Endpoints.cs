@@ -35,7 +35,7 @@ public class Endpoints : ControllerBase
         return Ok(_uploadTemplateRequestHandler.Handle(request));
     }
 
-    [HttpPost("ProcessEmailCreation")]
+    [HttpPost("api/ProcessEmailCreation")]
     public IActionResult ProcessEmailCreation([FromForm] ProcessEmailCreationRequest request)
     {
         return Ok(_processEmailCreationRequestHandler.Handle(request));

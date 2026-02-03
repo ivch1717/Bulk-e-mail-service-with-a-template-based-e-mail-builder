@@ -1,0 +1,9 @@
+<p>{{config.placeholder}}</p>
+<input type="number" (input)="rowChanged($event)">
+номер столбца
+<input type="number" (input)="columnChanged($event)">
+номер строки
+<input type="checkbox" (change)="modeChanged($event)">
+вкл - строка, выкл - столбец
+
+
