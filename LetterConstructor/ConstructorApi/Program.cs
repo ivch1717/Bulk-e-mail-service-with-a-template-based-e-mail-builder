@@ -15,11 +15,20 @@ builder.Services.AddScoped<IExportBlockRequestHandler, ExportBlockRequestHandler
 builder.Services.AddScoped<IExportTemplateRequestHandler, ExportTemplateRequestHandler>();
 builder.Services.AddScoped<IImportBlockRequestHandler, ImportBlockRequestHandler>();
 
+builder.Services.AddCors(o =>
+{
+    o.AddDefaultPolicy(p => p
+        .WithOrigins("http://localhost:4200")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .WithExposedHeaders("Content-Disposition"));
+});
+
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
+app.UseCors();
 app.MapConstructorEndpoints();
 
 app.Run();
