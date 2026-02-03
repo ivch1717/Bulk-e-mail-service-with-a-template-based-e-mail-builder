@@ -49,6 +49,11 @@ export class ConstructorPage {
     const block = this.blocks.find(b => b.id === this.activeBlockId);
     if (!block) return;
 
+    if (block.html.length == 0){
+      alert('Блок пустой')
+      return;
+    }
+
     this.http.post(
       'http://localhost:5200/blocks/export',
       { html: block.html },
@@ -76,6 +81,7 @@ export class ConstructorPage {
     }
     if (template === '') {
       alert("Ошибка, шаблон пустой")
+      return;
     }
 
     this.http.post(
