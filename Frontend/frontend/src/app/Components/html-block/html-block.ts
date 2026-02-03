@@ -19,6 +19,7 @@ export class HtmlBlock implements AfterViewInit, OnChanges {
 
   @Output() focused = new EventEmitter<void>();
   @Output() blurred = new EventEmitter<void>();
+  @Output() textChange = new EventEmitter<string>();
 
   autoGrow(event?: Event) {
     const textarea = (event?.target as HTMLTextAreaElement) ?? this.taRef?.nativeElement;

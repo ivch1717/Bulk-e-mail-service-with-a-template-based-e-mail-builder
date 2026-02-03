@@ -36,6 +36,28 @@ export class ConstructorPage {
     this.fileInput.nativeElement.click();
   }
 
+  exportBlock() {
+    if (this.activeBlockId === null) return;
+
+    console.log(this.blocks.filter(
+      b => b.id == this.activeBlockId
+    )[0].html);
+  }
+
+  exportTemplate(){
+    let template: string = '';
+    for (let i = 0; i < this.blocks.length; i++) {
+      if (this.blocks[i].html.length > 0){
+        template += this.blocks[i].html + '\n';
+      }
+    }
+    if (template === '') {
+      alert("Ошибка, шаблон пустой")
+    }
+
+    console.log(template);
+  }
+
   constructor(private cdr: ChangeDetectorRef) {}
 
   async onFileSelected(event?: Event) {
@@ -52,6 +74,12 @@ export class ConstructorPage {
     this.cdr.detectChanges();
 
     input.value = '';
+  }
+
+  onBlockHtmlChange(id: string | number, html: string) {
+    this.blocks = this.blocks.map(b =>
+      b.id === id ? { ...b, html } : b
+    );
   }
 
   trackById = (_: number, b: Block) => b.id;

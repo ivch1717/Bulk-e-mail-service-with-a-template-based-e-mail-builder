@@ -39,6 +39,40 @@
   background-color: #b91c1c;
 }
 
+.btn-import{
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+.btn-import:hover{
+  background-color: #2563eb;
+}
+.btn-import:active{
+  background-color: #1d4ed8;
+}
+
+.btn-export-block{
+  background-color: #8b5cf6;
+  color: #ffffff;
+}
+.btn-export-block:hover{
+  background-color: #7c3aed;
+}
+.btn-export-block:active{
+  background-color: #6d28d9;
+}
+
+.btn-export-tempate{
+  background-color: #f59e0b;
+  color: #ffffff;
+}
+.btn-export-tempate:hover{
+  background-color: #d97706;
+}
+.btn-export-tempate:active{
+  background-color: #b45309;
+}
+
+
 .layout {
   height: 100vh;
   display: flex;
