@@ -19,17 +19,17 @@ public class ExportBlockRequestHandler : IExportBlockRequestHandler
             throw new ValidationException("Invalid html");
         }
         
-        string? html = _parserHtmlBock.Parse(request.Html);
+        /*string? html = _parserHtmlBock.Parse(request.Html);
         if (html is null)
         {
             throw new ValidationException("Invalid html");
         }
         
         if (string.IsNullOrWhiteSpace(html))
-            throw new ValidationException("Parsed html is empty");
+            throw new ValidationException("Parsed html is empty");*/
 
         
-        var bytes = Encoding.UTF8.GetBytes(html);
+        var bytes = Encoding.UTF8.GetBytes(request.Html);
         var stream = new MemoryStream(bytes);
         stream.Position = 0;
 
