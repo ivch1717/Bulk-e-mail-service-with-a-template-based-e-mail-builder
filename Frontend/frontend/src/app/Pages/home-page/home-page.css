@@ -1,0 +1,29 @@
+.btn{
+  border-radius: 12px;
+  background-color: #008CBA;
+  color: #fff;
+  font-size: 18px;
+}
+
+.btn:hover{
+  background-color: #0054ba;
+  cursor: pointer;
+}
+
+.btn:active{
+  background-color: #000fba;
+  cursor: pointer;
+}
+
+.action{
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.page-center {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

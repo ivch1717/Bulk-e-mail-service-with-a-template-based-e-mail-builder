@@ -1,0 +1,40 @@
+<div class="layout">
+  <div class="toolbar">
+    <button class="btn btn-add" type="button" (click)="addBlock()">
+      Добавить пустой блок
+    </button>
+    <button class="btn btn-import" (click)="importBlock()">
+       Импортировать блок
+    </button>
+    <input
+      #fileInput
+      type="file"
+      accept=".html"
+      (change)="onFileSelected($event)"
+      hidden
+    />
+    <button class="btn btn-export-block" (pointerdown)="$event.preventDefault(); exportBlock()">
+      Экспортировать блок
+    </button>
+    <button class="btn btn-export-tempate" (pointerdown)="exportTemplate()">
+      Экспортировать Шаблон
+    </button>
+    <button class="btn btn-delete"   (pointerdown)="$event.preventDefault(); deleteBlock()">
+      Удалить блок
+    </button>
+  </div>
+
+  <div class="blocks-scroll">
+    <div class="blocks">
+      @for (block of blocks; track block.id) {
+        <app-html-block
+          [id]="block.id"
+          [text]="block.html"
+          (textChange)="onBlockHtmlChange(block.id, $event)"
+          (focused)="activeBlockId = block.id"
+          (blurred)="activeBlockId = null">
+        </app-html-block>
+      }
+    </div>
+  </div>
+</div>
