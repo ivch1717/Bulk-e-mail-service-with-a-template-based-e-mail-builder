@@ -1,6 +1,7 @@
 import {ChangeDetectorRef, Component, ElementRef, ViewChild} from '@angular/core';
 import {NgForOf} from '@angular/common';
 import {HtmlBlock} from '../../Components/html-block/html-block';
+import { HttpClient } from '@angular/common/http';
 
 type Block = { id: number, html: string };
 
@@ -13,6 +14,11 @@ type Block = { id: number, html: string };
   styleUrl: './constructor-page.css',
 })
 export class ConstructorPage {
+  constructor(
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
+  ) {}
+
   blocks: Block[] = [];
   private nextId = 1;
   addBlock() {
@@ -36,13 +42,30 @@ export class ConstructorPage {
     this.fileInput.nativeElement.click();
   }
 
+
   exportBlock() {
     if (this.activeBlockId === null) return;
 
-    console.log(this.blocks.filter(
-      b => b.id == this.activeBlockId
-    )[0].html);
+    const block = this.blocks.find(b => b.id === this.activeBlockId);
+    if (!block) return;
+
+    this.http.post(
+      'http://localhost:5200/blocks/export',
+      { html: block.html },
+      { responseType: 'blob' }
+    ).subscribe(blob => {
+
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'block.html';
+      a.click();
+
+      window.URL.revokeObjectURL(url);
+    });
   }
+
 
   exportTemplate(){
     let template: string = '';
@@ -55,10 +78,23 @@ export class ConstructorPage {
       alert("Ошибка, шаблон пустой")
     }
 
-    console.log(template);
+    this.http.post(
+      'http://localhost:5200/templates/export',
+      { html: template },
+      { responseType: 'blob' }
+    ).subscribe(blob => {
+
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'template.html';
+      a.click();
+
+      window.URL.revokeObjectURL(url);
+    });
   }
 
-  constructor(private cdr: ChangeDetectorRef) {}
 
   async onFileSelected(event?: Event) {
     if (!event) return;
