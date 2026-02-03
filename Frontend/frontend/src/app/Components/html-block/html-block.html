@@ -1,7 +1,8 @@
 <div class="block">
   <textarea class="code"
             #ta
-            [(ngModel)]="text"
+            [ngModel]="text"
+            (ngModelChange)="textChange.emit($event)"
             (input)="autoGrow($event)"
             (focus)="onFocus()"
             (blur)="onBlur()">
