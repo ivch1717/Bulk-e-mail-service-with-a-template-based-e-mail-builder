@@ -13,7 +13,7 @@ export class FileUpload {
   outputFile: EventEmitter<File> = new EventEmitter<File>();
 
   @Input()
-  title: string = ""
+  file_type: string = ""
 
   fileSelected(event: Event) {
     const element = event.target as HTMLInputElement;
