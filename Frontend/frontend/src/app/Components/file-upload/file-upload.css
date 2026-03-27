@@ -10,7 +10,7 @@ button {
   cursor: pointer;
 }
 
-button:active {
+button.active {
   background-color: var(--color-green);
 }
 
@@ -18,6 +18,6 @@ button:hover {
   background-color: var(--color-dark-red);
 }
 
-button:active:hover {
+button.active:hover {
   background-color: var(--color-dark-green);
 }

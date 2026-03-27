@@ -19,6 +19,7 @@ export class FileUpload {
     const element = event.target as HTMLInputElement;
     if (element.files) {
       this.file = element.files[0];
+      this.upload();
     }
   }
 
