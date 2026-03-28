@@ -1,0 +1,15 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 2px solid var(--color-dark-text);
+  text-align: center;
+}
+
+.table {
+  max-height: 500px;
+  overflow-y: scroll;
+}
+
