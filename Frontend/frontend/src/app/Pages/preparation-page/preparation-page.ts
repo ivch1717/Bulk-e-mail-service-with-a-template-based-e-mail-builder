@@ -3,12 +3,14 @@ import {FileUpload} from '../../Components/file-upload/file-upload';
 import {HttpClient} from '@angular/common/http';
 import {Placeholder} from '../../Components/placeholder/placeholder';
 import {PlaceholderConfig} from '../../Components/models/PlaceholderConfig'
+import {DataInformation} from '../../Components/data-information/data-information';
 
 @Component({
   selector: 'app-preparation-page',
   imports: [
     FileUpload,
-    Placeholder
+    Placeholder,
+    DataInformation
   ],
   templateUrl: './preparation-page.html',
   styleUrl: './preparation-page.css',
@@ -23,7 +25,7 @@ export class PreparationPage {
   data: File | null = null;
 
   result: string | null = null;
-
+  variables: string[] = [];
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) { }
 
   templateReceived(file: File) {
@@ -31,12 +33,13 @@ export class PreparationPage {
     const formData = new FormData();
     formData.append('template', file);
     this.http.post<string[]>('/api/UploadTemplate', formData).subscribe(response => {
-      this.configs = response.map(s => ({
-        placeholder: s,
-        offsetX: null,
-        offsetY: null,
-        row: false
-      }));
+      this.variables = response;
+      // this.configs = response.map(s => ({
+      //   placeholder: s,
+      //   offsetX: null,
+      //   offsetY: null,
+      //   row: false
+      // }));
       //this.configs.push({placeholder: "email", offsetX:null, offsetY:null, row:false});
       this.cdr.detectChanges();
     });
