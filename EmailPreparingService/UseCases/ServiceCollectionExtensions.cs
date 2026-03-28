@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NPOI.POIFS.Crypt.Dsig;
+using UseCases.ExtractTableHeaders;
 
 namespace UseCases;
 
@@ -14,6 +15,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUploadTemplateRequestHandler, UploadTemplateRequestHandler>();
         services.AddScoped<ITableExtracter, TableExtracter>();
         services.AddScoped<IProcessEmailCreationRequestHandler, ProcessEmailCreationRequestHandler>();
+        services.AddScoped<ITableFactory, TableFactory>();
+        services.AddScoped<IExtractTableHeadersRequestHandler,  ExtractTableHeadersRequestHandler>();
         return services;
     }
 }
