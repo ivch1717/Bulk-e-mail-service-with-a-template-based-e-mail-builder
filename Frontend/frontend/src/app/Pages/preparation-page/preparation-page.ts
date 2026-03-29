@@ -26,6 +26,7 @@ export class PreparationPage {
 
   result: string | null = null;
   variables: string[] = [];
+  headers: string[] = [];
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) { }
 
   templateReceived(file: File) {
@@ -47,7 +48,14 @@ export class PreparationPage {
   }
 
   dataReceived(file: File) {
+
     this.data = file;
+    const formData = new FormData();
+    formData.append('table', file);
+    this.http.post<{headers: string[]}>('/api/ExtractTableHeaders', formData).subscribe(response => {
+      this.headers = response.headers;
+      this.cdr.detectChanges();
+    });
   }
 
   console() {

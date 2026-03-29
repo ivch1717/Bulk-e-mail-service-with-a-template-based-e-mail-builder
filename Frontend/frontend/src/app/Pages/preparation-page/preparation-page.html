@@ -1,9 +1,10 @@
-<app-file-upload (outputFile)="templateReceived($event)" [file_type]="'шаблон'"></app-file-upload>
-<app-file-upload (outputFile)="dataReceived($event)" [file_type]="'таблицу'"></app-file-upload>
-
+<div class="file-uploads">
+  <app-file-upload (outputFile)="templateReceived($event)" [file_type]="'шаблон'"></app-file-upload>
+  <app-file-upload (outputFile)="dataReceived($event)" [file_type]="'таблицу'"></app-file-upload>
+</div>
 @for (config of configs; track $index) {
   <app-placeholder [config]="config"></app-placeholder>
 }
 
-<app-data-information [variables]="variables"></app-data-information>
+<app-data-information [variables]="variables" [headers]="headers"></app-data-information>
 <pre>{{result }}</pre>
