@@ -5,13 +5,13 @@ button {
   color: var(--color-light-text);
   font-size: var(--font-size-small);
   font-family: var(--font-family);
-  border: none;
-  outline: none;
   cursor: pointer;
+  border: var(--border-size) solid var(--color-dark-red);
 }
 
 button.active {
   background-color: var(--color-green);
+  border: var(--border-size) solid var(--color-dark-green);
 }
 
 button:hover {

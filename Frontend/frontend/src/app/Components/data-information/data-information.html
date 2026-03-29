@@ -2,13 +2,21 @@
   <table>
     <thead>
     <tr>
-      <th>Переменные шаблона</th>
+      <th>Шаблон</th>
+      <th>Таблица</th>
     </tr>
     </thead>
     <tbody>
       @for (v of variables; track v) {
         <tr>
           <td>{{v}}</td>
+          <td>
+            <select (change)="mapping.set(v, $any($event.target).value)">
+              @for (h of headers; track h) {
+                <option [value]="h" [selected]="mapping.get(v)">{{h}}</option>
+              }
+            </select>
+          </td>
         </tr>
       }
     </tbody>
