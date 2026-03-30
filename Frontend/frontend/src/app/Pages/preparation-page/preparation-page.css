@@ -4,11 +4,22 @@
   padding: 10px;
   border: var(--border-size) solid var(--color-dark-text);
   border-radius: var(--border-radius);
-  width: fit-content;
+  width: 48%;
+  justify-content: space-between;
 }
+
+.info {
+  display: flex;
+}
+
 
 app-data-information {
   display: block;
   margin-top: 20px;
   width: 50%
+}
+
+app-preview {
+  display: block;
+  width: 50%;
 }
