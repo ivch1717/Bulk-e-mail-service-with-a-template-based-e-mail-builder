@@ -4,13 +4,16 @@ import {HttpClient} from '@angular/common/http';
 import {Placeholder} from '../../Components/placeholder/placeholder';
 import {PlaceholderConfig} from '../../Components/models/PlaceholderConfig'
 import {DataInformation} from '../../Components/data-information/data-information';
+import {Preview} from '../../Components/preview/preview';
+
 
 @Component({
   selector: 'app-preparation-page',
   imports: [
     FileUpload,
     Placeholder,
-    DataInformation
+    DataInformation,
+    Preview
   ],
   templateUrl: './preparation-page.html',
   styleUrl: './preparation-page.css',
@@ -28,6 +31,9 @@ export class PreparationPage {
   variables: string[] = [];
   headers: string[] = [];
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) { }
+
+  total: number = 300;
+  previews: {to: string; html: string}[] = [];
 
   templateReceived(file: File) {
     this.template = file;
