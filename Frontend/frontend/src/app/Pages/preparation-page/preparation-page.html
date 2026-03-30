@@ -6,5 +6,9 @@
   <app-placeholder [config]="config"></app-placeholder>
 }
 
-<app-data-information [variables]="variables" [headers]="headers"></app-data-information>
+<div class="info">
+  <app-data-information [variables]="variables" [headers]="headers"></app-data-information>
+  <app-preview [total] = "total" [previews]="previews"></app-preview>
+</div>
+
 <pre>{{result }}</pre>
