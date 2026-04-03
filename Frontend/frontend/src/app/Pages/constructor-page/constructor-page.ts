@@ -1,15 +1,19 @@
 import {ChangeDetectorRef, Component, ElementRef, ViewChild} from '@angular/core';
-import {NgForOf} from '@angular/common';
 import {HtmlBlock} from '../../Components/html-block/html-block';
 import { HttpClient } from '@angular/common/http';
 import {Router} from '@angular/router';
+import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
+import {CdkScrollable} from '@angular/cdk/overlay';
 
 type Block = { id: number, html: string };
 
 @Component({
   selector: 'app-constructor-page',
   imports: [
-    HtmlBlock
+    HtmlBlock,
+    CdkDropList,
+    CdkDrag,
+    CdkScrollable
   ],
   templateUrl: './constructor-page.html',
   styleUrl: './constructor-page.css',
@@ -23,6 +27,8 @@ export class ConstructorPage {
 
   blocks: Block[] = [];
   private nextId = 1;
+  activeBlockId: number | null = null;
+
   back(){
     this.router.navigate(['/']);
   }
@@ -30,7 +36,27 @@ export class ConstructorPage {
     this.blocks.push({ id: this.nextId++, html: '' });
   }
 
-  activeBlockId: number | null = null;
+  addNextBlock() {
+    if (this.activeBlockId === null) return;
+
+    const index = this.blocks.findIndex(b => b.id === this.activeBlockId);
+    if (index === -1) return;
+
+    this.blocks = [
+      ...this.blocks.slice(0, index + 1),
+      { id: this.nextId++, html: '' },
+      ...this.blocks.slice(index + 1)
+    ];
+
+  }
+
+  drop(event: CdkDragDrop<Block[]>) {
+    if (event.previousIndex === event.currentIndex) return;
+
+    const updated = [...this.blocks];
+    moveItemInArray(updated, event.previousIndex, event.currentIndex);
+    this.blocks = updated;
+  }
 
   deleteBlock() {
     if (this.activeBlockId === null) return;
@@ -104,6 +130,19 @@ export class ConstructorPage {
 
       window.URL.revokeObjectURL(url);
     });
+  }
+
+  sendTemplate(){
+    let template: string = '';
+    for (let i = 0; i < this.blocks.length; i++) {
+      if (this.blocks[i].html.length > 0){
+        template += this.blocks[i].html + '\n';
+      }
+    }
+    if (template === '') {
+      alert("Ошибка, шаблон пустой")
+      return;
+    }
   }
 
 
