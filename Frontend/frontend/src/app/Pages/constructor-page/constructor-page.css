@@ -72,6 +72,18 @@
   background-color: #b45309;
 }
 
+.btn-send-tempate{
+  background-color: #a21caf;
+  color: #ffffff;
+}
+
+.btn-send-tempate:hover{
+  background-color: #86198f;
+}
+
+.btn-send-tempate:active{
+  background-color: #701a75;
+}
 .btn-back{
   margin-right: auto;
 }
@@ -112,6 +124,55 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
   padding: 16px;
+}
+
+.cdk-drag {
+  width: 700px;
+}
+
+.block-wrapper {
+  width: 700px;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.25;
+}
+
+.cdk-drag-animating {
+  transition: transform 180ms ease;
+}
+
+.blocks.cdk-drop-list-dragging .block-wrapper {
+  transition: transform 180ms ease;
+}
+
+
+.block-row {
+  position: relative;
+  width: 700px;
+  margin-bottom: 8px;
+}
+
+.block-row:last-child {
+  margin-bottom: 0;
+}
+
+.block-wrapper {
+  width: 700px;
+}
+
+.block-actions {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 0;
+
+  width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
