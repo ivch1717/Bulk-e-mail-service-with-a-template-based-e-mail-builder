@@ -102,14 +102,18 @@ export class ConstructorPage {
     });
   }
 
-
-  exportTemplate(){
+  getTextTemplate(){
     let template: string = '';
     for (let i = 0; i < this.blocks.length; i++) {
       if (this.blocks[i].html.length > 0){
         template += this.blocks[i].html + '\n';
       }
     }
+    return template;
+  }
+
+  exportTemplate(){
+    let template: string = this.getTextTemplate()
     if (template === '') {
       alert("Ошибка, шаблон пустой")
       return;
@@ -132,13 +136,29 @@ export class ConstructorPage {
     });
   }
 
-  sendTemplate(){
-    let template: string = '';
-    for (let i = 0; i < this.blocks.length; i++) {
-      if (this.blocks[i].html.length > 0){
-        template += this.blocks[i].html + '\n';
-      }
+  viewTemplate(){
+    let template: string = this.getTextTemplate()
+    if (template === '') {
+      alert("Ошибка, шаблон пустой")
+      return;
     }
+
+    this.http.post(
+      'http://localhost:5200/templates/export',
+      { html: template },
+      { responseType: 'blob' }
+    ).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 1000);
+    });
+  }
+
+  sendTemplate(){
+    let template: string = this.getTextTemplate()
     if (template === '') {
       alert("Ошибка, шаблон пустой")
       return;
