@@ -72,18 +72,32 @@
   background-color: #b45309;
 }
 
-.btn-send-tempate{
+.btn-view-tempate{
   background-color: #a21caf;
   color: #ffffff;
 }
 
-.btn-send-tempate:hover{
+.btn-view-tempate:hover{
   background-color: #86198f;
 }
 
-.btn-send-tempate:active{
+.btn-view-tempate:active{
   background-color: #701a75;
 }
+
+.btn-send-tempate{
+  background-color: #0d9488;
+  color: #ffffff;
+}
+
+.btn-send-tempate:hover{
+  background-color: #0f766e;
+}
+
+.btn-send-tempate:active{
+  background-color: #115e59;
+}
+
 .btn-back{
   margin-right: auto;
 }
