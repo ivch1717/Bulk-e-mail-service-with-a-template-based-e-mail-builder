@@ -36,7 +36,11 @@
       (cdkDropListDropped)="drop($event)"
     >
       @for (block of blocks; track block.id) {
-        <div class="block-row">
+        <div
+          class="block-row"
+          [class.block-row-new]="block.isNew"
+          [class.block-row-drop]="block.dropTick === dropAnimationTick"
+          [class.block-row-up]="block.upTick === upAnimationTick">
           <div
             class="block-wrapper"
             cdkDrag
