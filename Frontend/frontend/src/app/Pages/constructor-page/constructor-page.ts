@@ -5,7 +5,13 @@ import {Router} from '@angular/router';
 import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import {CdkScrollable} from '@angular/cdk/overlay';
 
-type Block = { id: number, html: string };
+type Block = {
+  id: number,
+  html: string,
+  isNew?: boolean,
+  dropTick?: number,
+  upTick?: number
+};
 
 @Component({
   selector: 'app-constructor-page',
@@ -28,12 +34,22 @@ export class ConstructorPage {
   blocks: Block[] = [];
   private nextId = 1;
   activeBlockId: number | null = null;
+  dropAnimationTick = 0;
+  upAnimationTick = 0;
 
   back(){
     this.router.navigate(['/']);
   }
   addBlock() {
-    this.blocks.push({ id: this.nextId++, html: '' });
+    let newBlock: Block = { id: this.nextId++, html: '', isNew: true };
+    this.blocks.push(newBlock);
+
+    setTimeout(() => {
+      this.blocks = this.blocks.map(b => ({
+        ...b,
+        isNew: false
+      }));
+    }, 450);
   }
 
   addNextBlock() {
@@ -42,12 +58,44 @@ export class ConstructorPage {
     const index = this.blocks.findIndex(b => b.id === this.activeBlockId);
     if (index === -1) return;
 
+    const newBlock: Block = {
+      id: this.nextId++,
+      html: '',
+      isNew: true,
+      dropTick: undefined
+    };
+
     this.blocks = [
-      ...this.blocks.slice(0, index + 1),
-      { id: this.nextId++, html: '' },
-      ...this.blocks.slice(index + 1)
+      ...this.blocks.slice(0, index + 1).map(b => ({
+        ...b,
+        dropTick: undefined
+      })),
+      newBlock,
+      ...this.blocks.slice(index + 1).map(b => ({
+        ...b,
+        dropTick: undefined
+      }))
     ];
 
+    this.cdr.detectChanges();
+
+    requestAnimationFrame(() => {
+      const tick = ++this.dropAnimationTick;
+
+      this.blocks = this.blocks.map((b, i) => ({
+        ...b,
+        dropTick: i > index + 1 ? tick : undefined
+      }));
+
+      this.cdr.detectChanges();
+    });
+
+    setTimeout(() => {
+      this.blocks = this.blocks.map(b => ({
+        ...b,
+        isNew: false
+      }));
+    }, 450);
   }
 
   drop(event: CdkDragDrop<Block[]>) {
@@ -61,11 +109,39 @@ export class ConstructorPage {
   deleteBlock() {
     if (this.activeBlockId === null) return;
 
-    this.blocks = this.blocks.filter(
-      b => b.id !== this.activeBlockId
-    );
+    const index = this.blocks.findIndex(b => b.id === this.activeBlockId);
+    if (index === -1) return;
+
+    const deletedId = this.activeBlockId;
+
+    this.blocks = this.blocks
+      .filter(b => b.id !== deletedId)
+      .map(b => ({
+        ...b,
+        upTick: undefined
+      }));
 
     this.activeBlockId = null;
+
+    this.cdr.detectChanges();
+
+    requestAnimationFrame(() => {
+      const tick = ++this.upAnimationTick;
+
+      this.blocks = this.blocks.map((b, i) => ({
+        ...b,
+        upTick: i >= index ? tick : undefined
+      }));
+
+      this.cdr.detectChanges();
+    });
+
+    setTimeout(() => {
+      this.blocks = this.blocks.map(b => ({
+        ...b,
+        upTick: undefined
+      }));
+    }, 550);
   }
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
@@ -163,6 +239,15 @@ export class ConstructorPage {
       alert("Ошибка, шаблон пустой")
       return;
     }
+
+    this.http.post(
+      'http://localhost:5200/templates/export',
+      { html: template },
+      { responseType: 'blob' }
+    ).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+
+    });
   }
 
 
