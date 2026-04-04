@@ -260,11 +260,18 @@ export class ConstructorPage {
     const file = input.files[0];
     const text = await file.text();
 
-    this.blocks = [...this.blocks, { id: this.nextId++, html: text }];
+    this.blocks = [...this.blocks, { id: this.nextId++, html: text, isNew: true }];
 
     this.cdr.detectChanges();
 
     input.value = '';
+
+    setTimeout(() => {
+      this.blocks = this.blocks.map(b => ({
+        ...b,
+        isNew: false
+      }));
+    }, 450);
   }
 
   onBlockHtmlChange(id: string | number, html: string) {
