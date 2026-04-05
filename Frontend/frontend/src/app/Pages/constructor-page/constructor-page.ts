@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import {Router} from '@angular/router';
 import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import {CdkScrollable} from '@angular/cdk/overlay';
+import {TemplateTransferService} from '../../Services/template-transfer/template-transfer';
 
 type Block = {
   id: number,
@@ -28,7 +29,8 @@ export class ConstructorPage {
   constructor(
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private templateTransferService: TemplateTransferService
   ) {}
 
   blocks: Block[] = [];
@@ -245,7 +247,10 @@ export class ConstructorPage {
       { html: template },
       { responseType: 'blob' }
     ).subscribe(blob => {
-      const url = window.URL.createObjectURL(blob);
+      const file = new File([blob], 'template.html', { type: 'text/html' });
+
+      this.templateTransferService.templateFile = file;
+      this.router.navigate(['/preparation']);
 
     });
   }
