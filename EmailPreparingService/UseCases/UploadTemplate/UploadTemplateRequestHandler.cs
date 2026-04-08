@@ -8,14 +8,14 @@ public class UploadTemplateRequestHandler : IUploadTemplateRequestHandler
     public List<string> Handle(UploadTemplateRequest request)
     {
         var list = Regex.Matches(ReadText(request.template), @"\[\[(.*?)\]\]");
-        List<string> result = [];
+        HashSet<string> result = [];
         result.Add("email");
         foreach (var match in list)
         {
             result.Add(match.ToString().Substring(2, match.ToString().Length - 4));
         }
 
-        return result;
+        return result.ToList();
     }
     
     public string ReadText(IFormFile file)
