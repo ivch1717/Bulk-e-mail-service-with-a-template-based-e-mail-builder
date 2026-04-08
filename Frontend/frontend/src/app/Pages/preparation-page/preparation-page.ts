@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component} from '@angular/core';
+import {ChangeDetectorRef, Component, ViewChild} from '@angular/core';
 import {FileUpload} from '../../Components/file-upload/file-upload';
 import {HttpClient} from '@angular/common/http';
 import {Placeholder} from '../../Components/placeholder/placeholder';
@@ -25,15 +25,53 @@ export class PreparationPage {
   dataTitle: string = "Загрузите данные в формате XLSX"
 
   template: File | null = null;
-  data: File | null = null;
+  table: File | null = null;
 
   result: string | null = null;
   variables: string[] = [];
   headers: string[] = [];
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) { }
 
-  total: number = 300;
+  total: number = 0;
   previews: {to: string; html: string}[] = [];
+
+  mapping: Map<string, string> = new Map();
+  nextFrom: number = 0;
+
+  @ViewChild(DataInformation)
+  dataInformation!: DataInformation;
+
+  onPreviewClick() {
+    const mapping = this.dataInformation.getMapping();
+    this.mapping = mapping;
+    const formData = new FormData();
+    formData.append('template', this.template!);
+    formData.append('table', this.table!);
+
+    formData.append('count', '10');
+    formData.append('mappingJson', JSON.stringify(Object.fromEntries(mapping)));
+    this.http.post<{emailPreviews: {to: string, html: string}[], nextRow: number, total: number}>('/api/GetPreview', formData).subscribe(response => {
+      this.previews = response.emailPreviews;
+      this.nextFrom = response.nextRow;
+      this.total = response.total;
+      console.log(response)
+      this.cdr.detectChanges();
+    });
+
+  }
+
+  onSendClick() {
+    const mapping = this.dataInformation.getMapping();
+    this.mapping = mapping;
+    const formData = new FormData();
+    formData.append('template', this.template!);
+    formData.append('table', this.table!);
+    formData.append('mappingJson', JSON.stringify(Object.fromEntries(mapping)));
+    this.http.post<{emailPreviews: {to: string, html: string}[], nextRow: number, total: number}>('/api/Send', formData).subscribe(response => {
+      this.cdr.detectChanges();
+    });
+
+  }
 
   templateReceived(file: File) {
     this.template = file;
@@ -54,23 +92,11 @@ export class PreparationPage {
   }
 
   dataReceived(file: File) {
-
-    this.data = file;
+    this.table = file;
     const formData = new FormData();
     formData.append('table', file);
     this.http.post<{headers: string[]}>('/api/ExtractTableHeaders', formData).subscribe(response => {
       this.headers = response.headers;
-      this.cdr.detectChanges();
-    });
-  }
-
-  console() {
-    const formData = new FormData();
-    formData.append('template', this.template!) // TODO: Убрать !
-    formData.append('data', this.data!)
-    formData.append('tableInfosJson', JSON.stringify(this.configs))
-    this.http.post('/api/ProcessEmailCreation', formData).subscribe(response => {
-      this.result = JSON.stringify(response);
       this.cdr.detectChanges();
     });
   }
