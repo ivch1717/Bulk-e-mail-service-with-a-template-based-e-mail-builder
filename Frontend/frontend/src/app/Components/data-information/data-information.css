@@ -4,7 +4,7 @@ table {
 }
 
 th, td {
-  border: 2px solid var(--color-dark-text);
+  /*border: 2px solid var(--color-dark-text);*/
   text-align: center;
 }
 

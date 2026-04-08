@@ -1,7 +1,11 @@
+using Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using UseCases;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddUseCases();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 

@@ -21,8 +21,8 @@
 }
 
 .preview {
-  border: var(--border-size) solid var(--color-dark-text);
-  border-radius: var(--border-radius);
+  /*border: var(--border-size) solid var(--color-dark-text);*/
+  /*border-radius: var(--border-radius);*/
   padding: 16px;
 }
 
