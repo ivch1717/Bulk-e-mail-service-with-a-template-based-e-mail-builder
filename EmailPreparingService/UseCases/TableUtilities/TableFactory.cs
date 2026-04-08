@@ -17,4 +17,10 @@ public class TableFactory : ITableFactory
         // TODO: сделать поддержку других форматов.
         return new XlsxTable(file);
     }
+    
+    public ITable Create(IFormFile file, int from)
+    {
+        // TODO: сделать поддержку других форматов.
+        return new XlsxTable(file, from);
+    }
 }

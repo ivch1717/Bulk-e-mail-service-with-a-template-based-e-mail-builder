@@ -17,6 +17,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IProcessEmailCreationRequestHandler, ProcessEmailCreationRequestHandler>();
         services.AddScoped<ITableFactory, TableFactory>();
         services.AddScoped<IExtractTableHeadersRequestHandler,  ExtractTableHeadersRequestHandler>();
+        services.AddScoped<IGetPreviewRequestHandler,   GetPreviewRequestHandler>();
+        services.AddScoped<ITemplateFactory, TemplateFactory>();
         return services;
     }
 }
