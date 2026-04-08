@@ -8,4 +8,6 @@ namespace UseCases;
 public interface ITableFactory
 {
     public ITable Create(IFormFile file);
+    
+    public ITable Create(IFormFile file, int from);
 }

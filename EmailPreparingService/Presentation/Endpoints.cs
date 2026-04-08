@@ -12,14 +12,17 @@ public class Endpoints : ControllerBase
     IUploadTemplateRequestHandler _uploadTemplateRequestHandler;
     IProcessEmailCreationRequestHandler _processEmailCreationRequestHandler;
     IExtractTableHeadersRequestHandler _extractTableHeadersRequestHandler;
+    IGetPreviewRequestHandler _getPreviewRequestHandler;
     
     public Endpoints( IUploadTemplateRequestHandler uploadTemplateRequestHandler, IProcessEmailCreationRequestHandler processEmailCreationRequestHandler,
         IExtractTableHeadersRequestHandler extractTableHeadersRequestHandler)
+        IExtractTableHeadersRequestHandler extractTableHeadersRequestHandler, IGetPreviewRequestHandler getPreviewRequestHandler,
     {
         // _uploadDataRequestHandler = uploadDataRequestHandler;
         _uploadTemplateRequestHandler = uploadTemplateRequestHandler;
         _processEmailCreationRequestHandler = processEmailCreationRequestHandler;
         _extractTableHeadersRequestHandler = extractTableHeadersRequestHandler;
+        _getPreviewRequestHandler = getPreviewRequestHandler;
     }
     
     // [HttpPost("UploadData")]
