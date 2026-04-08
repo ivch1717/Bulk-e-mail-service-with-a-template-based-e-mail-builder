@@ -19,6 +19,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IExtractTableHeadersRequestHandler,  ExtractTableHeadersRequestHandler>();
         services.AddScoped<IGetPreviewRequestHandler,   GetPreviewRequestHandler>();
         services.AddScoped<ITemplateFactory, TemplateFactory>();
+        services.AddScoped<ISendRequestHandler, SendRequestHandler>();
         return services;
     }
 }
