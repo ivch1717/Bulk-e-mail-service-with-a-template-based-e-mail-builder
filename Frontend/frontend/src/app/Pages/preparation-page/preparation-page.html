@@ -1,6 +1,8 @@
 <div class="file-uploads">
   <app-file-upload (outputFile)="templateReceived($event)" [file_type]="'шаблон'"></app-file-upload>
   <app-file-upload (outputFile)="dataReceived($event)" [file_type]="'таблицу'"></app-file-upload>
+  <button (click)="onPreviewClick()">Получить превью</button>
+  <button (click)="onSendClick()">Начать рассылку</button>
 </div>
 @for (config of configs; track $index) {
   <app-placeholder [config]="config"></app-placeholder>
@@ -8,7 +10,14 @@
 
 <div class="info">
   <app-data-information [variables]="variables" [headers]="headers"></app-data-information>
-  <app-preview [total] = "total" [previews]="previews"></app-preview>
+  <app-preview
+    [total]="total"
+    [previews]="previews"
+    [template]="template"
+    [table]="table"
+    [mapping]="mapping"
+    [nextFrom]="nextFrom">
+  </app-preview>
 </div>
 
 <pre>{{result }}</pre>
