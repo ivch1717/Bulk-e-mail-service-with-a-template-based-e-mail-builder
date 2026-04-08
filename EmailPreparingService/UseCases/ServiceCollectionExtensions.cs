@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using NPOI.POIFS.Crypt.Dsig;
 using UseCases.ExtractTableHeaders;
+using UseCases.GetPreview;
+using UseCases.TemplateUtilities;
 
 namespace UseCases;
 
