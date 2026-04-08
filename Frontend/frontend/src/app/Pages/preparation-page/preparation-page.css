@@ -1,10 +1,9 @@
 .file-uploads {
   display: flex;
   gap: 10px;
-  padding: 10px;
-  border: var(--border-size) solid var(--color-dark-text);
-  border-radius: var(--border-radius);
-  width: 48%;
+  padding: 20px;
+  /*border: var(--border-size) solid var(--color-dark-text);*/
+  /*border-radius: var(--border-radius);*/
   justify-content: space-between;
 }
 
@@ -22,4 +21,19 @@ app-data-information {
 app-preview {
   display: block;
   width: 50%;
+}
+
+button {
+  padding: 20px 40px;
+  background-color: var(--color-base);
+  border-radius: var(--border-radius);
+  color: var(--color-light-text);
+  font-size: var(--font-size-small);
+  font-family: var(--font-family);
+  cursor: pointer;
+  border: var(--border-size) solid var(--color-dark-red);
+}
+
+button:hover {
+  background-color: var(--color-dark-base);
 }
