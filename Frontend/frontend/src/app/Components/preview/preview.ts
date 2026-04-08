@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 @Component({
@@ -7,7 +7,7 @@ import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
   templateUrl: './preview.html',
   styleUrl: './preview.css',
 })
-export class Preview {
+export class Preview implements OnChanges {
 
   constructor(private sanitizer: DomSanitizer, private http: HttpClient, private cdr: ChangeDetectorRef) { }
 
@@ -17,6 +17,18 @@ export class Preview {
   @Input()
   previews: {to: string; html: string}[] = [];
 
+  @Input()
+  template: File | null = null;
+
+  @Input()
+  table: File | null = null;
+
+  @Input()
+  mapping: Map<string, string> = new Map();
+
+  @Input()
+  nextFrom: number = 0;
+
   index: number = 0;
   currentPreview: {to: string; html: string} = {to: "", html: ""};
 
@@ -25,22 +37,26 @@ export class Preview {
   }
 
   next() {
-    if (this.index == this.total) {
+    if (this.index == this.total - 1) {
       return;
     }
     this.index++;
     if (this.index >= this.previews.length) {
-      // const formData = new FormData();
-      // formData.append('table', blablabla);
-      // this.http.post('/api/blablabla', formData).subscribe(response => {
-      //   this.previews.concat(response);
-      //   this.currentPreview = this.previews[this.index];
-      //   this.cdr.detectChanges();
-      // });
+      const formData = new FormData();
+      formData.append('template', this.template!);
+      formData.append('table', this.table!);
+      formData.append('from', String(this.nextFrom));
+      formData.append('count', '10');
+      formData.append('mappingJson', JSON.stringify(Object.fromEntries(this.mapping)));
+      this.http.post<{emailPreviews: {to: string, html: string}[], nextRow: number}>('/api/GetPreview', formData).subscribe(response => {
+        this.previews.push(...response.emailPreviews);
+        this.nextFrom = response.nextRow;
+        this.currentPreview = this.previews[this.index];
+        this.cdr.detectChanges();
+      });
     } else {
       this.currentPreview = this.previews[this.index];
     }
-
   }
 
   prev() {
@@ -51,4 +67,10 @@ export class Preview {
     this.currentPreview = this.previews[this.index];
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['previews'] && this.previews.length > 0) {
+      this.index = 0;
+      this.currentPreview = this.previews[0];
+    }
+  }
 }
