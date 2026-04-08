@@ -1,10 +1,11 @@
-import {ChangeDetectorRef, Component} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FileUpload} from '../../Components/file-upload/file-upload';
 import {HttpClient} from '@angular/common/http';
 import {Placeholder} from '../../Components/placeholder/placeholder';
 import {PlaceholderConfig} from '../../Components/models/PlaceholderConfig'
 import {DataInformation} from '../../Components/data-information/data-information';
 import {Preview} from '../../Components/preview/preview';
+import {TemplateTransferService} from '../../Services/template-transfer/template-transfer';
 
 
 @Component({
@@ -30,7 +31,7 @@ export class PreparationPage {
   result: string | null = null;
   variables: string[] = [];
   headers: string[] = [];
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) { }
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef, private templateTransferService: TemplateTransferService) { }
 
   total: number = 300;
   previews: {to: string; html: string}[] = [];
@@ -73,5 +74,13 @@ export class PreparationPage {
       this.result = JSON.stringify(response);
       this.cdr.detectChanges();
     });
+  }
+
+  ngOnInit() {
+    const file = this.templateTransferService.templateFile;
+    if (file) {
+      this.templateReceived(file);
+      this.templateTransferService.templateFile = null;
+    }
   }
 }

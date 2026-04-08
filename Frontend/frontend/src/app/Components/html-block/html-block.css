@@ -10,6 +10,18 @@
   box-sizing: border-box;
 }
 
+.drag-handle {
+  padding: 8px 12px;
+  background: #f3f4f6;
+  border-bottom: 1px solid #d1d5db;
+  cursor: grab;
+  user-select: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
 .block:hover {
   border-color: #0066ba;
 }
