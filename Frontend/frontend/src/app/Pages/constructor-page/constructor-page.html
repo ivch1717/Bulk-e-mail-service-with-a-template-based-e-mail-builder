@@ -1,7 +1,10 @@
 <div class="layout">
   <div class="toolbar">
+    <button class="btn btn-back" type="button" (click)="back()">
+      ⬅ Вернуться
+    </button>
     <button class="btn btn-add" type="button" (click)="addBlock()">
-      Добавить пустой блок
+      Добавить пустой блок в конец
     </button>
     <button class="btn btn-import" (click)="importBlock()">
        Импортировать блок
@@ -13,27 +16,62 @@
       (change)="onFileSelected($event)"
       hidden
     />
-    <button class="btn btn-export-block" (pointerdown)="$event.preventDefault(); exportBlock()">
-      Экспортировать блок
-    </button>
     <button class="btn btn-export-tempate" (pointerdown)="exportTemplate()">
       Экспортировать Шаблон
     </button>
-    <button class="btn btn-delete"   (pointerdown)="$event.preventDefault(); deleteBlock()">
-      Удалить блок
+    <button class="btn btn-view-tempate" (click)="viewTemplate()">
+      Просмотреть шаблон
+    </button>
+    <button class="btn btn-send-tempate" (click)="sendTemplate()">
+      Перейти к рассылке →
     </button>
   </div>
 
-  <div class="blocks-scroll">
-    <div class="blocks">
+  <div class="blocks-scroll" cdkScrollable>
+    <div
+      class="blocks"
+      cdkDropList
+      cdkDropListOrientation="vertical"
+      [cdkDropListData]="blocks"
+      (cdkDropListDropped)="drop($event)"
+    >
       @for (block of blocks; track block.id) {
-        <app-html-block
-          [id]="block.id"
-          [text]="block.html"
-          (textChange)="onBlockHtmlChange(block.id, $event)"
-          (focused)="activeBlockId = block.id"
-          (blurred)="activeBlockId = null">
-        </app-html-block>
+        <div
+          class="block-row"
+          [class.block-row-new]="block.isNew"
+          [class.block-row-drop]="block.dropTick === dropAnimationTick"
+          [class.block-row-up]="block.upTick === upAnimationTick">
+          <div
+            class="block-wrapper"
+            cdkDrag
+            cdkDragLockAxis="y"
+          >
+            <app-html-block
+              [id]="block.id"
+              [text]="block.html"
+              (textChange)="onBlockHtmlChange(block.id, $event)"
+              (focused)="activeBlockId = block.id"
+              (blurred)="activeBlockId = null">
+            </app-html-block>
+          </div>
+
+          @if (activeBlockId === block.id) {
+            <div class="block-actions">
+              <button
+                class="btn btn-delete"
+                type="button"
+                (pointerdown)="$event.preventDefault(); deleteBlock()">
+                Удалить
+              </button>
+              <button class="btn btn-export-block" (pointerdown)="$event.preventDefault(); exportBlock()">
+                Экспортировать
+              </button>
+              <button class="btn btn-add" type="button" (pointerdown)="$event.preventDefault(); addNextBlock()">
+                Добавить
+              </button>
+            </div>
+          }
+        </div>
       }
     </div>
   </div>

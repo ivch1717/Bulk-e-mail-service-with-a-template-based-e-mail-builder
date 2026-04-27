@@ -1,0 +1,17 @@
+<div class="preview">
+  <div class="header">
+    <h2>Предпросмотр</h2>
+    <div class="navigation">
+      <button (click)="prev()"><</button>
+      <p>{{index + 1}} из {{total}}</p>
+      <button (click)="next()">></button>
+    </div>
+  </div>
+  <div class="to">
+    <p>Кому:</p>
+    <div class="email">
+      <address>{{currentPreview.to}}</address>
+    </div>
+  </div>
+  <div [innerHTML]="safeHtml"></div>
+</div>

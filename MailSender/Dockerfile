@@ -7,4 +7,4 @@ RUN dotnet publish -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/runtime:10.0
 WORKDIR /app
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "MailSenderRabbitNet10.dll"]
+ENTRYPOINT ["dotnet", "MailSender.dll"]
