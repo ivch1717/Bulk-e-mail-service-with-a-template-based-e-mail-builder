@@ -1,9 +1,32 @@
 services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-emailservice}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - mail_sender_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-emailservice}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   rabbitmq:
     image: rabbitmq:4-management
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    volumes:
+      - mail_sender_rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 5s
@@ -11,33 +34,51 @@ services:
       retries: 30
       start_period: 5s
 
-  sender:
-    build: .
+  mail-sender:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    init: true
+    restart: unless-stopped
     depends_on:
+      postgres:
+        condition: service_healthy
       rabbitmq:
         condition: service_healthy
     environment:
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-emailservice};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+
       RABBIT__HOST: rabbitmq
       RABBIT__PORT: "5672"
-      RABBIT__USER: guest
-      RABBIT__PASS: guest
-      RABBIT__EXCHANGE: mail.send
-      RABBIT__QUEUE: mail.send.q
-      RABBIT__ROUTINGKEY: send
-      RABBIT__CONSUMERS: "1"
-      RABBIT__PREFETCH: "1"
+      RABBIT__USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBIT__PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+      RABBIT__EXCHANGE: ${MAIL_SENDER_EXCHANGE:-mail.send}
+      RABBIT__QUEUE: ${MAIL_SENDER_QUEUE:-mail.send.q}
+      RABBIT__ROUTINGKEY: ${MAIL_SENDER_ROUTING_KEY:-send}
+      RABBIT__RETRYEXCHANGE: ${MAIL_SENDER_RETRY_EXCHANGE:-mail.send.retry}
+      RABBIT__RETRYQUEUE: ${MAIL_SENDER_RETRY_QUEUE:-mail.send.retry.q}
+      RABBIT__RETRYROUTINGKEY: ${MAIL_SENDER_RETRY_ROUTING_KEY:-send.retry}
+      RABBIT__DEADLETTEREXCHANGE: ${MAIL_SENDER_DLX_EXCHANGE:-mail.send.dlx}
+      RABBIT__DEADLETTERQUEUE: ${MAIL_SENDER_DLX_QUEUE:-mail.send.dlq}
+      RABBIT__DEADLETTERROUTINGKEY: ${MAIL_SENDER_DLX_ROUTING_KEY:-send.dlq}
+      RABBIT__CONSUMERS: "${MAIL_SENDER_CONSUMERS:-2}"
+      RABBIT__PREFETCH: "${MAIL_SENDER_PREFETCH:-20}"
 
-      SMTP_HOST: smtp.yandex.ru
-      SMTP_PORT: "587"
-      SMTP_USER: petrchurakov@yandex.ru
-      SMTP_PASS: pjojfbklywnoeasw
-      SMTP_FROM_NAME: MailSender Test
-      SMTP_FROM_EMAIL: petrchurakov@yandex.ru
-      SMTP_USE_STARTTLS: "true"
+      OUTBOX__BATCHSIZE: "${MAIL_SENDER_BATCH_SIZE:-100}"
+      OUTBOX__POLLINTERVALMILLISECONDS: "${MAIL_SENDER_POLL_INTERVAL_MS:-1000}"
+      OUTBOX__PUBLISHLEASESECONDS: "${MAIL_SENDER_PUBLISH_LEASE_SECONDS:-30}"
+      OUTBOX__DELIVERYLEASESECONDS: "${MAIL_SENDER_DELIVERY_LEASE_SECONDS:-120}"
+      OUTBOX__RETRYDELAYSECONDS: "${MAIL_SENDER_RETRY_DELAY_SECONDS:-30}"
+      OUTBOX__MAXDELIVERYATTEMPTS: "${MAIL_SENDER_MAX_DELIVERY_ATTEMPTS:-5}"
 
-      IDEM_FILE: data/processed-ids.log
-    volumes:
-      - sender-data:/app/data
+      SMTP_HOST: ${SMTP_HOST:?SMTP_HOST is required}
+      SMTP_PORT: "${SMTP_PORT:-587}"
+      SMTP_USER: ${SMTP_USER:?SMTP_USER is required}
+      SMTP_PASS: ${SMTP_PASS:?SMTP_PASS is required}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-MailSender}
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL:?SMTP_FROM_EMAIL is required}
+      SMTP_USE_STARTTLS: "${SMTP_USE_STARTTLS:-true}"
 
 volumes:
-  sender-data:
+  mail_sender_pgdata:
+  mail_sender_rabbitmq_data:

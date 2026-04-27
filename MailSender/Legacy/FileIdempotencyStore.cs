@@ -42,6 +42,12 @@ public sealed class FileIdempotencyStore : IIdempotencyStore
         }
     }
 
+    public bool IsProcessed(Guid messageId)
+    {
+        lock (_lock)
+            return _processed.Contains(messageId);
+    }
+
     public async Task MarkSuccessAsync(Guid messageId, CancellationToken ct)
     {
         lock (_lock)
