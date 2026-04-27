@@ -1,24 +1,25 @@
 services:
   postgres:
     image: postgres:17
-    restart: unless-stopped
+    container_name: postgres
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-emailservice}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: emailservice
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "5432:5432"
     volumes:
-      - mail_sender_pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-emailservice}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d emailservice"]
       interval: 5s
       timeout: 5s
       retries: 10
+    restart: unless-stopped
 
   rabbitmq:
     image: rabbitmq:4-management
-    restart: unless-stopped
+    container_name: rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
@@ -26,24 +27,70 @@ services:
       - "${RABBITMQ_PORT:-5672}:5672"
       - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
     volumes:
-      - mail_sender_rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmqdata:/var/lib/rabbitmq
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 5s
       timeout: 3s
       retries: 30
       start_period: 5s
+    restart: unless-stopped
+
+  backend:
+    container_name: backend
+    build:
+      context: ./EmailPreparingService
+      dockerfile: Dockerfile
+    environment:
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-emailservice};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/healthz"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    restart: unless-stopped
+
+  letter-constructor:
+    container_name: letter-constructor
+    build:
+      context: ./LetterConstructor
+      dockerfile: ConstructorApi/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    ports:
+      - "5200:8080"
+    restart: unless-stopped
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./Frontend/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+      - letter-constructor
+    restart: unless-stopped
 
   mail-sender:
+    container_name: mail-sender
     build:
-      context: .
+      context: ./MailSender
       dockerfile: Dockerfile
     init: true
-    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
       rabbitmq:
+        condition: service_healthy
+      backend:
         condition: service_healthy
     environment:
       ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-emailservice};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
@@ -61,11 +108,11 @@ services:
       RABBIT__DEADLETTEREXCHANGE: ${MAIL_SENDER_DLX_EXCHANGE:-mail.send.dlx}
       RABBIT__DEADLETTERQUEUE: ${MAIL_SENDER_DLX_QUEUE:-mail.send.dlq}
       RABBIT__DEADLETTERROUTINGKEY: ${MAIL_SENDER_DLX_ROUTING_KEY:-send.dlq}
-      RABBIT__CONSUMERS: "${MAIL_SENDER_CONSUMERS:-2}"
+      RABBIT__CONSUMERS: "${MAIL_SENDER_CONSUMERS:-5}"
       RABBIT__PREFETCH: "${MAIL_SENDER_PREFETCH:-20}"
 
-      OUTBOX__BATCHSIZE: "${MAIL_SENDER_BATCH_SIZE:-100}"
-      OUTBOX__POLLINTERVALMILLISECONDS: "${MAIL_SENDER_POLL_INTERVAL_MS:-1000}"
+      OUTBOX__BATCHSIZE: "${MAIL_SENDER_BATCH_SIZE:-200}"
+      OUTBOX__POLLINTERVALMILLISECONDS: "${MAIL_SENDER_POLL_INTERVAL_MS:-500}"
       OUTBOX__PUBLISHLEASESECONDS: "${MAIL_SENDER_PUBLISH_LEASE_SECONDS:-30}"
       OUTBOX__DELIVERYLEASESECONDS: "${MAIL_SENDER_DELIVERY_LEASE_SECONDS:-120}"
       OUTBOX__RETRYDELAYSECONDS: "${MAIL_SENDER_RETRY_DELAY_SECONDS:-30}"
@@ -78,7 +125,8 @@ services:
       SMTP_FROM_NAME: ${SMTP_FROM_NAME:-MailSender}
       SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL:?SMTP_FROM_EMAIL is required}
       SMTP_USE_STARTTLS: "${SMTP_USE_STARTTLS:-true}"
+    restart: unless-stopped
 
 volumes:
-  mail_sender_pgdata:
-  mail_sender_rabbitmq_data:
+  pgdata:
+  rabbitmqdata:
