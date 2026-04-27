@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UseCases;
+using UseCases.ExtractTableHeaders;
+using UseCases.GetPreview;
 
 namespace Presentation;
 
@@ -10,12 +12,20 @@ public class Endpoints : ControllerBase
     // IUploadDataRequestHandler _uploadDataRequestHandler;
     IUploadTemplateRequestHandler _uploadTemplateRequestHandler;
     IProcessEmailCreationRequestHandler _processEmailCreationRequestHandler;
+    IExtractTableHeadersRequestHandler _extractTableHeadersRequestHandler;
+    IGetPreviewRequestHandler _getPreviewRequestHandler;
+    ISendRequestHandler _sendRequestHandler;
     
-    public Endpoints( IUploadTemplateRequestHandler uploadTemplateRequestHandler, IProcessEmailCreationRequestHandler processEmailCreationRequestHandler )
+    public Endpoints( IUploadTemplateRequestHandler uploadTemplateRequestHandler, IProcessEmailCreationRequestHandler processEmailCreationRequestHandler,
+        IExtractTableHeadersRequestHandler extractTableHeadersRequestHandler, IGetPreviewRequestHandler getPreviewRequestHandler,
+        ISendRequestHandler sendRequestHandler)
     {
         // _uploadDataRequestHandler = uploadDataRequestHandler;
         _uploadTemplateRequestHandler = uploadTemplateRequestHandler;
         _processEmailCreationRequestHandler = processEmailCreationRequestHandler;
+        _extractTableHeadersRequestHandler = extractTableHeadersRequestHandler;
+        _getPreviewRequestHandler = getPreviewRequestHandler;
+        _sendRequestHandler = sendRequestHandler;
     }
     
     // [HttpPost("UploadData")]
@@ -39,5 +49,40 @@ public class Endpoints : ControllerBase
     public IActionResult ProcessEmailCreation([FromForm] ProcessEmailCreationRequest request)
     {
         return Ok(_processEmailCreationRequestHandler.Handle(request));
+    }
+
+    /// <summary>
+    /// Получение всех заголовков столбцов из таблицы.
+    /// Заголовки берутся из первой не пустой строки таблицы.
+    /// Формат таблицы .xlsx.
+    /// </summary>
+    /// <param name="request">.xlsx таблица.</param>
+    /// <returns>Заголовки в виде списка строк</returns>
+    [HttpPost("api/ExtractTableHeaders")]
+    public IActionResult ExtractTableHeaders([FromForm] ExtractTableHeadersRequest request)
+    {
+        return Ok(_extractTableHeadersRequestHandler.Handle(request));
+    }
+    
+    /// <summary>
+    /// Получение определенного числа писем для предпросмотра на сайте.
+    /// </summary>
+    /// <param name="request">.xlsx таблица,
+    /// .html шаблон,
+    /// int строка с таблицы с которой нужно начать,
+    /// int количество писем которые нужно сгенерировать,
+    /// map переменных шаблона со столбцами таблицы.</param>
+    /// <returns>Список писем с адресатами и номер строки следующей за той, что была обработана последней.</returns>
+    [HttpPost("api/GetPreview")]
+    public IActionResult GetPreview([FromForm] GetPreviewRequest request)
+    {
+        return Ok(_getPreviewRequestHandler.Handle(request));
+    }
+    
+    
+    [HttpPost("api/Send")]
+    public async Task<IActionResult> Send([FromForm] SendRequest request)
+    {
+        return Ok(await _sendRequestHandler.Handle(request));
     }
 }

@@ -4,10 +4,11 @@ import {
   ElementRef, ViewChild
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import {CdkDragHandle} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-html-block',
-  imports: [FormsModule],
+  imports: [FormsModule, CdkDragHandle],
   templateUrl: './html-block.html',
   styleUrl: './html-block.css',
 })

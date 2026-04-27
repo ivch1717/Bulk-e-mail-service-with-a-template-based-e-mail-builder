@@ -1,0 +1,28 @@
+<div class="table">
+  <table>
+    <thead>
+    <tr>
+      <th>Шаблон</th>
+      <th>Таблица</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (v of variables; track v) {
+        <tr>
+          <td>{{v}}</td>
+          @if (mapping.size > 0) {
+            <td>
+              <select [ngModel]="mapping.get(v)" (ngModelChange)="onMappingChange(v, $event)">
+                @for (h of headers; track h) {
+                  <option [value]="h">{{h}}</option>
+                }
+              </select>
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+
