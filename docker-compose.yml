@@ -1,14 +1,56 @@
-﻿services:
-  letterConstructor-service:
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    environment:
+      POSTGRES_DB: emailservice
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d emailservice"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    container_name: backend
     build:
-      context: .
-      dockerfile: LetterConstructor/ConstructorApi/Dockerfile
+      context: ./EmailPreparingService
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  letter-constructor:
+    container_name: letter-constructor
+    build:
+      context: ./LetterConstructor
+      dockerfile: ConstructorApi/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-    restart: unless-stopped
     ports:
-        - "7201:8080"
+      - "5200:8080"
+    restart: unless-stopped
 
+  frontend:
+    container_name: frontend
+    build:
+      context: ./Frontend/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+      - letter-constructor
+    restart: unless-stopped
 
 volumes:
   pgdata:
