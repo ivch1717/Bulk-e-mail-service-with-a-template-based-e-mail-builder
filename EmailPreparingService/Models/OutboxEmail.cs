@@ -11,4 +11,5 @@ public class OutboxEmail
     public Guid CampaignId { get; set; }
     
     public string Subject { get; set; } = "";
+
 }
