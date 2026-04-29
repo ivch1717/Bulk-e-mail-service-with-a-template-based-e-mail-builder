@@ -1,4 +1,5 @@
 <div class="file-uploads">
+  <button routerLink="/">Назад</button>
   <app-file-upload (outputFile)="templateReceived($event)" [file_type]="'шаблон'"></app-file-upload>
   <app-file-upload (outputFile)="dataReceived($event)" [file_type]="'таблицу'"></app-file-upload>
   <button (click)="onPreviewClick()">Получить превью</button>

@@ -6,7 +6,7 @@ import {PlaceholderConfig} from '../../Components/models/PlaceholderConfig'
 import {DataInformation} from '../../Components/data-information/data-information';
 import {Preview} from '../../Components/preview/preview';
 import {TemplateTransferService} from '../../Services/template-transfer/template-transfer';
-
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-preparation-page',
@@ -14,7 +14,8 @@ import {TemplateTransferService} from '../../Services/template-transfer/template
     FileUpload,
     Placeholder,
     DataInformation,
-    Preview
+    Preview,
+    RouterModule
   ],
   templateUrl: './preparation-page.html',
   styleUrl: './preparation-page.css',
