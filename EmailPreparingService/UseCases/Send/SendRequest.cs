@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Text.Json;
 using Infrastructure;
 using Microsoft.AspNetCore.Http;
