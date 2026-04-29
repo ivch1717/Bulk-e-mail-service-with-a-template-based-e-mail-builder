@@ -27,9 +27,21 @@
 }
 
 .to {
-  border-bottom: var(--border-size) solid var(--color-dark-text) ;
+  /*border-bottom: var(--border-size) solid var(--color-dark-text) ;*/
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px;
+  padding: 4px 8px;
+}
+
+.subject {
+  border-bottom: var(--border-size) solid var(--color-dark-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+}
+
+.subject input {
+  border: none;
 }

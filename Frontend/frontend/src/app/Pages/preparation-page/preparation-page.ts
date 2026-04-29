@@ -42,6 +42,9 @@ export class PreparationPage {
   @ViewChild(DataInformation)
   dataInformation!: DataInformation;
 
+  @ViewChild(Preview)
+  Preview!: Preview;
+
   onPreviewClick() {
     const mapping = this.dataInformation.getMapping();
     this.mapping = mapping;
@@ -68,6 +71,7 @@ export class PreparationPage {
     formData.append('template', this.template!);
     formData.append('table', this.table!);
     formData.append('mappingJson', JSON.stringify(Object.fromEntries(mapping)));
+    formData.append('subject', this.Preview.subject);
     this.http.post<{emailPreviews: {to: string, html: string}[], nextRow: number, total: number}>('/api/Send', formData).subscribe(response => {
       this.cdr.detectChanges();
     });

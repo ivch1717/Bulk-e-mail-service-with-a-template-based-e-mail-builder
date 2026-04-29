@@ -9,7 +9,8 @@ namespace UseCases.GetPreview;
 public record SendRequest(
     IFormFile template,
     IFormFile table,
-    string mappingJson
+    string mappingJson,
+    string subject
         );
         
 public record SendResponse(
@@ -57,12 +58,30 @@ public class SendRequestHandler : ISendRequestHandler
             string email = rowData.data[mapping["email"]];
             _db.OutboxEmails.Add(new OutboxEmail
             {
+<<<<<<< Updated upstream
                 Id = Guid.NewGuid(),
                 To = email,
                 Html = html,
                 CreatedAt = DateTime.UtcNow,
                 Sent = false
             });
+=======
+                string html = template.CreateEmail(rowData, mapping);
+                string email = rowData.data[mapping["email"]];
+                var validation = new MailAddress(email);
+                _db.OutboxEmails.Add(new OutboxEmail
+                {
+                    Id = Guid.NewGuid(),
+                    To = email,
+                    Html = html,
+                    CreatedAt = DateTime.UtcNow,
+                    Sent = false,
+                    CampaignId = campaignId,
+                    Subject = request.subject,
+                });
+            } catch (Exception) {}
+            
+>>>>>>> Stashed changes
         }
 
         await _db.SaveChangesAsync();
