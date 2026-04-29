@@ -73,6 +73,7 @@ export class PreparationPage {
     formData.append('table', this.table!);
     formData.append('mappingJson', JSON.stringify(Object.fromEntries(mapping)));
     formData.append('subject', this.preview.subject);
+    formData.append('tracking', String(this.preview.tracking));
     this.http.post<{emailPreviews: {to: string, html: string}[], nextRow: number, total: number}>('/api/Send', formData).subscribe(response => {
       this.cdr.detectChanges();
     });

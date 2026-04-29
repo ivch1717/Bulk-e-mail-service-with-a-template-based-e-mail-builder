@@ -14,3 +14,4 @@ htpp://localhost:5262/swagger
 Термины
 
 рассылка - campaign
+тема письма - subject

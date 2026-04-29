@@ -11,7 +11,8 @@ public record SendRequest(
     IFormFile template,
     IFormFile table,
     string mappingJson,
-    string subject
+    string subject,
+    bool tracking
         );
         
 public record SendResponse(
@@ -52,13 +53,18 @@ public class SendRequestHandler : ISendRequestHandler
         HashSet<string> columns = mapping.Values.ToHashSet();
         table = _tableFactory.Create(request.table);
         List<RowData> allRowData = table.GetData(columns, table.totalRows);
-        ITemplate template = _templateFactory.Create(request.template);
+        ITemplate template = _templateFactory.Create(request.template, request.tracking);
         Guid campaignId = Guid.NewGuid();
         foreach (var rowData in allRowData)
         {
             try
             {
                 string html = template.CreateEmail(rowData, mapping);
+                if (request.tracking)
+                {
+                    html = html.Replace("[[campaignId]]", campaignId.ToString());
+                    html = html.Replace("[[email]]", rowData.data[mapping["email"]]);
+                }
                 string email = rowData.data[mapping["email"]];
                 var validation = new MailAddress(email);
                 _db.OutboxEmails.Add(new OutboxEmail
