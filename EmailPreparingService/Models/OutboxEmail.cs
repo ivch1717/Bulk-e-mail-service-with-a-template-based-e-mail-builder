@@ -9,4 +9,6 @@ public class OutboxEmail
     public bool Sent { get; set; } = false;
     
     public Guid CampaignId { get; set; }
+    
+    public string Subject { get; set; } = "";
 }

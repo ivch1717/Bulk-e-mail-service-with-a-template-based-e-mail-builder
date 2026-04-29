@@ -1,9 +1,11 @@
 import {ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-preview',
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './preview.html',
   styleUrl: './preview.css',
 })
@@ -31,6 +33,7 @@ export class Preview implements OnChanges {
 
   index: number = 0;
   currentPreview: {to: string; html: string} = {to: "", html: ""};
+  subject: string = "";
 
   get safeHtml(): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(this.currentPreview.html);

@@ -10,7 +10,8 @@ namespace UseCases.GetPreview;
 public record SendRequest(
     IFormFile template,
     IFormFile table,
-    string mappingJson
+    string mappingJson,
+    string subject
         );
         
 public record SendResponse(
@@ -67,7 +68,8 @@ public class SendRequestHandler : ISendRequestHandler
                     Html = html,
                     CreatedAt = DateTime.UtcNow,
                     Sent = false,
-                    CampaignId = campaignId
+                    CampaignId = campaignId,
+                    Subject = request.subject
                 });
             } catch (Exception) {}
             
