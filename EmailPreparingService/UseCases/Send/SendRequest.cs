@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Text.Json;
 using Infrastructure;
 using Microsoft.AspNetCore.Http;
@@ -52,20 +53,10 @@ public class SendRequestHandler : ISendRequestHandler
         table = _tableFactory.Create(request.table);
         List<RowData> allRowData = table.GetData(columns, table.totalRows);
         ITemplate template = _templateFactory.Create(request.template);
+        Guid campaignId = Guid.NewGuid();
         foreach (var rowData in allRowData)
         {
-            string html = template.CreateEmail(rowData);
-            string email = rowData.data[mapping["email"]];
-            _db.OutboxEmails.Add(new OutboxEmail
-            {
-<<<<<<< Updated upstream
-                Id = Guid.NewGuid(),
-                To = email,
-                Html = html,
-                CreatedAt = DateTime.UtcNow,
-                Sent = false
-            });
-=======
+            try {
                 string html = template.CreateEmail(rowData, mapping);
                 string email = rowData.data[mapping["email"]];
                 var validation = new MailAddress(email);
@@ -80,8 +71,6 @@ public class SendRequestHandler : ISendRequestHandler
                     Subject = request.subject,
                 });
             } catch (Exception) {}
-            
->>>>>>> Stashed changes
         }
 
         await _db.SaveChangesAsync();
