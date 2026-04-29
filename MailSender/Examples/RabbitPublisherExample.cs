@@ -39,13 +39,20 @@ public static class RabbitPublisherExample
             var msg = new EmailSendRequested(
                 Guid.NewGuid(),
                 to,
-                $"{prefix} #{i + 1}",
                 $"<p>Test message {i + 1} at {DateTimeOffset.UtcNow:O}</p>",
+                $"{prefix} #{i + 1}",
                 null,
                 null);
 
+            var props = new BasicProperties
+            {
+                Persistent = true,
+                MessageId = msg.MessageId.ToString("D"),
+                ContentType = "application/json"
+            };
+
             var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(msg));
-            await ch.BasicPublishAsync(opt.Exchange, opt.RoutingKey, body, ct);
+            await ch.BasicPublishAsync(opt.Exchange, opt.RoutingKey, false, props, body, ct);
         }
     }
 }

@@ -13,12 +13,12 @@ public class HtmlTemplate : ITemplate
         _text = reader.ReadToEnd();
     }
     
-    public string CreateEmail(RowData rowData)
+    public string CreateEmail(RowData rowData, Dictionary<string, string> mapping)
     {
         return Regex.Replace(_text, @"\[\[(.*?)\]\]", match =>
         {
             string key = match.ToString().Substring(2, match.ToString().Length - 4);
-            return rowData.data[key];
+            return rowData.data[mapping[key]];
         });
     }
 }

@@ -32,6 +32,8 @@ public sealed class SmtpSender : ISmtpSender, IAsyncDisposable
         m.To.Add(MailboxAddress.Parse(msg.To));
         m.Subject = msg.Subject ?? "";
         m.Body = new BodyBuilder { HtmlBody = msg.HtmlBody ?? "" }.ToMessageBody();
+        m.MessageId = $"<{msg.MessageId:D}@mailsender>";
+        m.Headers.Add("X-Outbox-Id", msg.MessageId.ToString("D"));
 
         await _lock.WaitAsync(ct);
         try
