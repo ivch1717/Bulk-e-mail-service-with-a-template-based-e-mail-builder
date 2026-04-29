@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IGetPreviewRequestHandler,   GetPreviewRequestHandler>();
         services.AddScoped<ITemplateFactory, TemplateFactory>();
         services.AddScoped<ISendRequestHandler, SendRequestHandler>();
+        services.AddScoped<ITrackOpenRequestHandler, TrackOpenRequestHandler>();
         return services;
     }
 }

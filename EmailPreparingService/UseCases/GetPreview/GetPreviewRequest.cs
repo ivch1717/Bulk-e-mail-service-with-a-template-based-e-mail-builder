@@ -65,7 +65,7 @@ public class GetPreviewRequestHandler : IGetPreviewRequestHandler
             total = null;
         }
         List<RowData> allRowData = table.GetData(columns, request.count);
-        ITemplate template = _templateFactory.Create(request.template);
+        ITemplate template = _templateFactory.Create(request.template, false);
         List<EmailPreview> result = [];
         foreach (var rowData in allRowData)
         {

@@ -4,5 +4,5 @@ namespace UseCases.TemplateUtilities;
 
 public interface ITemplateFactory
 {
-    public ITemplate Create(IFormFile file);
+    public ITemplate Create(IFormFile file, bool tracking);
 }

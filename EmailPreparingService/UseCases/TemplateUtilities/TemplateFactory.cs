@@ -4,8 +4,8 @@ namespace UseCases.TemplateUtilities;
 
 public class TemplateFactory : ITemplateFactory
 {
-    public ITemplate Create(IFormFile file)
+    public ITemplate Create(IFormFile file, bool tracking)
     {
-        return new HtmlTemplate(file);
+        return tracking ? new HtmlTrackingTemplate(file) : new HtmlTemplate(file);
     }
 }

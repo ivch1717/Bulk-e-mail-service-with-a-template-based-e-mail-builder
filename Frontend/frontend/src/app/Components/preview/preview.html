@@ -17,5 +17,11 @@
     <p>Тема:</p>
     <input [(ngModel)]="subject" placeholder="Введите тему письма" />
   </div>
+  <div class="tracking">
+    <label>
+      <input type="checkbox" [(ngModel)]="tracking" />
+      Отслеживать открытия
+    </label>
+  </div>
   <div [innerHTML]="safeHtml"></div>
 </div>

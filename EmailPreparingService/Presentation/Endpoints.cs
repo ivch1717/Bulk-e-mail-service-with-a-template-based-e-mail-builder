@@ -15,10 +15,11 @@ public class Endpoints : ControllerBase
     IExtractTableHeadersRequestHandler _extractTableHeadersRequestHandler;
     IGetPreviewRequestHandler _getPreviewRequestHandler;
     ISendRequestHandler _sendRequestHandler;
+    private ITrackOpenRequestHandler _trackOpenRequestHandler;
     
     public Endpoints( IUploadTemplateRequestHandler uploadTemplateRequestHandler, IProcessEmailCreationRequestHandler processEmailCreationRequestHandler,
         IExtractTableHeadersRequestHandler extractTableHeadersRequestHandler, IGetPreviewRequestHandler getPreviewRequestHandler,
-        ISendRequestHandler sendRequestHandler)
+        ISendRequestHandler sendRequestHandler, ITrackOpenRequestHandler trackOpenRequestHandler)
     {
         // _uploadDataRequestHandler = uploadDataRequestHandler;
         _uploadTemplateRequestHandler = uploadTemplateRequestHandler;
@@ -26,6 +27,7 @@ public class Endpoints : ControllerBase
         _extractTableHeadersRequestHandler = extractTableHeadersRequestHandler;
         _getPreviewRequestHandler = getPreviewRequestHandler;
         _sendRequestHandler = sendRequestHandler;
+        _trackOpenRequestHandler =  trackOpenRequestHandler;
     }
     
     // [HttpPost("UploadData")]
@@ -84,5 +86,12 @@ public class Endpoints : ControllerBase
     public async Task<IActionResult> Send([FromForm] SendRequest request)
     {
         return Ok(await _sendRequestHandler.Handle(request));
+    }
+
+    [HttpGet("api/track/open")]
+    public async Task<IActionResult> TrackOpen([FromQuery] TrackOpenRequest request)
+    {
+        var pixel = await _trackOpenRequestHandler.HandleAsync(request);
+        return File(pixel, "image/gif");
     }
 }
