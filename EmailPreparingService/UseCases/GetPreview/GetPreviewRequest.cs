@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using UseCases.TemplateUtilities;
@@ -68,9 +69,18 @@ public class GetPreviewRequestHandler : IGetPreviewRequestHandler
         List<EmailPreview> result = [];
         foreach (var rowData in allRowData)
         {
-            string html = template.CreateEmail(rowData);
-            string email = rowData.data[mapping["email"]];
-            result.Add(new (email, html));
+            try
+            {
+                string html = template.CreateEmail(rowData, mapping);
+                string email = rowData.data[mapping["email"]];
+                var validation = new MailAddress(email);
+                result.Add(new(email, html));
+            }
+            catch (Exception )
+            {
+                total -= 1;
+            }
+            
         }
         return new(result, table.CurrentRow, total);
     }
