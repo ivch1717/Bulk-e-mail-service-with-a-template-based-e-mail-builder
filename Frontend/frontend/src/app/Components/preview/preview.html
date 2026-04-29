@@ -13,5 +13,9 @@
       <address>{{currentPreview.to}}</address>
     </div>
   </div>
+  <div class="subject">
+    <p>Тема:</p>
+    <input [(ngModel)]="subject" placeholder="Введите тему письма" />
+  </div>
   <div [innerHTML]="safeHtml"></div>
 </div>
