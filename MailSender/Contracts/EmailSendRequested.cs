@@ -3,8 +3,8 @@
 public sealed record EmailSendRequested(
     Guid MessageId,
     string To,
-    string Subject,
     string HtmlBody,
+    string? Subject,
     string? FromEmail,
     string? FromName
 );

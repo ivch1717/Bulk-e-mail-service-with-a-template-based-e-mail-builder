@@ -17,11 +17,32 @@ services:
       retries: 10
     restart: unless-stopped
 
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+    restart: unless-stopped
+
   backend:
     container_name: backend
     build:
       context: ./EmailPreparingService
       dockerfile: Dockerfile
+    environment:
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-emailservice};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
     ports:
       - "8080:8080"
     depends_on:
@@ -52,5 +73,52 @@ services:
       - letter-constructor
     restart: unless-stopped
 
+  mail-sender:
+    container_name: mail-sender
+    build:
+      context: ./MailSender
+      dockerfile: Dockerfile
+    init: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-emailservice};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+
+      RABBIT__HOST: rabbitmq
+      RABBIT__PORT: "5672"
+      RABBIT__USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBIT__PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+      RABBIT__EXCHANGE: ${MAIL_SENDER_EXCHANGE:-mail.send}
+      RABBIT__QUEUE: ${MAIL_SENDER_QUEUE:-mail.send.q}
+      RABBIT__ROUTINGKEY: ${MAIL_SENDER_ROUTING_KEY:-send}
+      RABBIT__RETRYEXCHANGE: ${MAIL_SENDER_RETRY_EXCHANGE:-mail.send.retry}
+      RABBIT__RETRYQUEUE: ${MAIL_SENDER_RETRY_QUEUE:-mail.send.retry.q}
+      RABBIT__RETRYROUTINGKEY: ${MAIL_SENDER_RETRY_ROUTING_KEY:-send.retry}
+      RABBIT__DEADLETTEREXCHANGE: ${MAIL_SENDER_DLX_EXCHANGE:-mail.send.dlx}
+      RABBIT__DEADLETTERQUEUE: ${MAIL_SENDER_DLX_QUEUE:-mail.send.dlq}
+      RABBIT__DEADLETTERROUTINGKEY: ${MAIL_SENDER_DLX_ROUTING_KEY:-send.dlq}
+      RABBIT__CONSUMERS: "${MAIL_SENDER_CONSUMERS:-5}"
+      RABBIT__PREFETCH: "${MAIL_SENDER_PREFETCH:-20}"
+
+      OUTBOX__BATCHSIZE: "${MAIL_SENDER_BATCH_SIZE:-200}"
+      OUTBOX__POLLINTERVALMILLISECONDS: "${MAIL_SENDER_POLL_INTERVAL_MS:-500}"
+      OUTBOX__PUBLISHLEASESECONDS: "${MAIL_SENDER_PUBLISH_LEASE_SECONDS:-30}"
+      OUTBOX__DELIVERYLEASESECONDS: "${MAIL_SENDER_DELIVERY_LEASE_SECONDS:-120}"
+      OUTBOX__RETRYDELAYSECONDS: "${MAIL_SENDER_RETRY_DELAY_SECONDS:-30}"
+      OUTBOX__MAXDELIVERYATTEMPTS: "${MAIL_SENDER_MAX_DELIVERY_ATTEMPTS:-5}"
+
+      SMTP_HOST: ${SMTP_HOST:?SMTP_HOST is required}
+      SMTP_PORT: "${SMTP_PORT:-587}"
+      SMTP_USER: ${SMTP_USER:?SMTP_USER is required}
+      SMTP_PASS: ${SMTP_PASS:?SMTP_PASS is required}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-MailSender}
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL:?SMTP_FROM_EMAIL is required}
+      SMTP_USE_STARTTLS: "${SMTP_USE_STARTTLS:-true}"
+    restart: unless-stopped
+
 volumes:
   pgdata:
+  rabbitmqdata:
