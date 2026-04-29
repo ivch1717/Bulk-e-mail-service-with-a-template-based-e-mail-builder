@@ -52,6 +52,7 @@ public class SendRequestHandler : ISendRequestHandler
         table = _tableFactory.Create(request.table);
         List<RowData> allRowData = table.GetData(columns, table.totalRows);
         ITemplate template = _templateFactory.Create(request.template);
+        Guid campaignId = Guid.NewGuid();
         foreach (var rowData in allRowData)
         {
             try
@@ -65,7 +66,8 @@ public class SendRequestHandler : ISendRequestHandler
                     To = email,
                     Html = html,
                     CreatedAt = DateTime.UtcNow,
-                    Sent = false
+                    Sent = false,
+                    CampaignId = campaignId
                 });
             } catch (Exception) {}
             
