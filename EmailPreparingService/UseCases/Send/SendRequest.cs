@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Text.Json;
 using Infrastructure;
 using Microsoft.AspNetCore.Http;
@@ -53,16 +54,21 @@ public class SendRequestHandler : ISendRequestHandler
         ITemplate template = _templateFactory.Create(request.template);
         foreach (var rowData in allRowData)
         {
-            string html = template.CreateEmail(rowData);
-            string email = rowData.data[mapping["email"]];
-            _db.OutboxEmails.Add(new OutboxEmail
+            try
             {
-                Id = Guid.NewGuid(),
-                To = email,
-                Html = html,
-                CreatedAt = DateTime.UtcNow,
-                Sent = false
-            });
+                string html = template.CreateEmail(rowData, mapping);
+                string email = rowData.data[mapping["email"]];
+                var validation = new MailAddress(email);
+                _db.OutboxEmails.Add(new OutboxEmail
+                {
+                    Id = Guid.NewGuid(),
+                    To = email,
+                    Html = html,
+                    CreatedAt = DateTime.UtcNow,
+                    Sent = false
+                });
+            } catch (Exception) {}
+            
         }
 
         await _db.SaveChangesAsync();
