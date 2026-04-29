@@ -35,6 +35,8 @@ export class Preview implements OnChanges {
   currentPreview: {to: string; html: string} = {to: "", html: ""};
   subject: string = "";
 
+  subject: string = "";
+
   get safeHtml(): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(this.currentPreview.html);
   }
