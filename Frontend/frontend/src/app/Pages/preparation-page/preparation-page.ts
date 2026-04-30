@@ -112,6 +112,11 @@ export class PreparationPage {
     this.http.post<string[]>('/api/UploadTemplate', formData).subscribe({
       next: (response) => {
         this.variables = response;
+        if (this.variables.length === 1) {
+          this.snackBar.open("В шаблоне нет переменных, возможно они обозначены неверно, если так и должно быть это сообщение можно проигнорировать", 'Закрыть', {
+            duration: 5000,
+          });
+        }
         this.cdr.detectChanges();
       },
       error: (error) => {
