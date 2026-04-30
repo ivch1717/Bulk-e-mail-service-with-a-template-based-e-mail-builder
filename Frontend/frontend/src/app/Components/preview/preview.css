@@ -57,3 +57,19 @@
 /*.subject input {*/
 /*  border: none;*/
 /*}*/
+
+mat-card { margin: 16px; }
+
+mat-card-header { display: flex; align-items: center; }
+
+.spacer { flex: 1; }
+
+.label { color: gray; margin-right: 8px; }
+
+.to { margin: 16px 0 8px; }
+
+.subject { width: 100%; margin: 8px 0; }
+
+mat-divider { margin: 16px 0; }
+
+.html-preview { border: 1px solid #eee; border-radius: 8px; padding: 16px; }

@@ -1,27 +1,37 @@
 <div class="file-uploads">
-  <app-file-upload (outputFile)="templateReceived($event)" [file_type]="'шаблон'"></app-file-upload>
-  <app-file-upload (outputFile)="dataReceived($event)" [file_type]="'таблицу'"></app-file-upload>
-  <button mat-flat-button color="primary" (click)="onPreviewClick()">
-    <mat-icon>visibility</mat-icon>Получить превью
-  </button>
-  <button mat-flat-button color="warn" (click)="onSendClick()">
-    <mat-icon>send</mat-icon>Начать рассылку
-  </button>
+  <div class="cell">
+    <app-file-upload (outputFile)="templateReceived($event)" [file_type]="'шаблон'"></app-file-upload>
+  </div>
+  <div class="cell">
+    <app-file-upload (outputFile)="dataReceived($event)" [file_type]="'таблицу'"></app-file-upload>
+  </div>
+  <div class="cell">
+    <button mat-flat-button color="primary" (click)="onPreviewClick()">
+      <mat-icon>visibility</mat-icon>Получить превью
+    </button>
+  </div>
+  <div class="cell">
+    <button mat-flat-button color="warn" (click)="onSendClick()">
+      <mat-icon>send</mat-icon>Начать рассылку
+    </button>
+  </div>
 </div>
 @for (config of configs; track $index) {
   <app-placeholder [config]="config"></app-placeholder>
 }
 
-<div class="info">
+<div class="info" [class.full-width]="previews.length === 0">
   <app-data-information [variables]="variables" [headers]="headers"></app-data-information>
-  <app-preview
-    [total]="total"
-    [previews]="previews"
-    [template]="template"
-    [table]="table"
-    [mapping]="mapping"
-    [nextFrom]="nextFrom">
-  </app-preview>
+  @if (previews.length > 0) {
+    <app-preview
+      [total]="total"
+      [previews]="previews"
+      [template]="template"
+      [table]="table"
+      [mapping]="mapping"
+      [nextFrom]="nextFrom">
+    </app-preview>
+  }
 </div>
 
 <pre>{{result }}</pre>
