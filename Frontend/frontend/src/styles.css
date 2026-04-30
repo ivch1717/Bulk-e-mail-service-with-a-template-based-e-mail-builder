@@ -18,3 +18,12 @@
 
   --font-family: sans-serif;
 }
+
+.mat-mdc-select-value {
+  text-align: center;
+}
+
+.mat-mdc-option .mdc-list-item__primary-text {
+  width: 100%;
+  text-align: center;
+}
