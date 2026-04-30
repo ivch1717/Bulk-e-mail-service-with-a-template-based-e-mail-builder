@@ -78,3 +78,7 @@ mat-card {
   height: 100%;
   box-sizing: border-box;
 }
+
+mat-card {
+  margin: 0 16px;
+}
