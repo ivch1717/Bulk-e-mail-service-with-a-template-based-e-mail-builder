@@ -2,10 +2,16 @@ import {ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@an
 import {HttpClient} from '@angular/common/http';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-preview',
-  imports: [FormsModule],
+  standalone: true,
+  imports: [FormsModule, MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule, MatCheckboxModule],
   templateUrl: './preview.html',
   styleUrl: './preview.css',
 })

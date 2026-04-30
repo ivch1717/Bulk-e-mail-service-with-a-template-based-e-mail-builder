@@ -23,17 +23,17 @@ app-preview {
   width: 50%;
 }
 
-button {
-  padding: 20px 40px;
-  background-color: var(--color-base);
-  border-radius: var(--border-radius);
-  color: var(--color-light-text);
-  font-size: var(--font-size-small);
-  font-family: var(--font-family);
-  cursor: pointer;
-  border: var(--border-size) solid var(--color-dark-red);
-}
+/*button {*/
+/*  padding: 20px 40px;*/
+/*  background-color: var(--color-base);*/
+/*  border-radius: var(--border-radius);*/
+/*  color: var(--color-light-text);*/
+/*  font-size: var(--font-size-small);*/
+/*  font-family: var(--font-family);*/
+/*  cursor: pointer;*/
+/*  border: var(--border-size) solid var(--color-dark-red);*/
+/*}*/
 
-button:hover {
-  background-color: var(--color-dark-base);
-}
+/*button:hover {*/
+/*  background-color: var(--color-dark-base);*/
+/*}*/
