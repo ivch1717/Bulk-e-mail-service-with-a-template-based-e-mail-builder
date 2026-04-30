@@ -59,7 +59,7 @@ public class Endpoints : ControllerBase
     /// Формат таблицы .xlsx.
     /// </summary>
     /// <param name="request">.xlsx таблица.</param>
-    /// <returns>Заголовки в виде списка строк</returns>
+    /// <returns>Заголовки в виде списка строк, если нет заголовков то код 422.</returns>
     [HttpPost("api/ExtractTableHeaders")]
     public IActionResult ExtractTableHeaders([FromForm] ExtractTableHeadersRequest request)
     {
