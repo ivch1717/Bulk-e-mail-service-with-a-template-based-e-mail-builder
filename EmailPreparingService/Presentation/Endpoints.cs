@@ -44,7 +44,19 @@ public class Endpoints : ControllerBase
     [HttpPost("api/UploadTemplate")]
     public IActionResult UploadTemplate([FromForm] UploadTemplateRequest request)
     {
-        return Ok(_uploadTemplateRequestHandler.Handle(request));
+        try
+        {
+            var response = _uploadTemplateRequestHandler.Handle(request);
+            return Ok(_uploadTemplateRequestHandler.Handle(request));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return BadRequest("Unknown exception");
+        }
     }
 
     [HttpPost("api/ProcessEmailCreation")]
