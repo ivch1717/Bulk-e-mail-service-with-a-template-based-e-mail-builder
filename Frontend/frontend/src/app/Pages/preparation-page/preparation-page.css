@@ -71,3 +71,15 @@ app-preview {
   from { opacity: 0; transform: translateX(20px); }
   to   { opacity: 1; transform: translateX(0); }
 }
+
+.file-uploads {
+  margin-top: 16px;
+}
+
+.info {
+  align-items: stretch;
+}
+
+app-data-information, app-preview {
+  height: 100%;
+}
