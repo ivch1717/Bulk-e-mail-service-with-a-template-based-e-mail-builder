@@ -1,12 +1,21 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
+using UseCases.TemplateUtilities;
 
 namespace UseCases;
 
 public class UploadTemplateRequestHandler : IUploadTemplateRequestHandler
 {
+    private readonly ITemplateFactory _templateFactory;
+    
+    public UploadTemplateRequestHandler(ITemplateFactory templatefactory)
+    {
+        _templateFactory = templatefactory;
+    }
+    
     public List<string> Handle(UploadTemplateRequest request)
     {
+        var template = _templateFactory.Create(request.template, false);
         var list = Regex.Matches(ReadText(request.template), @"\[\[(.*?)\]\]");
         HashSet<string> result = [];
         result.Add("email");
