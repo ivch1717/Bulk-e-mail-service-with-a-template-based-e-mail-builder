@@ -1,7 +1,4 @@
 <div class="file-uploads">
-  <button mat-stroked-button routerLink="/">
-    <mat-icon>arrow_back</mat-icon>Назад
-  </button>
   <app-file-upload (outputFile)="templateReceived($event)" [file_type]="'шаблон'"></app-file-upload>
   <app-file-upload (outputFile)="dataReceived($event)" [file_type]="'таблицу'"></app-file-upload>
   <button mat-flat-button color="primary" (click)="onPreviewClick()">
