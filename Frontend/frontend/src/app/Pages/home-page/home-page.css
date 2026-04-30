@@ -1,29 +1,57 @@
-.btn{
-  border-radius: 12px;
-  background-color: #008CBA;
-  color: #fff;
-  font-size: 18px;
-}
-
-.btn:hover{
-  background-color: #0054ba;
-  cursor: pointer;
-}
-
-.btn:active{
-  background-color: #000fba;
-  cursor: pointer;
-}
-
-.action{
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.page-center {
-  min-height: 100vh;
+.hero {
+  height: calc(100vh - 64px);
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.hero-content {
+  text-align: center;
+  max-width: 800px;
+  padding: 0 24px;
+}
+
+.title {
+  font-size: 56px;
+  font-weight: 700;
+  margin: 0 0 16px;
+  color: #673ab7;
+}
+
+.subtitle {
+  font-size: 20px;
+  color: #666;
+  margin: 0 0 48px;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.feature-card {
+  padding: 24px 16px;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.feature-card mat-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  color: #673ab7;
+  margin-bottom: 12px;
+}
+
+.feature-card h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.feature-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
 }
