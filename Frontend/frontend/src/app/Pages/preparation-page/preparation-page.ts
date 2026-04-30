@@ -7,6 +7,8 @@ import {DataInformation} from '../../Components/data-information/data-informatio
 import {Preview} from '../../Components/preview/preview';
 import {TemplateTransferService} from '../../Services/template-transfer/template-transfer';
 import { RouterModule } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../Components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-preparation-page',
@@ -23,6 +25,7 @@ import { RouterModule } from '@angular/router';
 export class PreparationPage {
   configs: PlaceholderConfig[] = [];
 
+
   templateTitle: string = "Загрузите шаблон в формате HTML"
   dataTitle: string = "Загрузите данные в формате XLSX"
 
@@ -32,7 +35,7 @@ export class PreparationPage {
   result: string | null = null;
   variables: string[] = [];
   headers: string[] = [];
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef, private templateTransferService: TemplateTransferService) { }
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef, private templateTransferService: TemplateTransferService, private dialog: MatDialog) { }
 
   total: number = 0;
   previews: {to: string; html: string}[] = [];
@@ -66,18 +69,28 @@ export class PreparationPage {
   }
 
   onSendClick() {
-    const mapping = this.dataInformation.getMapping();
-    this.mapping = mapping;
-    const formData = new FormData();
-    formData.append('template', this.template!);
-    formData.append('table', this.table!);
-    formData.append('mappingJson', JSON.stringify(Object.fromEntries(mapping)));
-    formData.append('subject', this.preview.subject);
-    formData.append('tracking', String(this.preview.tracking));
-    this.http.post<{emailPreviews: {to: string, html: string}[], nextRow: number, total: number}>('/api/Send', formData).subscribe(response => {
-      this.cdr.detectChanges();
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: { message: 'Вы уверены, что хотите начать рассылку?' },
+      width: '350px'
     });
-
+    ref.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
+      const mapping = this.dataInformation.getMapping();
+      this.mapping = mapping;
+      const formData = new FormData();
+      formData.append('template', this.template!);
+      formData.append('table', this.table!);
+      formData.append('mappingJson', JSON.stringify(Object.fromEntries(mapping)));
+      formData.append('subject', this.preview.subject);
+      formData.append('tracking', String(this.preview.tracking));
+      this.http.post<{
+        emailPreviews: { to: string, html: string }[],
+        nextRow: number,
+        total: number
+      }>('/api/Send', formData).subscribe(response => {
+        this.cdr.detectChanges();
+      });
+    });
   }
 
   templateReceived(file: File) {
