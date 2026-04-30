@@ -2,6 +2,7 @@
 using UseCases;
 using UseCases.ExtractTableHeaders;
 using UseCases.GetPreview;
+using UseCases.UploadTemplate;
 
 namespace Presentation;
 
@@ -47,7 +48,7 @@ public class Endpoints : ControllerBase
         try
         {
             var response = _uploadTemplateRequestHandler.Handle(request);
-            return Ok(_uploadTemplateRequestHandler.Handle(request));
+            return Ok(response);
         }
         catch (ArgumentException ex)
         {
