@@ -1,59 +1,59 @@
-.header {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: var(--border-size) solid var(--color-dark-text) ;
-}
+/*.header {*/
+/*  display: flex;*/
+/*  justify-content: space-between;*/
+/*  border-bottom: var(--border-size) solid var(--color-dark-text) ;*/
+/*}*/
 
-.navigation {
-  width: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+/*.navigation {*/
+/*  width: 200px;*/
+/*  display: flex;*/
+/*  align-items: center;*/
+/*  justify-content: space-between;*/
 
-}
+/*}*/
 
-.navigation button {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--border-radius);
-  border: var(--border-size) solid var(--color-dark-text);
-  background-color: var(--color-base);
-}
+/*.navigation button {*/
+/*  width: 40px;*/
+/*  height: 40px;*/
+/*  border-radius: var(--border-radius);*/
+/*  border: var(--border-size) solid var(--color-dark-text);*/
+/*  background-color: var(--color-base);*/
+/*}*/
 
-.preview {
-  /*border: var(--border-size) solid var(--color-dark-text);*/
-  /*border-radius: var(--border-radius);*/
-  padding: 16px;
-}
+/*.preview {*/
+/*  !*border: var(--border-size) solid var(--color-dark-text);*!*/
+/*  !*border-radius: var(--border-radius);*!*/
+/*  padding: 16px;*/
+/*}*/
 
-.to {
-  /*border-bottom: var(--border-size) solid var(--color-dark-text) ;*/
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 8px;
-}
+/*.to {*/
+/*  !*border-bottom: var(--border-size) solid var(--color-dark-text) ;*!*/
+/*  display: flex;*/
+/*  align-items: center;*/
+/*  gap: 8px;*/
+/*  padding: 4px 8px;*/
+/*}*/
 
-.subject {
-  border-bottom: var(--border-size) solid var(--color-dark-text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 8px;
-}
+/*.subject {*/
+/*  border-bottom: var(--border-size) solid var(--color-dark-text);*/
+/*  display: flex;*/
+/*  align-items: center;*/
+/*  gap: 8px;*/
+/*  padding: 4px 8px;*/
+/*}*/
 
-.subject input {
-  border: none;
-}
+/*.subject input {*/
+/*  border: none;*/
+/*}*/
 
-.subject {
-  border-bottom: var(--border-size) solid var(--color-dark-text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 8px;
-}
+/*.subject {*/
+/*  border-bottom: var(--border-size) solid var(--color-dark-text);*/
+/*  display: flex;*/
+/*  align-items: center;*/
+/*  gap: 8px;*/
+/*  padding: 4px 8px;*/
+/*}*/
 
-.subject input {
-  border: none;
-}
+/*.subject input {*/
+/*  border: none;*/
+/*}*/

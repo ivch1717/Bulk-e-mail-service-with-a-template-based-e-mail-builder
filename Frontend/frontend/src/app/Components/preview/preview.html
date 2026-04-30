@@ -2,26 +2,19 @@
   <div class="header">
     <h2>Предпросмотр</h2>
     <div class="navigation">
-      <button (click)="prev()"><</button>
-      <p>{{index + 1}} из {{total}}</p>
-      <button (click)="next()">></button>
+      <button mat-icon-button (click)="prev()"><mat-icon>chevron_left</mat-icon></button>
+      <span>{{index + 1}} из {{total}}</span>
+      <button mat-icon-button (click)="next()"><mat-icon>chevron_right</mat-icon></button>
     </div>
   </div>
-  <div class="to">
-    <p>Кому:</p>
-    <div class="email">
-      <address>{{currentPreview.to}}</address>
-    </div>
-  </div>
-  <div class="subject">
-    <p>Тема:</p>
-    <input [(ngModel)]="subject" placeholder="Введите тему письма" />
-  </div>
-  <div class="tracking">
-    <label>
-      <input type="checkbox" [(ngModel)]="tracking" />
-      Отслеживать открытия
-    </label>
-  </div>
+  <p><b>Кому:</b> <span>{{currentPreview.to}}</span></p>
+
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Тема</mat-label>
+    <input matInput [(ngModel)]="subject" placeholder="Введите тему письма" />
+  </mat-form-field>
+
+  <mat-checkbox [(ngModel)]="tracking">Отслеживать открытия</mat-checkbox>
+
   <div [innerHTML]="safeHtml"></div>
 </div>

@@ -1,9 +1,15 @@
 <div class="file-uploads">
-  <button routerLink="/">Назад</button>
+  <button mat-stroked-button routerLink="/">
+    <mat-icon>arrow_back</mat-icon>Назад
+  </button>
   <app-file-upload (outputFile)="templateReceived($event)" [file_type]="'шаблон'"></app-file-upload>
   <app-file-upload (outputFile)="dataReceived($event)" [file_type]="'таблицу'"></app-file-upload>
-  <button (click)="onPreviewClick()">Получить превью</button>
-  <button (click)="onSendClick()">Начать рассылку</button>
+  <button mat-flat-button color="primary" (click)="onPreviewClick()">
+    <mat-icon>visibility</mat-icon>Получить превью
+  </button>
+  <button mat-flat-button color="warn" (click)="onSendClick()">
+    <mat-icon>send</mat-icon>Начать рассылку
+  </button>
 </div>
 @for (config of configs; track $index) {
   <app-placeholder [config]="config"></app-placeholder>

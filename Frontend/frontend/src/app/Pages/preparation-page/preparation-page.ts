@@ -9,6 +9,8 @@ import {TemplateTransferService} from '../../Services/template-transfer/template
 import { RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../Components/confirm-dialog/confirm-dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-preparation-page',
@@ -17,7 +19,9 @@ import { ConfirmDialogComponent } from '../../Components/confirm-dialog/confirm-
     Placeholder,
     DataInformation,
     Preview,
-    RouterModule
+    RouterModule,
+    MatButtonModule,
+    MatIconModule,
   ],
   templateUrl: './preparation-page.html',
   styleUrl: './preparation-page.css',
