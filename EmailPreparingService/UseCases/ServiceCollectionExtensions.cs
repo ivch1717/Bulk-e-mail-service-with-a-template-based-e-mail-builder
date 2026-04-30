@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NPOI.POIFS.Crypt.Dsig;
 using UseCases.ExtractTableHeaders;
+using UseCases.GetAllCampaigns;
 using UseCases.GetPreview;
 using UseCases.TemplateUtilities;
 using UseCases.UploadTemplate;
@@ -24,6 +25,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITemplateFactory, TemplateFactory>();
         services.AddScoped<ISendRequestHandler, SendRequestHandler>();
         services.AddScoped<ITrackOpenRequestHandler, TrackOpenRequestHandler>();
+        services.AddScoped<IGetAllCampaignsRequestHandler, GetAllCampaignsRequestHandler>();
         return services;
     }
 }

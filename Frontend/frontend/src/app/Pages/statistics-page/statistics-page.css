@@ -1,0 +1,6 @@
+mat-card {
+  margin: 24px 16px;
+}
+.mat-mdc-text-field-wrapper {
+  border-radius: 12px !important;
+}
