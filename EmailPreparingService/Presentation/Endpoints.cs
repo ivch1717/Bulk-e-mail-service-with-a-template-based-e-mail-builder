@@ -63,7 +63,10 @@ public class Endpoints : ControllerBase
     [HttpPost("api/ExtractTableHeaders")]
     public IActionResult ExtractTableHeaders([FromForm] ExtractTableHeadersRequest request)
     {
-        return Ok(_extractTableHeadersRequestHandler.Handle(request));
+        var response = _extractTableHeadersRequestHandler.Handle(request);
+        return response.headers.Count == 0 
+            ? UnprocessableEntity("There are no headers in the table")
+            : Ok(response.headers);
     }
     
     /// <summary>

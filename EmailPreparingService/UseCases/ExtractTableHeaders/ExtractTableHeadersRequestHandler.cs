@@ -31,6 +31,6 @@ public class ExtractTableHeadersRequestHandler : IExtractTableHeadersRequestHand
                 return new ExtractTableHeadersResponse(result);
             }
         }
-        return new ExtractTableHeadersResponse(null);
+        return new ExtractTableHeadersResponse([]);
     }
 }
