@@ -1,9 +1,13 @@
 import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {FormsModule} from '@angular/forms';
+import {MatTableModule} from '@angular/material/table';
+import {MatSelectModule} from '@angular/material/select';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 @Component({
   selector: 'app-data-information',
-  imports: [FormsModule],
+  standalone: true,
+  imports: [FormsModule, MatTableModule, MatSelectModule, MatFormFieldModule],
   templateUrl: './data-information.html',
   styleUrl: './data-information.css'
 })
@@ -14,6 +18,8 @@ export class DataInformation implements OnChanges{
 
   @Input()
   headers: string[] = [];
+
+  displayedColumns = ['variable', 'header'];
 
   mapping: Map<string, string> = new Map<string, string>();
 
