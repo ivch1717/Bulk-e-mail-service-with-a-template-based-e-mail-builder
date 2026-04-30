@@ -3,11 +3,13 @@ import {FormsModule} from '@angular/forms';
 import {MatTableModule} from '@angular/material/table';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
+
 
 @Component({
   selector: 'app-data-information',
   standalone: true,
-  imports: [FormsModule, MatTableModule, MatSelectModule, MatFormFieldModule],
+  imports: [FormsModule, MatTableModule, MatSelectModule, MatFormFieldModule, MatCardModule],
   templateUrl: './data-information.html',
   styleUrl: './data-information.css'
 })

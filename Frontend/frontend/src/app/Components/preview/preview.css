@@ -73,3 +73,8 @@ mat-card-header { display: flex; align-items: center; }
 mat-divider { margin: 16px 0; }
 
 .html-preview { border: 1px solid #eee; border-radius: 8px; padding: 16px; }
+
+mat-card {
+  height: 100%;
+  box-sizing: border-box;
+}
