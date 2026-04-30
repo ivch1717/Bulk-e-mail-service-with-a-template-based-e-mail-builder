@@ -1,9 +1,9 @@
 <div class="file-uploads">
   <div class="cell">
-    <app-file-upload (outputFile)="templateReceived($event)" [file_type]="'шаблон'"></app-file-upload>
+    <app-file-upload #templateUpload (outputFile)="templateReceived($event)" [file_type]="'шаблон'"></app-file-upload>
   </div>
   <div class="cell">
-    <app-file-upload (outputFile)="dataReceived($event)" [file_type]="'таблицу'"></app-file-upload>
+    <app-file-upload #dataUpload (outputFile)="dataReceived($event)" [file_type]="'таблицу'"></app-file-upload>
   </div>
   <div class="cell">
     <button mat-flat-button color="primary" (click)="onPreviewClick()">
