@@ -1,10 +1,14 @@
 .file-uploads {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+}
+
+.cell {
   display: flex;
-  gap: 10px;
-  padding: 20px;
-  /*border: var(--border-size) solid var(--color-dark-text);*/
-  /*border-radius: var(--border-radius);*/
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
 }
 
 .info {
@@ -23,17 +27,59 @@ app-preview {
   width: 50%;
 }
 
-button {
-  padding: 20px 40px;
-  background-color: var(--color-base);
-  border-radius: var(--border-radius);
-  color: var(--color-light-text);
-  font-size: var(--font-size-small);
-  font-family: var(--font-family);
-  cursor: pointer;
-  border: var(--border-size) solid var(--color-dark-red);
+/*button {*/
+/*  padding: 20px 40px;*/
+/*  background-color: var(--color-base);*/
+/*  border-radius: var(--border-radius);*/
+/*  color: var(--color-light-text);*/
+/*  font-size: var(--font-size-small);*/
+/*  font-family: var(--font-family);*/
+/*  cursor: pointer;*/
+/*  border: var(--border-size) solid var(--color-dark-red);*/
+/*}*/
+
+/*button:hover {*/
+/*  background-color: var(--color-dark-base);*/
+/*}*/
+
+.info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
-button:hover {
-  background-color: var(--color-dark-base);
+.info.full-width {
+  grid-template-columns: 1fr;
+}
+
+.info.full-width app-data-information {
+  width: 100%;
+}
+
+.info.full-width app-data-information table {
+  width: 100%;
+}
+
+app-data-information, app-preview {
+  width: 100%;
+}
+
+app-preview {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.file-uploads {
+  margin-top: 16px;
+}
+
+.info {
+  align-items: stretch;
+}
+
+app-data-information, app-preview {
+  height: 100%;
 }

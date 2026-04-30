@@ -10,4 +10,5 @@ public class AppDbContext : DbContext
     }
     
     public DbSet<OutboxEmail> OutboxEmails { get; set; }
+    public DbSet<EmailOpenData> EmailOpenDatas { get; set; }
 }

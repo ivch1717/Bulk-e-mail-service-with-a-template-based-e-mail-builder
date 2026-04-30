@@ -3,6 +3,7 @@ using NPOI.POIFS.Crypt.Dsig;
 using UseCases.ExtractTableHeaders;
 using UseCases.GetPreview;
 using UseCases.TemplateUtilities;
+using UseCases.UploadTemplate;
 
 namespace UseCases;
 
@@ -22,6 +23,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IGetPreviewRequestHandler,   GetPreviewRequestHandler>();
         services.AddScoped<ITemplateFactory, TemplateFactory>();
         services.AddScoped<ISendRequestHandler, SendRequestHandler>();
+        services.AddScoped<ITrackOpenRequestHandler, TrackOpenRequestHandler>();
         return services;
     }
 }

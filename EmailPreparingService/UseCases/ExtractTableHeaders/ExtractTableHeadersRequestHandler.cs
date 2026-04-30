@@ -1,20 +1,15 @@
 namespace UseCases.ExtractTableHeaders;
 
 /// <summary>
-/// Обработчик для получения заголовков столбцов.
+/// Обработчик для получения заголовков таблицы.
 /// </summary>
-public class ExtractTableHeadersRequestHandler : IExtractTableHeadersRequestHandler
+public class ExtractTableHeadersRequestHandler(ITableFactory tableFactory) : IExtractTableHeadersRequestHandler
 {
     /// <summary>
     /// Фабрика таблиц для поддержки разных форматов таблиц.
     /// </summary>
-    private ITableFactory _tableFactory;
-    
-    public ExtractTableHeadersRequestHandler(ITableFactory tableFactory)
-    {
-        _tableFactory = tableFactory;
-    }
-    
+    private readonly ITableFactory _tableFactory = tableFactory;
+
     /// <summary>
     /// Ищет заголовки столбцов, просматривая до первой не пустой строки в первом листе таблицы.
     /// </summary>
@@ -22,15 +17,15 @@ public class ExtractTableHeadersRequestHandler : IExtractTableHeadersRequestHand
     /// <returns>Список заголовков</returns>
     public ExtractTableHeadersResponse Handle(ExtractTableHeadersRequest request)
     {
-        ITable table = _tableFactory.Create(request.table);
-        for (int i = 0; i < table.totalRows; ++i)
+        var table = _tableFactory.Create(request.table);
+        for (var i = 0; i < table.totalRows; ++i)
         {
-            List<string> result = table.GetRow(i, skipEmpty: true);
+            var result = table.GetRow(i, skipEmpty: true);
             if (result.Count != 0)
             {
                 return new ExtractTableHeadersResponse(result);
             }
         }
-        return new ExtractTableHeadersResponse(null);
+        return new ExtractTableHeadersResponse([]);
     }
 }

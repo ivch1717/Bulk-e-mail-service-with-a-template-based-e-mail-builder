@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260429115806_AddSubject")]
-    partial class AddSubject
+    [Migration("20260429113919_AddCampaignId")]
+    partial class AddCampaignId
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,10 +43,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<bool>("Sent")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("Subject")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("To")
                         .IsRequired()

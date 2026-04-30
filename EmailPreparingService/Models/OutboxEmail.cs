@@ -7,8 +7,9 @@ public class OutboxEmail
     public string Html { get; set; } = "";
     public DateTime CreatedAt { get; set; }
     public bool Sent { get; set; } = false;
-
+    
     public Guid CampaignId { get; set; }
     
-    public string Subject { get; set; }
+    public string Subject { get; set; } = "";
+
 }

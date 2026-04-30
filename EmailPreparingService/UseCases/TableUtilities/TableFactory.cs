@@ -15,7 +15,12 @@ public class TableFactory : ITableFactory
     public ITable Create(IFormFile file)
     {
         // TODO: сделать поддержку других форматов.
-        return new XlsxTable(file);
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        return extension switch
+        {
+            ".xlsx" => new XlsxTable(file),
+            _ => throw new ArgumentException($"Неподдерживаемый формат файла: {extension}.")
+        };
     }
     
     public ITable Create(IFormFile file, int from)

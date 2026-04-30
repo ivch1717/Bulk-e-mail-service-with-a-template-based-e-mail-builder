@@ -7,6 +7,12 @@ import {DataInformation} from '../../Components/data-information/data-informatio
 import {Preview} from '../../Components/preview/preview';
 import {TemplateTransferService} from '../../Services/template-transfer/template-transfer';
 import { RouterModule } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../Components/confirm-dialog/confirm-dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 
 @Component({
   selector: 'app-preparation-page',
@@ -15,13 +21,16 @@ import { RouterModule } from '@angular/router';
     Placeholder,
     DataInformation,
     Preview,
-    RouterModule
+    RouterModule,
+    MatButtonModule,
+    MatIconModule,
   ],
   templateUrl: './preparation-page.html',
   styleUrl: './preparation-page.css',
 })
 export class PreparationPage {
   configs: PlaceholderConfig[] = [];
+
 
   templateTitle: string = "Загрузите шаблон в формате HTML"
   dataTitle: string = "Загрузите данные в формате XLSX"
@@ -32,7 +41,7 @@ export class PreparationPage {
   result: string | null = null;
   variables: string[] = [];
   headers: string[] = [];
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef, private templateTransferService: TemplateTransferService) { }
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef, private templateTransferService: TemplateTransferService, private dialog: MatDialog, private snackBar: MatSnackBar) { }
 
   total: number = 0;
   previews: {to: string; html: string}[] = [];
@@ -44,7 +53,13 @@ export class PreparationPage {
   dataInformation!: DataInformation;
 
   @ViewChild(Preview)
-  Preview!: Preview;
+  preview!: Preview;
+
+  @ViewChild('dataUpload')
+  dataUpload!: FileUpload;
+
+  @ViewChild('templateUpload')
+  templateUpload!: FileUpload;
 
   onPreviewClick() {
     const mapping = this.dataInformation.getMapping();
@@ -66,45 +81,79 @@ export class PreparationPage {
   }
 
   onSendClick() {
-    const mapping = this.dataInformation.getMapping();
-    this.mapping = mapping;
-    const formData = new FormData();
-    formData.append('template', this.template!);
-    formData.append('table', this.table!);
-    formData.append('mappingJson', JSON.stringify(Object.fromEntries(mapping)));
-    formData.append('subject', this.Preview.subject);
-    this.http.post<{emailPreviews: {to: string, html: string}[], nextRow: number, total: number}>('/api/Send', formData).subscribe(response => {
-      this.cdr.detectChanges();
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: { message: this.preview.subject ? 'Вы уверены, что хотите начать рассылку?' : 'Тема письма пустая, письмо с пустой темой может попасть в спам, все равно отправить?' },
+      width: '350px'
     });
-
+    ref.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
+      const mapping = this.dataInformation.getMapping();
+      this.mapping = mapping;
+      const formData = new FormData();
+      formData.append('template', this.template!);
+      formData.append('table', this.table!);
+      formData.append('mappingJson', JSON.stringify(Object.fromEntries(mapping)));
+      formData.append('subject', this.preview.subject);
+      formData.append('tracking', String(this.preview.tracking));
+      this.http.post<{
+        emailPreviews: { to: string, html: string }[],
+        nextRow: number,
+        total: number
+      }>('/api/Send', formData).subscribe(response => {
+        this.cdr.detectChanges();
+      });
+    });
   }
 
   templateReceived(file: File) {
     this.template = file;
     const formData = new FormData();
     formData.append('template', file);
-    this.http.post<string[]>('/api/UploadTemplate', formData).subscribe(response => {
-      this.variables = response;
-      // this.configs = response.map(s => ({
-      //   placeholder: s,
-      //   offsetX: null,
-      //   offsetY: null,
-      //   row: false
-      // }));
-      //this.configs.push({placeholder: "email", offsetX:null, offsetY:null, row:false});
-      this.cdr.detectChanges();
+    this.http.post<string[]>('/api/UploadTemplate', formData).subscribe({
+      next: (response) => {
+        this.variables = response;
+        if (this.variables.length === 1) {
+          this.snackBar.open("В шаблоне нет переменных, возможно они обозначены неверно, если так и должно быть это сообщение можно проигнорировать", 'Закрыть', {
+            duration: 5000,
+          });
+        }
+        if (this.variables.includes("")) {
+          this.snackBar.open("В шаблоне есть переменная без названия", 'Закрыть', {
+            duration: 5000,
+          });
+        }
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        this.dataInformation.variables = [];
+        this.templateUpload.file = null;
+        this.snackBar.open(error.error, 'Закрыть', {
+          duration: 5000,
+        });
+        this.cdr.detectChanges();
+      }
     });
-
   }
 
   dataReceived(file: File) {
     this.table = file;
     const formData = new FormData();
     formData.append('table', file);
-    this.http.post<{headers: string[]}>('/api/ExtractTableHeaders', formData).subscribe(response => {
-      this.headers = response.headers;
-      this.cdr.detectChanges();
-    });
+    this.http.post<string[]>('/api/ExtractTableHeaders', formData).subscribe({
+        next: (response) => {
+            this.headers = response;
+            this.cdr.detectChanges();
+            },
+        error: (error) => {
+          this.dataInformation.headers = [];
+          this.table = null;
+          this.dataUpload.file = null;
+          this.snackBar.open(error.error, 'Закрыть', {
+            duration: 5000,
+          });
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   ngOnInit() {
@@ -114,5 +163,5 @@ export class PreparationPage {
       this.templateTransferService.templateFile = null;
     }
   }
-
+// test
 }

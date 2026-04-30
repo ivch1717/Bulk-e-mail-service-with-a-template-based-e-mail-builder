@@ -1,21 +1,28 @@
-<div class="preview">
-  <div class="header">
-    <h2>Предпросмотр</h2>
-    <div class="navigation">
-      <button (click)="prev()"><</button>
-      <p>{{index + 1}} из {{total}}</p>
-      <button (click)="next()">></button>
-    </div>
-  </div>
-  <div class="to">
-    <p>Кому:</p>
-    <div class="email">
-      <address>{{currentPreview.to}}</address>
-    </div>
-  </div>
-  <div class="subject">
-    <p>Тема:</p>
-    <input [(ngModel)]="subject" placeholder="Введите тему письма" />
-  </div>
-  <div [innerHTML]="safeHtml"></div>
-</div>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Предпросмотр</mat-card-title>
+    <div class="spacer"></div>
+    <button mat-icon-button (click)="prev()" [disabled]="index === 0">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span>{{index + 1}} из {{total}}</span>
+    <button mat-icon-button (click)="next()" [disabled]="index === total - 1">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p class="to"><span class="label">Кому:</span> {{currentPreview.to}}</p>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="subject">
+      <mat-label>Тема</mat-label>
+      <input matInput [(ngModel)]="subject" />
+    </mat-form-field>
+
+    <mat-checkbox [checked]="tracking" (change)="onTrackingChange($event)">Отслеживать открытия</mat-checkbox>
+
+    <mat-divider></mat-divider>
+
+    <div class="html-preview" [innerHTML]="safeHtml"></div>
+  </mat-card-content>
+</mat-card>

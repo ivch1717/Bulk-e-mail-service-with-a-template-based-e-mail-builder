@@ -18,3 +18,19 @@
 
   --font-family: sans-serif;
 }
+
+.mat-mdc-select-value {
+  text-align: center;
+}
+
+.mat-mdc-option .mdc-list-item__primary-text {
+  width: 100%;
+  text-align: center;
+}
+
+body {
+  background-color: #f5f5f5;
+}
+.mat-mdc-table {
+  background-color: rgb(249, 241, 245) !important;
+}

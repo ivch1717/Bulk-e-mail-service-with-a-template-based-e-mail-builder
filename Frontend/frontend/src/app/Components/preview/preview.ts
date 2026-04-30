@@ -2,16 +2,26 @@ import {ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@an
 import {HttpClient} from '@angular/common/http';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-preview',
-  imports: [FormsModule],
+  standalone: true,
+  imports: [FormsModule, MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule, MatCheckboxModule, MatCardModule, MatDividerModule],
   templateUrl: './preview.html',
   styleUrl: './preview.css',
 })
 export class Preview implements OnChanges {
 
-  constructor(private sanitizer: DomSanitizer, private http: HttpClient, private cdr: ChangeDetectorRef) { }
+  constructor(private sanitizer: DomSanitizer, private http: HttpClient, private cdr: ChangeDetectorRef, private dialog: MatDialog) { }
 
   @Input()
   total: number = 0;
@@ -33,13 +43,30 @@ export class Preview implements OnChanges {
 
   index: number = 0;
   currentPreview: {to: string; html: string} = {to: "", html: ""};
-
   subject: string = "";
+
+  tracking: boolean = false;
 
   get safeHtml(): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(this.currentPreview.html);
   }
 
+  onTrackingChange(event: any) {
+    event.source.checked = this.tracking;
+    if (!this.tracking) {
+      const ref = this.dialog.open(ConfirmDialogComponent, {
+        data: { message: 'Для сбора статистики пользователь должен указать своё согласие на сбор статистики. Разработчики отказываются от ответственности при использовании вами этой функции.' },
+        width: '350px'
+      });
+      ref.afterClosed().subscribe(confirmed => {
+        this.tracking = !!confirmed;
+        event.source.checked = this.tracking;
+      });
+    } else {
+      this.tracking = false;
+      event.source.checked = false;
+    }
+  }
   next() {
     if (this.index == this.total - 1) {
       return;

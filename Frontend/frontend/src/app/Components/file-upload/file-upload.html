@@ -1,5 +1,6 @@
 <input type="file" #fileInput (change)="fileSelected($event)" hidden>
 
-<button (click)="fileInput.click()" [class.active]="file != null">
-  Загрузить {{ file_type }}
+<button mat-raised-button [color]="file ? 'primary' : undefined" (click)="fileInput.click()">
+  <mat-icon>upload_file</mat-icon>
+  {{ file ? file.name : 'Загрузить ' + file_type }}
 </button>

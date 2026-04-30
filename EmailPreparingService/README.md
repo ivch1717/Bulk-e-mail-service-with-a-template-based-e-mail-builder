@@ -9,3 +9,9 @@ dotnet run --project Host
 htpp://localhost:5262/swagger 
 
 Для теста минуя фронтенд
+
+
+Термины
+
+рассылка - campaign
+тема письма - subject

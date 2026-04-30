@@ -2,6 +2,7 @@
 using UseCases;
 using UseCases.ExtractTableHeaders;
 using UseCases.GetPreview;
+using UseCases.UploadTemplate;
 
 namespace Presentation;
 
@@ -15,10 +16,11 @@ public class Endpoints : ControllerBase
     IExtractTableHeadersRequestHandler _extractTableHeadersRequestHandler;
     IGetPreviewRequestHandler _getPreviewRequestHandler;
     ISendRequestHandler _sendRequestHandler;
+    private ITrackOpenRequestHandler _trackOpenRequestHandler;
     
     public Endpoints( IUploadTemplateRequestHandler uploadTemplateRequestHandler, IProcessEmailCreationRequestHandler processEmailCreationRequestHandler,
         IExtractTableHeadersRequestHandler extractTableHeadersRequestHandler, IGetPreviewRequestHandler getPreviewRequestHandler,
-        ISendRequestHandler sendRequestHandler)
+        ISendRequestHandler sendRequestHandler, ITrackOpenRequestHandler trackOpenRequestHandler)
     {
         // _uploadDataRequestHandler = uploadDataRequestHandler;
         _uploadTemplateRequestHandler = uploadTemplateRequestHandler;
@@ -26,6 +28,7 @@ public class Endpoints : ControllerBase
         _extractTableHeadersRequestHandler = extractTableHeadersRequestHandler;
         _getPreviewRequestHandler = getPreviewRequestHandler;
         _sendRequestHandler = sendRequestHandler;
+        _trackOpenRequestHandler =  trackOpenRequestHandler;
     }
     
     // [HttpPost("UploadData")]
@@ -42,7 +45,19 @@ public class Endpoints : ControllerBase
     [HttpPost("api/UploadTemplate")]
     public IActionResult UploadTemplate([FromForm] UploadTemplateRequest request)
     {
-        return Ok(_uploadTemplateRequestHandler.Handle(request));
+        try
+        {
+            var response = _uploadTemplateRequestHandler.Handle(request);
+            return Ok(response);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return BadRequest("Unknown exception");
+        }
     }
 
     [HttpPost("api/ProcessEmailCreation")]
@@ -57,11 +72,25 @@ public class Endpoints : ControllerBase
     /// Формат таблицы .xlsx.
     /// </summary>
     /// <param name="request">.xlsx таблица.</param>
-    /// <returns>Заголовки в виде списка строк</returns>
+    /// <returns>Заголовки в виде списка строк, если нет заголовков то код 422.</returns>
     [HttpPost("api/ExtractTableHeaders")]
     public IActionResult ExtractTableHeaders([FromForm] ExtractTableHeadersRequest request)
     {
-        return Ok(_extractTableHeadersRequestHandler.Handle(request));
+        try
+        {
+            var response = _extractTableHeadersRequestHandler.Handle(request);
+            return response.headers.Count == 0
+                ? UnprocessableEntity("There are no headers in the table")
+                : Ok(response.headers);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return BadRequest("Unknown exception");
+        }
     }
     
     /// <summary>
@@ -84,5 +113,12 @@ public class Endpoints : ControllerBase
     public async Task<IActionResult> Send([FromForm] SendRequest request)
     {
         return Ok(await _sendRequestHandler.Handle(request));
+    }
+
+    [HttpGet("api/track/open")]
+    public async Task<IActionResult> TrackOpen([FromQuery] TrackOpenRequest request)
+    {
+        var pixel = await _trackOpenRequestHandler.HandleAsync(request);
+        return File(pixel, "image/gif");
     }
 }
