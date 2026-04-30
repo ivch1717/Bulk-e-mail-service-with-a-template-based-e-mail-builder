@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UseCases;
 using UseCases.ExtractTableHeaders;
+using UseCases.GetAllCampaigns;
 using UseCases.GetPreview;
 using UseCases.UploadTemplate;
 
@@ -17,10 +18,11 @@ public class Endpoints : ControllerBase
     IGetPreviewRequestHandler _getPreviewRequestHandler;
     ISendRequestHandler _sendRequestHandler;
     private ITrackOpenRequestHandler _trackOpenRequestHandler;
+    private IGetAllCampaignsRequestHandler _getAllCampaignsRequestHandler;
     
     public Endpoints( IUploadTemplateRequestHandler uploadTemplateRequestHandler, IProcessEmailCreationRequestHandler processEmailCreationRequestHandler,
         IExtractTableHeadersRequestHandler extractTableHeadersRequestHandler, IGetPreviewRequestHandler getPreviewRequestHandler,
-        ISendRequestHandler sendRequestHandler, ITrackOpenRequestHandler trackOpenRequestHandler)
+        ISendRequestHandler sendRequestHandler, ITrackOpenRequestHandler trackOpenRequestHandler, IGetAllCampaignsRequestHandler getAllCampaignsRequestHandler)
     {
         // _uploadDataRequestHandler = uploadDataRequestHandler;
         _uploadTemplateRequestHandler = uploadTemplateRequestHandler;
@@ -29,6 +31,7 @@ public class Endpoints : ControllerBase
         _getPreviewRequestHandler = getPreviewRequestHandler;
         _sendRequestHandler = sendRequestHandler;
         _trackOpenRequestHandler =  trackOpenRequestHandler;
+        _getAllCampaignsRequestHandler = getAllCampaignsRequestHandler;
     }
     
     // [HttpPost("UploadData")]
@@ -120,5 +123,16 @@ public class Endpoints : ControllerBase
     {
         var pixel = await _trackOpenRequestHandler.HandleAsync(request);
         return File(pixel, "image/gif");
+    }
+
+    /// <summary>
+    /// Получение информации о всех рассылках.
+    /// </summary>
+    /// <returns>Список краткой информации о каждой рассылке.</returns>
+    [HttpGet("api/stats/campaigns")]
+    public async Task<IActionResult> GetAllCampaigns()
+    {
+        var response = await _getAllCampaignsRequestHandler.HandleAsync();
+        return Ok(response);
     }
 }
