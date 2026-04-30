@@ -117,6 +117,11 @@ export class PreparationPage {
             duration: 5000,
           });
         }
+        if (this.variables.includes("")) {
+          this.snackBar.open("В шаблоне есть переменная без названия", 'Закрыть', {
+            duration: 5000,
+          });
+        }
         this.cdr.detectChanges();
       },
       error: (error) => {
