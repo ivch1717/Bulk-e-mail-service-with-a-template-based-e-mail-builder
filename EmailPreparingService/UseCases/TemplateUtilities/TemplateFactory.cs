@@ -12,6 +12,5 @@ public class TemplateFactory : ITemplateFactory
             ".html" => tracking ? new HtmlTrackingTemplate(file) : new HtmlTemplate(file),
             _ => throw new ArgumentException($"Неподдерживаемый формат файла: {extension}.")
         };
-        
     }
 }
