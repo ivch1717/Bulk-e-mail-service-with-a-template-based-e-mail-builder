@@ -19,7 +19,7 @@
       <input matInput [(ngModel)]="subject" />
     </mat-form-field>
 
-    <mat-checkbox [(ngModel)]="tracking">Отслеживать открытия</mat-checkbox>
+    <mat-checkbox [checked]="tracking" (change)="onTrackingChange($event)">Отслеживать открытия</mat-checkbox>
 
     <mat-divider></mat-divider>
 

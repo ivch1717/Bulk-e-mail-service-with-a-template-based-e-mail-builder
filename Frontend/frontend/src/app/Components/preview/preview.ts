@@ -9,6 +9,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-preview',
@@ -19,7 +21,7 @@ import { MatDividerModule } from '@angular/material/divider';
 })
 export class Preview implements OnChanges {
 
-  constructor(private sanitizer: DomSanitizer, private http: HttpClient, private cdr: ChangeDetectorRef) { }
+  constructor(private sanitizer: DomSanitizer, private http: HttpClient, private cdr: ChangeDetectorRef, private dialog: MatDialog) { }
 
   @Input()
   total: number = 0;
@@ -49,6 +51,22 @@ export class Preview implements OnChanges {
     return this.sanitizer.bypassSecurityTrustHtml(this.currentPreview.html);
   }
 
+  onTrackingChange(event: any) {
+    event.source.checked = this.tracking;
+    if (!this.tracking) {
+      const ref = this.dialog.open(ConfirmDialogComponent, {
+        data: { message: 'Для сбора статистики пользователь должен указать своё согласие на сбор статистики. Разработчики отказываются от ответственности при использовании вами этой функции.' },
+        width: '350px'
+      });
+      ref.afterClosed().subscribe(confirmed => {
+        this.tracking = !!confirmed;
+        event.source.checked = this.tracking;
+      });
+    } else {
+      this.tracking = false;
+      event.source.checked = false;
+    }
+  }
   next() {
     if (this.index == this.total - 1) {
       return;

@@ -74,7 +74,7 @@ export class PreparationPage {
 
   onSendClick() {
     const ref = this.dialog.open(ConfirmDialogComponent, {
-      data: { message: 'Вы уверены, что хотите начать рассылку?' },
+      data: { message: this.preview.subject ? 'Вы уверены, что хотите начать рассылку?' : 'Тема письма пустая, письмо с пустой темой может попасть в спам, все равно отправить?' },
       width: '350px'
     });
     ref.afterClosed().subscribe(confirmed => {
