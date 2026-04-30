@@ -11,6 +11,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../Components/confirm-dialog/confirm-dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 
 @Component({
   selector: 'app-preparation-page',
@@ -39,7 +41,7 @@ export class PreparationPage {
   result: string | null = null;
   variables: string[] = [];
   headers: string[] = [];
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef, private templateTransferService: TemplateTransferService, private dialog: MatDialog) { }
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef, private templateTransferService: TemplateTransferService, private dialog: MatDialog, private snackBar: MatSnackBar) { }
 
   total: number = 0;
   previews: {to: string; html: string}[] = [];
@@ -52,6 +54,12 @@ export class PreparationPage {
 
   @ViewChild(Preview)
   preview!: Preview;
+
+  @ViewChild('dataUpload')
+  dataUpload!: FileUpload;
+
+  @ViewChild('templateUpload')
+  templateUpload!: FileUpload;
 
   onPreviewClick() {
     const mapping = this.dataInformation.getMapping();
@@ -101,28 +109,41 @@ export class PreparationPage {
     this.template = file;
     const formData = new FormData();
     formData.append('template', file);
-    this.http.post<string[]>('/api/UploadTemplate', formData).subscribe(response => {
-      this.variables = response;
-      // this.configs = response.map(s => ({
-      //   placeholder: s,
-      //   offsetX: null,
-      //   offsetY: null,
-      //   row: false
-      // }));
-      //this.configs.push({placeholder: "email", offsetX:null, offsetY:null, row:false});
-      this.cdr.detectChanges();
+    this.http.post<string[]>('/api/UploadTemplate', formData).subscribe({
+      next: (response) => {
+        this.variables = response;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        this.dataInformation.variables = [];
+        this.templateUpload.file = null;
+        this.snackBar.open(error.error, 'Закрыть', {
+          duration: 5000,
+        });
+        this.cdr.detectChanges();
+      }
     });
-
   }
 
   dataReceived(file: File) {
     this.table = file;
     const formData = new FormData();
     formData.append('table', file);
-    this.http.post<{headers: string[]}>('/api/ExtractTableHeaders', formData).subscribe(response => {
-      this.headers = response.headers;
-      this.cdr.detectChanges();
-    });
+    this.http.post<string[]>('/api/ExtractTableHeaders', formData).subscribe({
+        next: (response) => {
+            this.headers = response;
+            this.cdr.detectChanges();
+            },
+        error: (error) => {
+          this.dataInformation.headers = [];
+          this.table = null;
+          this.dataUpload.file = null;
+          this.snackBar.open(error.error, 'Закрыть', {
+            duration: 5000,
+          });
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   ngOnInit() {
