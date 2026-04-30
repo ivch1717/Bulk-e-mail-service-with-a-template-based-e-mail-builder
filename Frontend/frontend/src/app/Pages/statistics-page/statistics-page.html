@@ -3,7 +3,11 @@
 } @else {
   <mat-card>
     <mat-card-content>
-      <table mat-table [dataSource]="campaigns">
+      <mat-form-field>
+        <mat-label>Поиск по ID</mat-label>
+        <input matInput [(ngModel)]="searchId" placeholder="6b49c386...">
+      </mat-form-field>
+      <table mat-table [dataSource]="filteredCampaigns">
         <ng-container matColumnDef="campaignId">
           <th mat-header-cell *matHeaderCellDef>ID рассылки</th>
           <td mat-cell *matCellDef="let c">{{ c.campaignId }}</td>
