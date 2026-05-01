@@ -64,7 +64,7 @@ services:
   frontend:
     container_name: frontend
     build:
-      context: ./Frontend/frontend
+      context: ./Frontend
       dockerfile: Dockerfile
     # ports:
     #   - "4200:4200"
