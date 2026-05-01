@@ -8,3 +8,4 @@ _ReSharper.Caches/
 **/.DS_Store
 .env
 .htpasswd
+.node_modules/
