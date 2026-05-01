@@ -51,10 +51,15 @@ public class GetCampaignRequestHandler : IGetCampaignRequestHandler
             ))
             .ToList();
 
-        var opensByHour = opens
-            .GroupBy(e => new DateTime(e.OpenedAt.Year, e.OpenedAt.Month, e.OpenedAt.Day, e.OpenedAt.Hour, 0, 0))
-            .Select(g => new OpenByHour(hour: g.Key, count: g.Count()))
-            .OrderBy(x => x.hour)
+        var opensByHourDict = opens
+            .GroupBy(e => e.OpenedAt.Hour)
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        var opensByHour = Enumerable.Range(0, 24)
+            .Select(h => new OpenByHour(
+                hour: new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, h, 0, 0),
+                count: opensByHourDict.GetValueOrDefault(h, 0)
+            ))
             .ToList();
 
         return new CampaignInfo(campaignId, totalSent, totalOpened, openRate, recipients, opensByHour);

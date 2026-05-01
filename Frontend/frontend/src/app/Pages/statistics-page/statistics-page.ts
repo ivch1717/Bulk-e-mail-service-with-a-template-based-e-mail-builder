@@ -6,6 +6,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { CampaignDetails } from '../../Components/campaign-details/campaign-details';
+import {MatButtonModule} from '@angular/material/button';
+
+
 
 interface CampaignSummary {
   campaignId: string;
@@ -15,13 +20,17 @@ interface CampaignSummary {
 
 @Component({
   selector: 'app-statistics-page',
+  standalone: true,
   imports: [
     MatTableModule,
-    MatProgressSpinnerModule,
     MatCardModule,
+    MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    CampaignDetails,
   ],
   templateUrl: './statistics-page.html',
   styleUrl: './statistics-page.css',
@@ -29,9 +38,9 @@ interface CampaignSummary {
 export class StatisticsPage implements OnInit {
   campaigns: CampaignSummary[] = [];
   loading = true;
-  displayedColumns = ['campaignId', 'totalSent', 'totalOpened', 'openRate'];
-
+  displayedColumns = ['campaignId', 'totalSent', 'totalOpened', 'openRate', 'expand'];
   searchId = '';
+  expandedCampaignId: string | null = null;
 
   constructor(private http: HttpClient, private cdr : ChangeDetectorRef) {}
 
@@ -41,6 +50,10 @@ export class StatisticsPage implements OnInit {
       this.loading = false;
       this.cdr.detectChanges();
     });
+  }
+
+  toggleExpand(campaignId: string) {
+    this.expandedCampaignId = this.expandedCampaignId === campaignId ? null : campaignId;
   }
 
   openRate(campaign: CampaignSummary): string {
