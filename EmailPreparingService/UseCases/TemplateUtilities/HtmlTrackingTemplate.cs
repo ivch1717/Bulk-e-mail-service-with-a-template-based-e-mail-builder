@@ -8,7 +8,7 @@ public class HtmlTrackingTemplate : ITemplate
     private string _text = "";
 
     private const string trackingTemplate =
-        $"<img src=\"http://localhost:8080/api/track/open?campaignId=[[campaignId]]&email=[[email]]\" width=\"1\" height=\"1\" style=\"display:none\" alt=\"\" />";
+        $"<img src=\"http://80.249.148.39/api/track/open?campaignId=[[campaignId]]&email=[[email]]\" width=\"1\" height=\"1\" style=\"display:none\" alt=\"\" />";
     public HtmlTrackingTemplate(IFormFile file)
     {
         using var reader = new StreamReader(file.OpenReadStream());
