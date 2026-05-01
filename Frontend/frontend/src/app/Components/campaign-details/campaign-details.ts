@@ -60,7 +60,10 @@ export class CampaignDetails implements OnInit {
   get chartData(): ChartData<'bar'> {
     return {
       labels: this.info!.opensByHour.map(o =>
-        new Date(o.hour).toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })
+        new Date(o.hour + 'Z').toLocaleTimeString('ru', {
+          hour: '2-digit',
+          minute: '2-digit'
+        })
       ),
       datasets: [{
         label: 'Открытий',
