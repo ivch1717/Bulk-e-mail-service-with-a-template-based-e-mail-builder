@@ -9,3 +9,4 @@ _ReSharper.Caches/
 .env
 .htpasswd
 node_modules/
+.vscode/
