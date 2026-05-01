@@ -2,6 +2,7 @@
 using UseCases;
 using UseCases.ExtractTableHeaders;
 using UseCases.GetAllCampaigns;
+using UseCases.GetCampaign;
 using UseCases.GetPreview;
 using UseCases.UploadTemplate;
 
@@ -19,10 +20,12 @@ public class Endpoints : ControllerBase
     ISendRequestHandler _sendRequestHandler;
     private ITrackOpenRequestHandler _trackOpenRequestHandler;
     private IGetAllCampaignsRequestHandler _getAllCampaignsRequestHandler;
+    private IGetCampaignRequestHandler _getCampaignRequestHandler;
     
     public Endpoints( IUploadTemplateRequestHandler uploadTemplateRequestHandler, IProcessEmailCreationRequestHandler processEmailCreationRequestHandler,
         IExtractTableHeadersRequestHandler extractTableHeadersRequestHandler, IGetPreviewRequestHandler getPreviewRequestHandler,
-        ISendRequestHandler sendRequestHandler, ITrackOpenRequestHandler trackOpenRequestHandler, IGetAllCampaignsRequestHandler getAllCampaignsRequestHandler)
+        ISendRequestHandler sendRequestHandler, ITrackOpenRequestHandler trackOpenRequestHandler, IGetAllCampaignsRequestHandler getAllCampaignsRequestHandler,
+        IGetCampaignRequestHandler getCampaignRequestHandler)
     {
         // _uploadDataRequestHandler = uploadDataRequestHandler;
         _uploadTemplateRequestHandler = uploadTemplateRequestHandler;
@@ -32,6 +35,7 @@ public class Endpoints : ControllerBase
         _sendRequestHandler = sendRequestHandler;
         _trackOpenRequestHandler =  trackOpenRequestHandler;
         _getAllCampaignsRequestHandler = getAllCampaignsRequestHandler;
+        _getCampaignRequestHandler = getCampaignRequestHandler;
     }
     
     // [HttpPost("UploadData")]
@@ -133,6 +137,17 @@ public class Endpoints : ControllerBase
     public async Task<IActionResult> GetAllCampaigns()
     {
         var response = await _getAllCampaignsRequestHandler.HandleAsync();
+        return Ok(response);
+    }
+    
+    /// <summary>
+    /// Получение информации о конкретной рассылке.
+    /// </summary>
+    /// <returns>Полная информация о каждой рассылке.</returns>
+    [HttpGet("api/stats/campaigns/{campaignId}")]
+    public async Task<IActionResult> GetCampaign(Guid campaignId)
+    {
+        var response = await _getCampaignRequestHandler.HandleAsync(campaignId);
         return Ok(response);
     }
 }
