@@ -1,6 +1,33 @@
-<div class="page-center">
-  <div class="action">
-    <button class="btn" routerLink="/constructor">Конструктор письма</button>
-    <button class="btn" routerLink="/preparation">Отправить письма</button>
+<div class="hero">
+  <div class="hero-content">
+    <h1 class="title">Массовые рассылки</h1>
+    <p class="subtitle">Сервис массовых email-рассылок с отслеживанием открытий</p>
+
+    <div class="features">
+      <div class="feature-card">
+        <mat-icon>upload_file</mat-icon>
+        <h3>Загрузи шаблон</h3>
+        <p>HTML-шаблон письма с переменными для подстановки</p>
+      </div>
+      <div class="feature-card">
+        <mat-icon>table_chart</mat-icon>
+        <h3>Подключи таблицу</h3>
+        <p>XLSX-файл с адресами и данными получателей</p>
+      </div>
+      <div class="feature-card">
+        <mat-icon>send</mat-icon>
+        <h3>Отправь рассылку</h3>
+        <p>Письма уйдут каждому получателю с его данными</p>
+      </div>
+      <div class="feature-card">
+        <mat-icon>bar_chart</mat-icon>
+        <h3>Смотри статистику</h3>
+        <p>Отслеживай кто и когда открыл письмо</p>
+      </div>
+    </div>
+
+    <button mat-flat-button color="primary" routerLink="/preparation">
+      Начать рассылку
+    </button>
   </div>
 </div>

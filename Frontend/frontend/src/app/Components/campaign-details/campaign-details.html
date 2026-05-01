@@ -1,0 +1,37 @@
+@if (loading) {
+  <mat-spinner [diameter]="32"></mat-spinner>
+} @else if (info) {
+  <div class="stats-row">
+    <span>Отправлено: <b>{{ info.totalSent }}</b></span>
+    <span>Открыто: <b>{{ info.totalOpened }}</b></span>
+    <span>% открытий: <b>{{ info.openRate }}%</b></span>
+  </div>
+
+  <table mat-table [dataSource]="info.recipients">
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef>Email</th>
+      <td mat-cell *matCellDef="let r">{{ r.email }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="openedAt">
+      <th mat-header-cell *matHeaderCellDef>Открыто</th>
+      <td mat-cell *matCellDef="let r">{{ r.openedAt | date:'dd.MM.yyyy HH:mm' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="userAgent">
+      <th mat-header-cell *matHeaderCellDef>User Agent</th>
+      <td mat-cell *matCellDef="let r">{{ r.userAgent ?? '—' }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+  @if (info!.opensByHour.length > 0) {
+    <h4>Открытия по времени</h4>
+    <canvas baseChart
+            [data]="chartData"
+            [options]="chartOptions"
+            type="bar">
+    </canvas>
+  }
+}
