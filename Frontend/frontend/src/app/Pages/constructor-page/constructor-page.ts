@@ -164,7 +164,7 @@ export class ConstructorPage {
     }
 
     this.http.post(
-      'http://localhost:5200/blocks/export',
+      '/blocks/export',
       { html: block.html },
       { responseType: 'blob' }
     ).subscribe(blob => {
@@ -198,7 +198,7 @@ export class ConstructorPage {
     }
 
     this.http.post(
-      'http://localhost:5200/templates/export',
+      '/templates/export',
       { html: template },
       { responseType: 'blob' }
     ).subscribe(blob => {
@@ -222,7 +222,7 @@ export class ConstructorPage {
     }
 
     this.http.post(
-      'http://localhost:5200/templates/export',
+      '/templates/export',
       { html: template },
       { responseType: 'blob' }
     ).subscribe(blob => {
@@ -243,7 +243,7 @@ export class ConstructorPage {
     }
 
     this.http.post(
-      'http://localhost:5200/templates/export',
+      '/templates/export',
       { html: template },
       { responseType: 'blob' }
     ).subscribe(blob => {
