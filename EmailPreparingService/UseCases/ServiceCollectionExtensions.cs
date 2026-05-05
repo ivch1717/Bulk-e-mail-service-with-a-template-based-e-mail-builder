@@ -1,7 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using NPOI.POIFS.Crypt.Dsig;
+using UseCases.CreateSmtpProfile;
+using UseCases.DeleteSmtpProfile;
 using UseCases.ExtractTableHeaders;
 using UseCases.GetAllCampaigns;
+using UseCases.GetAllSmtpProfiles;
 using UseCases.GetCampaign;
 using UseCases.GetPreview;
 using UseCases.TemplateUtilities;
@@ -28,6 +31,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITrackOpenRequestHandler, TrackOpenRequestHandler>();
         services.AddScoped<IGetAllCampaignsRequestHandler, GetAllCampaignsRequestHandler>();
         services.AddScoped<IGetCampaignRequestHandler, GetCampaignRequestHandler>();
+        services.AddScoped<ICreateSmtpProfileRequestHandler, CreateSmtpProfileRequestHandler>();
+        services.AddScoped<IDeleteSmtpProfileRequestHandler, DeleteSmtpProfileRequestHandler>();
+        services.AddScoped<IGetAllSmtpProfilesRequestHandler, GetAllSmtpProfilesRequestHandler>();
         return services;
     }
 }

@@ -21,6 +21,18 @@
 
     <mat-checkbox [checked]="tracking" (change)="onTrackingChange($event)">Отслеживать открытия</mat-checkbox>
 
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 100%; margin-top: 8px">
+      <mat-label>Отправить с</mat-label>
+        <mat-select [(ngModel)]="selectedSmtpId">
+          @for (profile of smtpProfiles; track profile.id) {
+            <mat-option [value]="profile.id">{{ profile.displayName }} ({{ profile.fromEmail }})</mat-option>
+          }
+        </mat-select>
+        @if (smtpProfiles.length === 0) {
+          <mat-hint style="color: orange">Нет настроенных SMTP аккаунтов. Добавьте их на странице настроек.</mat-hint>
+        }
+    </mat-form-field>
+
     <mat-divider></mat-divider>
 
     <div class="html-preview" [innerHTML]="safeHtml"></div>
