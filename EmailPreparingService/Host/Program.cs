@@ -8,6 +8,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient<IMailSenderClient, MailSenderClient>(client =>
+{
+    client.BaseAddress = new Uri("https://mail-sender");
+});
 
 
 var app = builder.Build();

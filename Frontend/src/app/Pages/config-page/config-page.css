@@ -1,0 +1,13 @@
+mat-card {
+  margin: 24px 16px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.form-row mat-form-field {
+  flex: 1;
+}

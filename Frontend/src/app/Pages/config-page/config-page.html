@@ -1,0 +1,79 @@
+<mat-card>
+  <mat-card-content>
+    <h3>Добавить SMTP аккаунт</h3>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Хост</mat-label>
+        <input matInput [(ngModel)]="host" placeholder="smtp.yandex.ru" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Порт</mat-label>
+        <input matInput type="number" [(ngModel)]="port" />
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Логин</mat-label>
+        <input matInput [(ngModel)]="user" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Пароль</mat-label>
+        <input matInput type="password" [(ngModel)]="password" />
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Email отправителя</mat-label>
+        <input matInput [(ngModel)]="fromEmail" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Имя отправителя</mat-label>
+        <input matInput [(ngModel)]="displayName" />
+      </mat-form-field>
+    </div>
+
+    <button mat-flat-button color="primary" (click)="add()">
+      <mat-icon>add</mat-icon>Добавить
+    </button>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-content>
+    <h3>Настроенные аккаунты</h3>
+
+    @if (profiles.length === 0) {
+      <p>Нет настроенных SMTP аккаунтов</p>
+    } @else {
+      <table mat-table [dataSource]="profiles">
+        <ng-container matColumnDef="displayName">
+          <th mat-header-cell *matHeaderCellDef>Имя</th>
+          <td mat-cell *matCellDef="let p">{{ p.displayName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="fromEmail">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let p">{{ p.fromEmail }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="delete">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let p">
+            <button mat-icon-button color="warn" (click)="delete(p.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    }
+  </mat-card-content>
+</mat-card>

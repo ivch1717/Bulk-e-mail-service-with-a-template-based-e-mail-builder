@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -11,15 +11,16 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-preview',
   standalone: true,
-  imports: [FormsModule, MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule, MatCheckboxModule, MatCardModule, MatDividerModule],
+  imports: [FormsModule, MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule, MatCheckboxModule, MatCardModule, MatDividerModule, MatSelectModule],
   templateUrl: './preview.html',
   styleUrl: './preview.css',
 })
-export class Preview implements OnChanges {
+export class Preview implements OnChanges, OnInit {
 
   constructor(private sanitizer: DomSanitizer, private http: HttpClient, private cdr: ChangeDetectorRef, private dialog: MatDialog) { }
 
@@ -46,6 +47,15 @@ export class Preview implements OnChanges {
   subject: string = "";
 
   tracking: boolean = false;
+
+  smtpProfiles: {id: string, fromEmail: string, displayName: string}[] = [];
+  selectedSmtpId: string | null = null;
+
+  ngOnInit() {
+    this.http.get<{smtpProfiles: {id: string, fromEmail: string, displayName: string}[]}>('/api/smtp').subscribe(response => {
+      this.smtpProfiles = response.smtpProfiles;
+    });
+  }
 
   get safeHtml(): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(this.currentPreview.html);
