@@ -1,4 +1,4 @@
-﻿namespace Models;
+namespace Publisher;
 
 public class OutboxEmail
 {
