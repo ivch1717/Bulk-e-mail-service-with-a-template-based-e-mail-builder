@@ -4,40 +4,29 @@ using UseCases.ExtractTableHeaders;
 using UseCases.GetPreview;
 using UseCases.UploadTemplate;
 
-namespace Presentation;
+namespace Presentation.Endpoints;
 
 [ApiController]
-[Route("")]
-public class EmailPreparationEndpoints : ControllerBase
+[Route("api")]
+public class EmailPreparationEndpoints(
+    IUploadTemplateRequestHandler uploadTemplateRequestHandler,
+    IProcessEmailCreationRequestHandler processEmailCreationRequestHandler,
+    IExtractTableHeadersRequestHandler extractTableHeadersRequestHandler,
+    IGetPreviewRequestHandler getPreviewRequestHandler,
+    ISendRequestHandler sendRequestHandler)
+    : ControllerBase
 {
-    IUploadTemplateRequestHandler _uploadTemplateRequestHandler;
-    IProcessEmailCreationRequestHandler _processEmailCreationRequestHandler;
-    IExtractTableHeadersRequestHandler _extractTableHeadersRequestHandler;
-    IGetPreviewRequestHandler _getPreviewRequestHandler;
-    ISendRequestHandler _sendRequestHandler;
-    
-    public EmailPreparationEndpoints( IUploadTemplateRequestHandler uploadTemplateRequestHandler, IProcessEmailCreationRequestHandler processEmailCreationRequestHandler,
-        IExtractTableHeadersRequestHandler extractTableHeadersRequestHandler, IGetPreviewRequestHandler getPreviewRequestHandler,
-        ISendRequestHandler sendRequestHandler)
-    {
-        _uploadTemplateRequestHandler = uploadTemplateRequestHandler;
-        _processEmailCreationRequestHandler = processEmailCreationRequestHandler;
-        _extractTableHeadersRequestHandler = extractTableHeadersRequestHandler;
-        _getPreviewRequestHandler = getPreviewRequestHandler;
-        _sendRequestHandler = sendRequestHandler;
-    }
-    
     /// <summary>
     /// Загрузка html шаблона письма, для обнаружения подстановочных переменных.
     /// </summary>
     /// <param name="request">html шаблон.</param>
     /// <returns>Список названий подстановочных переменных, обнаруженных в шаблоне.</returns>
-    [HttpPost("api/UploadTemplate")]
+    [HttpPost("UploadTemplate")]
     public IActionResult UploadTemplate([FromForm] UploadTemplateRequest request)
     {
         try
         {
-            var response = _uploadTemplateRequestHandler.Handle(request);
+            var response = uploadTemplateRequestHandler.Handle(request);
             return Ok(response);
         }
         catch (ArgumentException ex)
@@ -50,10 +39,10 @@ public class EmailPreparationEndpoints : ControllerBase
         }
     }
 
-    [HttpPost("api/ProcessEmailCreation")]
+    [HttpPost("ProcessEmailCreation")]
     public IActionResult ProcessEmailCreation([FromForm] ProcessEmailCreationRequest request)
     {
-        return Ok(_processEmailCreationRequestHandler.Handle(request));
+        return Ok(processEmailCreationRequestHandler.Handle(request));
     }
 
     /// <summary>
@@ -63,12 +52,12 @@ public class EmailPreparationEndpoints : ControllerBase
     /// </summary>
     /// <param name="request">.xlsx таблица.</param>
     /// <returns>Заголовки в виде списка строк, если нет заголовков то код 422.</returns>
-    [HttpPost("api/ExtractTableHeaders")]
+    [HttpPost("ExtractTableHeaders")]
     public IActionResult ExtractTableHeaders([FromForm] ExtractTableHeadersRequest request)
     {
         try
         {
-            var response = _extractTableHeadersRequestHandler.Handle(request);
+            var response = extractTableHeadersRequestHandler.Handle(request);
             return response.headers.Count == 0
                 ? UnprocessableEntity("There are no headers in the table")
                 : Ok(response.headers);
@@ -87,24 +76,24 @@ public class EmailPreparationEndpoints : ControllerBase
     /// Получение определенного числа писем для предпросмотра на сайте.
     /// </summary>
     /// <param name="request">.xlsx таблица,
-    /// .html шаблон,
-    /// int строка с таблицы с которой нужно начать,
-    /// int количество писем которые нужно сгенерировать,
-    /// map переменных шаблона со столбцами таблицы.</param>
+    /// .html шаблон.
+    /// Начальная строка таблицы.
+    /// Количество писем которые нужно сгенерировать.
+    /// Переменные шаблона со столбцами таблицы.</param>
     /// <returns>Список писем с адресатами и номер строки следующей за той, что была обработана последней.</returns>
-    [HttpPost("api/GetPreview")]
+    [HttpPost("GetPreview")]
     public IActionResult GetPreview([FromForm] GetPreviewRequest request)
     {
-        return Ok(_getPreviewRequestHandler.Handle(request));
+        return Ok(getPreviewRequestHandler.Handle(request));
     }
     
     
-    [HttpPost("api/Send")]
+    [HttpPost("Send")]
     public async Task<IActionResult> Send([FromForm] SendRequest request)
     {
         try
         {
-            return Ok(await _sendRequestHandler.Handle(request));
+            return Ok(await sendRequestHandler.Handle(request));
         }
         catch (ArgumentException ex)
         {

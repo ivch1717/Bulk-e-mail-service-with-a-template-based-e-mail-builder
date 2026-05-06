@@ -2,28 +2,20 @@ using Microsoft.AspNetCore.Mvc;
 using UseCases.GetAllCampaigns;
 using UseCases.GetCampaign;
 
-namespace Presentation;
+namespace Presentation.Endpoints;
 
 [ApiController]
-[Route("")]
-public class StatisticsEndpoints : ControllerBase
+[Route("api")]
+public class StatisticsEndpoints(
+    ITrackOpenRequestHandler trackOpenRequestHandler,
+    IGetAllCampaignsRequestHandler getAllCampaignsRequestHandler,
+    IGetCampaignRequestHandler getCampaignRequestHandler)
+    : ControllerBase
 {
-    private ITrackOpenRequestHandler _trackOpenRequestHandler;
-    private IGetAllCampaignsRequestHandler _getAllCampaignsRequestHandler;
-    private IGetCampaignRequestHandler _getCampaignRequestHandler;
-    
-    public StatisticsEndpoints( ITrackOpenRequestHandler trackOpenRequestHandler, IGetAllCampaignsRequestHandler getAllCampaignsRequestHandler,
-        IGetCampaignRequestHandler getCampaignRequestHandler)
-    {
-        _trackOpenRequestHandler =  trackOpenRequestHandler;
-        _getAllCampaignsRequestHandler = getAllCampaignsRequestHandler;
-        _getCampaignRequestHandler = getCampaignRequestHandler;
-    }
-    
-    [HttpGet("api/track/open")]
+    [HttpGet("track/open")]
     public async Task<IActionResult> TrackOpen([FromQuery] TrackOpenRequest request)
     {
-        var pixel = await _trackOpenRequestHandler.HandleAsync(request);
+        var pixel = await trackOpenRequestHandler.HandleAsync(request);
         return File(pixel, "image/gif");
     }
 
@@ -31,10 +23,10 @@ public class StatisticsEndpoints : ControllerBase
     /// Получение информации о всех рассылках.
     /// </summary>
     /// <returns>Список краткой информации о каждой рассылке.</returns>
-    [HttpGet("api/stats/campaigns")]
+    [HttpGet("stats/campaigns")]
     public async Task<IActionResult> GetAllCampaigns()
     {
-        var response = await _getAllCampaignsRequestHandler.HandleAsync();
+        var response = await getAllCampaignsRequestHandler.HandleAsync();
         return Ok(response);
     }
     
@@ -42,10 +34,10 @@ public class StatisticsEndpoints : ControllerBase
     /// Получение информации о конкретной рассылке.
     /// </summary>
     /// <returns>Полная информация о каждой рассылке.</returns>
-    [HttpGet("api/stats/campaigns/{campaignId}")]
+    [HttpGet("stats/campaigns/{campaignId}")]
     public async Task<IActionResult> GetCampaign(Guid campaignId)
     {
-        var response = await _getCampaignRequestHandler.HandleAsync(campaignId);
+        var response = await getCampaignRequestHandler.HandleAsync(campaignId);
         return Ok(response);
     }
 }

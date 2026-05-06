@@ -3,35 +3,27 @@ using UseCases.CreateSmtpProfile;
 using UseCases.DeleteSmtpProfile;
 using UseCases.GetAllSmtpProfiles;
 
-namespace Presentation.Endpointss;
+namespace Presentation.Endpoints;
 
 [ApiController]
 [Route("api/smtp")]
-public class SmtpProfileEndpoints : ControllerBase
+public class SmtpProfileEndpoints(
+    ICreateSmtpProfileRequestHandler createSmtpProfileRequestHandler,
+    IDeleteSmtpProfileRequestHandler deleteSmtpProfileRequestHandler,
+    IGetAllSmtpProfilesRequestHandler getAllSmtpProfileRequestHandler)
+    : ControllerBase
 {
-    private ICreateSmtpProfileRequestHandler _createSmtpProfileRequestHandler;
-    private IDeleteSmtpProfileRequestHandler _deleteSmtpProfileRequestHandler;
-    private IGetAllSmtpProfilesRequestHandler _getAllSmtpProfileRequestHandler;
-    
-    public SmtpProfileEndpoints(ICreateSmtpProfileRequestHandler createSmtpProfileRequestHandler,
-        IDeleteSmtpProfileRequestHandler deleteSmtpProfileRequestHandler, IGetAllSmtpProfilesRequestHandler getAllSmtpProfileRequestHandler)
-    {
-        _createSmtpProfileRequestHandler =  createSmtpProfileRequestHandler;
-        _deleteSmtpProfileRequestHandler =  deleteSmtpProfileRequestHandler;
-        _getAllSmtpProfileRequestHandler = getAllSmtpProfileRequestHandler;
-    }
-    
     [HttpPost("")]
-    public async Task<IActionResult> CreateSmptProfile([FromBody] CreateSmtpProfileRequest request)
+    public async Task<IActionResult> CreateSmtpProfile([FromBody] CreateSmtpProfileRequest request)
     {
-        var respose = await _createSmtpProfileRequestHandler.HandleAsync(request);
-        return respose.success ? Ok(respose) : BadRequest(respose);
+        var response = await createSmtpProfileRequestHandler.HandleAsync(request);
+        return response.success ? Ok(response) : BadRequest(response);
     }
     
     [HttpDelete("{profileId:guid}")]
-    public async Task<IActionResult> DeleteSmptProfile(Guid profileId)
+    public async Task<IActionResult> DeleteSmtpProfile(Guid profileId)
     {
-        var response = await _deleteSmtpProfileRequestHandler.HandleAsync(profileId);
+        var response = await deleteSmtpProfileRequestHandler.HandleAsync(profileId);
         return response ? Ok() : NotFound();
     }
 
@@ -42,7 +34,7 @@ public class SmtpProfileEndpoints : ControllerBase
         Response.Headers["Pragma"] = "no-cache";
         Response.Headers["Expires"] = "0";
 
-        var response = await _getAllSmtpProfileRequestHandler.HandleAsync();
+        var response = await getAllSmtpProfileRequestHandler.HandleAsync();
         return Ok(response);
     }
 }
