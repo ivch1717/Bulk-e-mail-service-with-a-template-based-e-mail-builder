@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UseCases;
-using UseCases.CreateSmtpProfile;
-using UseCases.DeleteSmtpProfile;
 using UseCases.ExtractTableHeaders;
-using UseCases.GetAllCampaigns;
-using UseCases.GetAllSmtpProfiles;
-using UseCases.GetCampaign;
 using UseCases.GetPreview;
 using UseCases.UploadTemplate;
 
@@ -13,43 +8,25 @@ namespace Presentation;
 
 [ApiController]
 [Route("")]
-public class Endpoints : ControllerBase
+public class EmailPreparationEndpoints : ControllerBase
 {
-    // IUploadDataRequestHandler _uploadDataRequestHandler;
     IUploadTemplateRequestHandler _uploadTemplateRequestHandler;
     IProcessEmailCreationRequestHandler _processEmailCreationRequestHandler;
     IExtractTableHeadersRequestHandler _extractTableHeadersRequestHandler;
     IGetPreviewRequestHandler _getPreviewRequestHandler;
     ISendRequestHandler _sendRequestHandler;
-    private ITrackOpenRequestHandler _trackOpenRequestHandler;
-    private IGetAllCampaignsRequestHandler _getAllCampaignsRequestHandler;
-    private IGetCampaignRequestHandler _getCampaignRequestHandler;
     
-    
-    public Endpoints( IUploadTemplateRequestHandler uploadTemplateRequestHandler, IProcessEmailCreationRequestHandler processEmailCreationRequestHandler,
+    public EmailPreparationEndpoints( IUploadTemplateRequestHandler uploadTemplateRequestHandler, IProcessEmailCreationRequestHandler processEmailCreationRequestHandler,
         IExtractTableHeadersRequestHandler extractTableHeadersRequestHandler, IGetPreviewRequestHandler getPreviewRequestHandler,
-        ISendRequestHandler sendRequestHandler, ITrackOpenRequestHandler trackOpenRequestHandler, IGetAllCampaignsRequestHandler getAllCampaignsRequestHandler,
-        IGetCampaignRequestHandler getCampaignRequestHandler, ICreateSmtpProfileRequestHandler createSmtpProfileRequestHandler,
-        IDeleteSmtpProfileRequestHandler deleteSmtpProfileRequestHandler, IGetAllSmtpProfilesRequestHandler getAllSmtpProfileRequestHandler)
+        ISendRequestHandler sendRequestHandler)
     {
-        // _uploadDataRequestHandler = uploadDataRequestHandler;
         _uploadTemplateRequestHandler = uploadTemplateRequestHandler;
         _processEmailCreationRequestHandler = processEmailCreationRequestHandler;
         _extractTableHeadersRequestHandler = extractTableHeadersRequestHandler;
         _getPreviewRequestHandler = getPreviewRequestHandler;
         _sendRequestHandler = sendRequestHandler;
-        _trackOpenRequestHandler =  trackOpenRequestHandler;
-        _getAllCampaignsRequestHandler = getAllCampaignsRequestHandler;
-        _getCampaignRequestHandler = getCampaignRequestHandler;
-       
     }
     
-    // [HttpPost("UploadData")]
-    // public IActionResult UploadData([FromForm] UploadDataRequest request)
-    // {
-    //     return Ok(_uploadDataRequestHandler.Handle(request));
-    // }
-
     /// <summary>
     /// Загрузка html шаблона письма, для обнаружения подстановочных переменных.
     /// </summary>
@@ -134,34 +111,4 @@ public class Endpoints : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
-    [HttpGet("api/track/open")]
-    public async Task<IActionResult> TrackOpen([FromQuery] TrackOpenRequest request)
-    {
-        var pixel = await _trackOpenRequestHandler.HandleAsync(request);
-        return File(pixel, "image/gif");
-    }
-
-    /// <summary>
-    /// Получение информации о всех рассылках.
-    /// </summary>
-    /// <returns>Список краткой информации о каждой рассылке.</returns>
-    [HttpGet("api/stats/campaigns")]
-    public async Task<IActionResult> GetAllCampaigns()
-    {
-        var response = await _getAllCampaignsRequestHandler.HandleAsync();
-        return Ok(response);
-    }
-    
-    /// <summary>
-    /// Получение информации о конкретной рассылке.
-    /// </summary>
-    /// <returns>Полная информация о каждой рассылке.</returns>
-    [HttpGet("api/stats/campaigns/{campaignId}")]
-    public async Task<IActionResult> GetCampaign(Guid campaignId)
-    {
-        var response = await _getCampaignRequestHandler.HandleAsync(campaignId);
-        return Ok(response);
-    }
-
 }
