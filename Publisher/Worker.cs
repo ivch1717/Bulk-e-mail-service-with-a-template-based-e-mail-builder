@@ -84,7 +84,7 @@ public class Worker(IServiceScopeFactory scopeFactory, ILogger<Worker> logger) :
                 logger.LogError(ex, "Publisher error");
             }
 
-            await Task.Delay(500, stoppingToken);
+            await Task.Delay(5000, stoppingToken);
         }
     }
 
