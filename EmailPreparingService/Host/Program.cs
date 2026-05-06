@@ -1,4 +1,5 @@
 using Infrastructure;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using UseCases;
 
@@ -22,8 +23,25 @@ using (var scope = app.Services.CreateScope())
     await db.Database.MigrateAsync();
 }
 
-app.MapControllers(); 
+app.UseExceptionHandler(err => err.Run(async context =>
+{
+    var feature = context.Features.Get<IExceptionHandlerFeature>();
+    var ex = feature?.Error;
+
+    context.Response.ContentType = "application/json";
+    context.Response.StatusCode = ex switch
+    {
+        ArgumentException => 400,
+        _ => 500
+    };
+
+    await context.Response.WriteAsJsonAsync(new { error = ex?.Message ?? "Unknown error" });
+}));
+
+app.MapControllers();
+
 app.MapGet("/healthz", () => Results.Ok(new { status = "ok" }));
+
 
 if (app.Environment.IsDevelopment())
 {

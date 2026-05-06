@@ -29,19 +29,7 @@ public class EmailPreparationEndpoints(
     [HttpPost("upload-template")]
     public IActionResult UploadTemplate([FromForm] UploadTemplateRequest request)
     {
-        try
-        {
-            var response = uploadTemplateRequestHandler.Handle(request);
-            return Ok(response);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return BadRequest("Unknown exception");
-        }
+        return Ok(uploadTemplateRequestHandler.Handle(request));
     }
 
     /// <summary>
