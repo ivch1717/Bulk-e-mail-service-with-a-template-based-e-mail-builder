@@ -1,4 +1,4 @@
-namespace UseCases.UploadTemplate;
+namespace UseCases.Preparation.UploadTemplate;
 
 /// <summary>
 /// Интерфейс обработчика шаблонов.

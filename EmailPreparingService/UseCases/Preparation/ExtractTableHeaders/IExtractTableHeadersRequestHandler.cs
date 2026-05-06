@@ -1,7 +1,7 @@
-namespace UseCases.ExtractTableHeaders;
+namespace UseCases.Preparation.ExtractTableHeaders;
 
 /// <summary>
-/// Интерфейс для обработчика.
+/// Интерфейс для обработчика таблицы.
 /// </summary>
 public interface IExtractTableHeadersRequestHandler 
 {

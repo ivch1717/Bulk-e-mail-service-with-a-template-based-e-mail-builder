@@ -2,13 +2,15 @@ using Microsoft.Extensions.DependencyInjection;
 using NPOI.POIFS.Crypt.Dsig;
 using UseCases.CreateSmtpProfile;
 using UseCases.DeleteSmtpProfile;
-using UseCases.ExtractTableHeaders;
 using UseCases.GetAllCampaigns;
 using UseCases.GetAllSmtpProfiles;
 using UseCases.GetCampaign;
 using UseCases.GetPreview;
+using UseCases.Preparation.ExtractTableHeaders;
+using UseCases.Preparation.UploadTemplate;
 using UseCases.TemplateUtilities;
 using UseCases.UploadTemplate;
+using UploadTemplateRequestHandler = UseCases.Preparation.UploadTemplate.UploadTemplateRequestHandler;
 
 namespace UseCases;
 

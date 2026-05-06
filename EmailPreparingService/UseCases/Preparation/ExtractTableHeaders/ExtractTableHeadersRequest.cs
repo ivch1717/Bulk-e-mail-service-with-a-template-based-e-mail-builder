@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace UseCases.ExtractTableHeaders;
+namespace UseCases.Preparation.ExtractTableHeaders;
 
 /// <summary>
 /// Запрос для получения заголовков таблицы.
