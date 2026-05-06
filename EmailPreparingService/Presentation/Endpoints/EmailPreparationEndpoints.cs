@@ -6,6 +6,7 @@ using UseCases.UploadTemplate;
 
 namespace Presentation.Endpoints;
 
+
 [ApiController]
 [Route("api/preparation")]
 public class EmailPreparationEndpoints(
@@ -37,12 +38,6 @@ public class EmailPreparationEndpoints(
         {
             return BadRequest("Unknown exception");
         }
-    }
-
-    [HttpPost("process-email-creation")]
-    public IActionResult ProcessEmailCreation([FromForm] ProcessEmailCreationRequest request)
-    {
-        return Ok(processEmailCreationRequestHandler.Handle(request));
     }
 
     /// <summary>
