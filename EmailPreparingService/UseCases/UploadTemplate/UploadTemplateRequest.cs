@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Http;
 namespace UseCases.UploadTemplate;
 
 /// <summary>
-/// Список уникальных переменных обнаруженных в шаблоне.
+/// Запрос для получения переменных шаблона.
 /// </summary>
-/// <param name="template">Файл шаблона.</param>
-public sealed record UploadTemplateRequest(
-    IFormFile template
-    );
+/// <param name="template">Шаблон.</param>
+public sealed record UploadTemplateRequest(IFormFile template);

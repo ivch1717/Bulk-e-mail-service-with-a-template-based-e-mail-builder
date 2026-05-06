@@ -1,31 +1,35 @@
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Http;
 using UseCases.TemplateUtilities;
 
 namespace UseCases.UploadTemplate;
 
+/// <summary>
+/// Обработчик шаблона.
+/// </summary>
+/// <param name="templateFactory">Фабрика шаблонов.</param>
 public partial class UploadTemplateRequestHandler(ITemplateFactory templateFactory) : IUploadTemplateRequestHandler
 {
-    public List<string> Handle(UploadTemplateRequest request)
+    /// <summary>
+    /// Распознает переменные в шаблоне.
+    /// </summary>
+    /// <param name="request">Шаблон.</param>
+    /// <returns>Переменные.</returns>
+    public UploadTemplateResponse Handle(UploadTemplateRequest request)
     {
         var template = templateFactory.Create(request.template, false);
-        var list = GetVariables().Matches(ReadText(request.template));
-        HashSet<string> result =
+        HashSet<string> variables =
         [
             "email"
         ];
-        foreach (var match in list)
+        var templateVariables = GetVariables().Matches(template.ToString()!);
+        
+        foreach (var variable in templateVariables)
         {
-            result.Add(match!.ToString()!.Substring(2, match.ToString()!.Length - 4));
+            var match = variable.ToString()!;
+            variables.Add(match[2..^2]);
         }
         
-        return result.ToList();
-    }
-
-    private static string ReadText(IFormFile file)
-    {
-        using var reader = new StreamReader(file.OpenReadStream());
-        return reader.ReadToEnd();
+        return new UploadTemplateResponse(variables.ToList());
     }
 
     [GeneratedRegex(@"\[\[(.*?)\]\]")]

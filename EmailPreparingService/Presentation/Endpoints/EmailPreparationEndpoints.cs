@@ -1,27 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using UseCases;
 using UseCases.ExtractTableHeaders;
 using UseCases.GetPreview;
 using UseCases.UploadTemplate;
 
 namespace Presentation.Endpoints;
 
-
+/// <summary>
+/// Эндпоинты, отвечающие за рассылку и ее подготовку.
+/// </summary>
+/// <param name="uploadTemplateRequestHandler">Обработчик шаблона.</param>
+/// <param name="extractTableHeadersRequestHandler">Обработчик таблицы.</param>
+/// <param name="getPreviewRequestHandler">Обработчик генерации предпросмотра.</param>
+/// <param name="sendRequestHandler">Обработчик рассылки.</param>
 [ApiController]
 [Route("api/preparation")]
 public class EmailPreparationEndpoints(
     IUploadTemplateRequestHandler uploadTemplateRequestHandler,
-    IProcessEmailCreationRequestHandler processEmailCreationRequestHandler,
     IExtractTableHeadersRequestHandler extractTableHeadersRequestHandler,
     IGetPreviewRequestHandler getPreviewRequestHandler,
     ISendRequestHandler sendRequestHandler)
     : ControllerBase
 {
     /// <summary>
-    /// Загрузка html шаблона письма, для обнаружения подстановочных переменных.
+    /// Распознает переменные в шаблоне.
     /// </summary>
-    /// <param name="request">html шаблон.</param>
-    /// <returns>Список названий подстановочных переменных, обнаруженных в шаблоне.</returns>
+    /// <param name="request">Шаблон.</param>
+    /// <returns>Переменные.</returns>
     [HttpPost("upload-template")]
     public IActionResult UploadTemplate([FromForm] UploadTemplateRequest request)
     {
@@ -82,7 +86,12 @@ public class EmailPreparationEndpoints(
         return Ok(getPreviewRequestHandler.Handle(request));
     }
     
-    
+    /// <summary>
+    /// Запускает рассылку.
+    /// </summary>
+    /// <param name="request">Параметры рассылки.</param>
+    /// <returns>200 Ok, если рассылка успешно передана в сервис рассылки.
+    /// 400 Bad request, если произошла ошибка.</returns>
     [HttpPost("send")]
     public async Task<IActionResult> Send([FromForm] SendRequest request)
     {

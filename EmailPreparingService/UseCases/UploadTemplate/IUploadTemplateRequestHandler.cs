@@ -1,11 +1,14 @@
 namespace UseCases.UploadTemplate;
 
+/// <summary>
+/// Интерфейс обработчика шаблонов.
+/// </summary>
 public interface IUploadTemplateRequestHandler
 {
     /// <summary>
-    /// Обрабатывает запрос по получению множества переменных.
+    /// Распознает переменные в шаблоне.
     /// </summary>
-    /// <param name="request">Файл шаблона.</param>
-    /// <returns>Список уникальных переменных.</returns>
-    public List<string> Handle(UploadTemplateRequest request);
+    /// <param name="request">Шаблон.</param>
+    /// <returns>Переменные.</returns>
+    public UploadTemplateResponse Handle(UploadTemplateRequest request);
 }

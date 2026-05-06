@@ -24,4 +24,9 @@ public class HtmlTrackingTemplate : ITemplate
         });
         return text + trackingTemplate;
     }
+    
+    public override string ToString()
+    {
+        return _text;
+    }
 }

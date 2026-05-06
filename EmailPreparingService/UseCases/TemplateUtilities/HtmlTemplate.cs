@@ -17,8 +17,13 @@ public class HtmlTemplate : ITemplate
     {
         return Regex.Replace(_text, @"\[\[(.*?)\]\]", match =>
         {
-            string key = match.ToString().Substring(2, match.ToString().Length - 4);
+            string key = match.ToString()[2..^2];
             return rowData.data[mapping[key]];
         });
+    }
+
+    public override string ToString()
+    {
+        return _text;
     }
 }
