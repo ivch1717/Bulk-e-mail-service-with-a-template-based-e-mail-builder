@@ -30,10 +30,6 @@ public class SmtpProfileEndpoints(
     [HttpGet("")]
     public async Task<IActionResult> GetAllSmtpProfiles()
     {
-        Response.Headers["Cache-Control"] = "no-store, no-cache, max-age=0";
-        Response.Headers["Pragma"] = "no-cache";
-        Response.Headers["Expires"] = "0";
-
         var response = await getAllSmtpProfileRequestHandler.HandleAsync();
         return Ok(response);
     }

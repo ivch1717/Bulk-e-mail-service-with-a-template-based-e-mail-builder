@@ -7,7 +7,7 @@ using UseCases.UploadTemplate;
 namespace Presentation.Endpoints;
 
 [ApiController]
-[Route("api")]
+[Route("api/preparation")]
 public class EmailPreparationEndpoints(
     IUploadTemplateRequestHandler uploadTemplateRequestHandler,
     IProcessEmailCreationRequestHandler processEmailCreationRequestHandler,
@@ -21,7 +21,7 @@ public class EmailPreparationEndpoints(
     /// </summary>
     /// <param name="request">html шаблон.</param>
     /// <returns>Список названий подстановочных переменных, обнаруженных в шаблоне.</returns>
-    [HttpPost("UploadTemplate")]
+    [HttpPost("upload-template")]
     public IActionResult UploadTemplate([FromForm] UploadTemplateRequest request)
     {
         try
@@ -39,7 +39,7 @@ public class EmailPreparationEndpoints(
         }
     }
 
-    [HttpPost("ProcessEmailCreation")]
+    [HttpPost("process-email-creation")]
     public IActionResult ProcessEmailCreation([FromForm] ProcessEmailCreationRequest request)
     {
         return Ok(processEmailCreationRequestHandler.Handle(request));
@@ -52,7 +52,7 @@ public class EmailPreparationEndpoints(
     /// </summary>
     /// <param name="request">.xlsx таблица.</param>
     /// <returns>Заголовки в виде списка строк, если нет заголовков то код 422.</returns>
-    [HttpPost("ExtractTableHeaders")]
+    [HttpPost("extract-table-headers")]
     public IActionResult ExtractTableHeaders([FromForm] ExtractTableHeadersRequest request)
     {
         try
@@ -81,14 +81,14 @@ public class EmailPreparationEndpoints(
     /// Количество писем которые нужно сгенерировать.
     /// Переменные шаблона со столбцами таблицы.</param>
     /// <returns>Список писем с адресатами и номер строки следующей за той, что была обработана последней.</returns>
-    [HttpPost("GetPreview")]
+    [HttpPost("get-preview")]
     public IActionResult GetPreview([FromForm] GetPreviewRequest request)
     {
         return Ok(getPreviewRequestHandler.Handle(request));
     }
     
     
-    [HttpPost("Send")]
+    [HttpPost("send")]
     public async Task<IActionResult> Send([FromForm] SendRequest request)
     {
         try
