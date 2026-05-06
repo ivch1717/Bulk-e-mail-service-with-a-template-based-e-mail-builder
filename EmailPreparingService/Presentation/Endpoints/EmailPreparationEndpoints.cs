@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using UseCases.ExtractTableHeaders;
 using UseCases.GetPreview;
+using UseCases.Preparation.ExtractTableHeaders;
+using UseCases.Preparation.UploadTemplate;
 using UseCases.UploadTemplate;
 
 namespace Presentation.Endpoints;

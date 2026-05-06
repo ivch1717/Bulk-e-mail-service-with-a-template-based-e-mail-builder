@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Moq;
 using UseCases;
-using UseCases.ExtractTableHeaders;
+using UseCases.Preparation.ExtractTableHeaders;
 
 namespace Tests;
 

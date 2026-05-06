@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using UseCases.TemplateUtilities;
 
-namespace UseCases.UploadTemplate;
+namespace UseCases.Preparation.UploadTemplate;
 
 /// <summary>
 /// Обработчик шаблона.

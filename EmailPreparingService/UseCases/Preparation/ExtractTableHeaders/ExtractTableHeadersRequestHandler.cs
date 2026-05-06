@@ -1,4 +1,4 @@
-namespace UseCases.ExtractTableHeaders;
+namespace UseCases.Preparation.ExtractTableHeaders;
 
 /// <summary>
 /// Обработчик для получения заголовков таблицы.
@@ -6,15 +6,15 @@ namespace UseCases.ExtractTableHeaders;
 public class ExtractTableHeadersRequestHandler(ITableFactory tableFactory) : IExtractTableHeadersRequestHandler
 {
     /// <summary>
-    /// Фабрика таблиц для поддержки разных форматов таблиц.
+    /// Фабрика таблиц.
     /// </summary>
     private readonly ITableFactory _tableFactory = tableFactory;
 
     /// <summary>
     /// Ищет заголовки столбцов, просматривая до первой не пустой строки в первом листе таблицы.
     /// </summary>
-    /// <param name="request">Таблица с данными.</param>
-    /// <returns>Список заголовков</returns>
+    /// <param name="request">Таблица.</param>
+    /// <returns>Заголовки.</returns>
     public ExtractTableHeadersResponse Handle(ExtractTableHeadersRequest request)
     {
         var table = _tableFactory.Create(request.table);
@@ -26,6 +26,7 @@ public class ExtractTableHeadersRequestHandler(ITableFactory tableFactory) : IEx
                 return new ExtractTableHeadersResponse(result);
             }
         }
-        return new ExtractTableHeadersResponse([]);
+
+        throw new ArgumentException("В таблице нет непустых строк.");
     }
 }

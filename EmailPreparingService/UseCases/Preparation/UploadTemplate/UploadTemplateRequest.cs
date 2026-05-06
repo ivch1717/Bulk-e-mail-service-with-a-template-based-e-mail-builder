@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace UseCases.UploadTemplate;
+namespace UseCases.Preparation.UploadTemplate;
 
 /// <summary>
 /// Запрос для получения переменных шаблона.
