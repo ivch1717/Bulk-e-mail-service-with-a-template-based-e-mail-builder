@@ -32,7 +32,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d emailservice"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_PREPARATION_USER} -d emailservice"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -50,7 +50,7 @@ services:
     volumes:
       - pgdata-mail-service:/var/lib/postgresql-mail-service/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d emailservice"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_MAIL_SENDER_USER} -d mailservice"]
       interval: 5s
       timeout: 5s
       retries: 10
