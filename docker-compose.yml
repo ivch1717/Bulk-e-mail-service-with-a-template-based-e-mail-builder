@@ -9,7 +9,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=emailservice;Username=postgres;Password=postgres
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=emailservice;Username=${POSTGRES_PREPARATION_USER};Password=${POSTGRES_PREPARATION_PASSWORD}
       RABBIT__HOST: rabbitmq
       RABBIT__USER: ${RABBITMQ_DEFAULT_USER:-guest}
       RABBIT__PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
@@ -81,7 +81,7 @@ services:
       context: ./EmailPreparingService
       dockerfile: Dockerfile
     environment:
-      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-emailservice};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-emailservice};Username=${POSTGRES_PREPARATION_USER};Password=${POSTGRES_PREPARATION_PASSWORD}
     # ports:
     #   - "8080:8080"
     depends_on:
@@ -123,7 +123,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      ConnectionStrings__Postgres: Host=postgres-mail-service;Port=5432;Database=${POSTGRES_DB:-mailservice};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      ConnectionStrings__Postgres: Host=postgres-mail-service;Port=5432;Database=${POSTGRES_DB:-mailservice};Username=${POSTGRES_MAIL_SENDER_USER};Password=${POSTGRES_MAIL_SENDER_PASSWORD}
 
       RABBIT__HOST: rabbitmq
       RABBIT__PORT: "5672"

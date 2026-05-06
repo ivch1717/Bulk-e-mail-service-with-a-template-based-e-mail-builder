@@ -70,7 +70,7 @@ export class PreparationPage {
 
     formData.append('count', '10');
     formData.append('mappingJson', JSON.stringify(Object.fromEntries(mapping)));
-    this.http.post<{emailPreviews: {to: string, html: string}[], nextRow: number, total: number}>('/api/get-preview', formData).subscribe(response => {
+    this.http.post<{emailPreviews: {to: string, html: string}[], nextRow: number, total: number}>('/api/preparation/get-preview', formData).subscribe(response => {
       this.previews = response.emailPreviews;
       this.nextFrom = response.nextRow;
       this.total = response.total;
@@ -108,7 +108,7 @@ export class PreparationPage {
         emailPreviews: { to: string, html: string }[],
         nextRow: number,
         total: number
-      }>('/api/send', formData).subscribe(response => {
+      }>('/api/preparation/send', formData).subscribe(response => {
         this.cdr.detectChanges();
       });
     });
@@ -118,7 +118,7 @@ export class PreparationPage {
     this.template = file;
     const formData = new FormData();
     formData.append('template', file);
-    this.http.post<string[]>('/api/upload-template', formData).subscribe({
+    this.http.post<string[]>('/api/preparation/upload-template', formData).subscribe({
       next: (response) => {
         this.variables = response;
         if (this.variables.length === 1) {
@@ -148,7 +148,7 @@ export class PreparationPage {
     this.table = file;
     const formData = new FormData();
     formData.append('table', file);
-    this.http.post<string[]>('/api/extract-table-headers', formData).subscribe({
+    this.http.post<string[]>('/api/preparation/extract-table-headers', formData).subscribe({
         next: (response) => {
             this.headers = response;
             this.cdr.detectChanges();

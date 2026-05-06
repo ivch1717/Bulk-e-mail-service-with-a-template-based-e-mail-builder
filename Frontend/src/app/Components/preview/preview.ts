@@ -90,7 +90,7 @@ export class Preview implements OnChanges, OnInit {
       formData.append('from', String(this.nextFrom));
       formData.append('count', '10');
       formData.append('mappingJson', JSON.stringify(Object.fromEntries(this.mapping)));
-      this.http.post<{emailPreviews: {to: string, html: string}[], nextRow: number}>('/api/get-preview', formData).subscribe(response => {
+      this.http.post<{emailPreviews: {to: string, html: string}[], nextRow: number}>('/api/preparation/get-preview', formData).subscribe(response => {
         this.previews.push(...response.emailPreviews);
         this.nextFrom = response.nextRow;
         this.currentPreview = this.previews[this.index];
