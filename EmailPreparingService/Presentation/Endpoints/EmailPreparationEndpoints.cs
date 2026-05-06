@@ -33,30 +33,14 @@ public class EmailPreparationEndpoints(
     }
 
     /// <summary>
-    /// Получение всех заголовков столбцов из таблицы.
-    /// Заголовки берутся из первой не пустой строки таблицы.
-    /// Формат таблицы .xlsx.
+    /// Распознает заголовки столбцов в таблице.
     /// </summary>
-    /// <param name="request">.xlsx таблица.</param>
-    /// <returns>Заголовки в виде списка строк, если нет заголовков то код 422.</returns>
+    /// <param name="request">Таблица.</param>
+    /// <returns>Заголовки.</returns>
     [HttpPost("extract-table-headers")]
     public IActionResult ExtractTableHeaders([FromForm] ExtractTableHeadersRequest request)
     {
-        try
-        {
-            var response = extractTableHeadersRequestHandler.Handle(request);
-            return response.headers.Count == 0
-                ? UnprocessableEntity("There are no headers in the table")
-                : Ok(response.headers);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return BadRequest("Unknown exception");
-        }
+        return Ok(extractTableHeadersRequestHandler.Handle(request));
     }
     
     /// <summary>
