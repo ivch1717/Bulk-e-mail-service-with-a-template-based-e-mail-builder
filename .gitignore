@@ -10,3 +10,5 @@ _ReSharper.Caches/
 .htpasswd
 node_modules/
 .vscode/
+obj2/
+**/obj2/
