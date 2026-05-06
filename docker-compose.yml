@@ -19,13 +19,14 @@ services:
       RABBIT__RETRYEXCHANGE: ${MAIL_SENDER_RETRY_EXCHANGE:-mail.send.retry}
       RABBIT__RETRYROUTINGKEY: ${MAIL_SENDER_RETRY_ROUTING_KEY:-send.retry}
     restart: unless-stopped
+
   postgres:
     image: postgres:17
     container_name: postgres
     environment:
       POSTGRES_DB: emailservice
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${POSTGRES_PREPARATION_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PREPARATION_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -36,13 +37,14 @@ services:
       timeout: 5s
       retries: 10
     restart: unless-stopped
+
   postgres-mail-service:
     image: postgres:17
     container_name: postgres-mail-service
     environment:
       POSTGRES_DB: mailservice
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${POSTGRES_MAIL_SENDER_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_MAIL_SENDER_PASSWORD}
     ports:
       - "5433:5432"
     volumes:
@@ -53,6 +55,7 @@ services:
       timeout: 5s
       retries: 10
     restart: unless-stopped
+
   rabbitmq:
     image: rabbitmq:4-management
     container_name: rabbitmq
