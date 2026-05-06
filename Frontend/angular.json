@@ -28,7 +28,10 @@
             "styles": [
               "src/material-theme.scss",
               "src/styles.css"
-            ]
+            ],
+            "optimization": {
+              "fonts": false
+            }
           },
           "configurations": {
             "production": {

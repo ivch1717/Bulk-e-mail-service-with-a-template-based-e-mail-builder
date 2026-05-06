@@ -10,7 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient<IMailSenderClient, MailSenderClient>(client =>
 {
-    client.BaseAddress = new Uri("https://mail-sender");
+    client.BaseAddress = new Uri(builder.Configuration["MailSender:BaseAddress"] ?? "http://mail-sender");
 });
 
 

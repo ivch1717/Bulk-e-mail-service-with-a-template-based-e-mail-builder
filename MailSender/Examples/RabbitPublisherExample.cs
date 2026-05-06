@@ -9,6 +9,7 @@ public static class RabbitPublisherExample
     public static async Task PublishTestBatchAsync(
         RabbitOptions opt,
         string to,
+        Guid smtpProfileId,
         int count,
         string? subjectPrefix = null,
         CancellationToken ct = default)
@@ -38,11 +39,10 @@ public static class RabbitPublisherExample
         {
             var msg = new EmailSendRequested(
                 Guid.NewGuid(),
+                smtpProfileId,
                 to,
                 $"<p>Test message {i + 1} at {DateTimeOffset.UtcNow:O}</p>",
-                $"{prefix} #{i + 1}",
-                null,
-                null);
+                $"{prefix} #{i + 1}");
 
             var props = new BasicProperties
             {

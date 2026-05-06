@@ -87,11 +87,10 @@ public sealed class RabbitOutboxPublisher : BackgroundService
                 {
                     var message = new EmailSendRequested(
                         email.Id,
+                        email.SmtpProfileId,
                         email.To,
                         email.Html,
-                        Subject: null,
-                        FromEmail: null,
-                        FromName: null);
+                        email.Subject);
 
                     var properties = new BasicProperties
                     {

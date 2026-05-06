@@ -38,6 +38,19 @@ public sealed class PostgresOutboxRepository : IOutboxRepository
 
             create index if not exists ix_mail_sender_state_delivery
                 on mail_sender_state (delivery_lease_until, next_retry_at, dead_lettered_at);
+
+            create table if not exists mail_sender_smtp_profiles (
+                id uuid primary key,
+                host text not null,
+                port integer not null,
+                username text not null,
+                password text not null,
+                from_email text not null,
+                display_name text not null,
+                use_start_tls boolean not null default true,
+                created_at timestamp with time zone not null default now(),
+                updated_at timestamp with time zone not null default now()
+            );
             """;
 
         await using var command = new NpgsqlCommand(sql, connection);
@@ -59,10 +72,11 @@ public sealed class PostgresOutboxRepository : IOutboxRepository
 
         const string sql = """
             with candidates as (
-                select o."Id", o."To", o."Html", o."CreatedAt"
+                select o."Id", o."SmtpId", o."To", o."Html", o."Subject", o."CreatedAt"
                 from "OutboxEmails" o
                 left join mail_sender_state s on s.outbox_id = o."Id"
                 where o."Sent" = false
+                  and o."SmtpId" <> '00000000-0000-0000-0000-000000000000'::uuid
                   and (
                       s.outbox_id is null
                       or (
@@ -94,7 +108,7 @@ public sealed class PostgresOutboxRepository : IOutboxRepository
                   and (s.publish_lease_until is null or s.publish_lease_until < @now)
                 returning s.outbox_id
             )
-            select c."Id", c."To", c."Html", c."CreatedAt"
+            select c."Id", c."SmtpId", c."To", c."Html", c."Subject", c."CreatedAt"
             from candidates c
             join claimed cl on cl.outbox_id = c."Id"
             order by c."CreatedAt", c."Id"
@@ -110,13 +124,45 @@ public sealed class PostgresOutboxRepository : IOutboxRepository
         {
             result.Add(new OutboxEmail(
                 reader.GetGuid(0),
-                reader.GetString(1),
+                reader.GetGuid(1),
                 reader.GetString(2),
-                reader.GetDateTime(3),
+                reader.GetString(3),
+                reader.GetString(4),
+                reader.GetDateTime(5),
                 Sent: false));
         }
 
         return result;
+    }
+
+    public async Task<OutboxEmail?> GetOutboxEmailAsync(Guid messageId, CancellationToken ct)
+    {
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync(ct);
+
+        const string sql = """
+            select "Id", "SmtpId", "To", "Html", "Subject", "CreatedAt", "Sent"
+            from "OutboxEmails"
+            where "Id" = @id
+            """;
+
+        await using var command = new NpgsqlCommand(sql, connection);
+        command.Parameters.AddWithValue("id", messageId);
+
+        await using var reader = await command.ExecuteReaderAsync(ct);
+        if (!await reader.ReadAsync(ct))
+        {
+            return null;
+        }
+
+        return new OutboxEmail(
+            reader.GetGuid(0),
+            reader.GetGuid(1),
+            reader.GetString(2),
+            reader.GetString(3),
+            reader.GetString(4),
+            reader.GetDateTime(5),
+            reader.GetBoolean(6));
     }
 
     public async Task MarkPublishedAsync(Guid messageId, CancellationToken ct)
@@ -178,13 +224,11 @@ public sealed class PostgresOutboxRepository : IOutboxRepository
             update mail_sender_state s
             set delivery_lease_until = @leaseUntil,
                 updated_at = @now
-            from "OutboxEmails" o
             where s.outbox_id = @id
-              and o."Id" = @id
-              and o."Sent" = false
               and s.sent_at is null
               and s.dead_lettered_at is null
               and (s.delivery_lease_until is null or s.delivery_lease_until < @now)
+              and (s.next_retry_at is null or s.next_retry_at <= @now)
             returning s.delivery_attempts
             """;
 
@@ -204,13 +248,12 @@ public sealed class PostgresOutboxRepository : IOutboxRepository
         const string statusSql = """
             select
                 case
-                    when o."Id" is null or o."Sent" = true or s.sent_at is not null or s.dead_lettered_at is not null
+                    when s.sent_at is not null or s.dead_lettered_at is not null
                         then 1
                     else 2
                 end as status,
                 coalesce(s.delivery_attempts, 0) as delivery_attempts
             from (select 1) x
-            left join "OutboxEmails" o on o."Id" = @id
             left join mail_sender_state s on s.outbox_id = @id
             """;
 
@@ -226,6 +269,114 @@ public sealed class PostgresOutboxRepository : IOutboxRepository
         }
 
         return new OutboxDeliveryAttempt(DeliveryAcquireStatus.Completed, 0);
+    }
+
+    public async Task<SmtpProfile?> GetSmtpProfileAsync(Guid profileId, CancellationToken ct)
+    {
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync(ct);
+
+        const string sql = """
+            select id, host, port, username, password, from_email, display_name, use_start_tls
+            from mail_sender_smtp_profiles
+            where id = @id
+            """;
+
+        await using var command = new NpgsqlCommand(sql, connection);
+        command.Parameters.AddWithValue("id", profileId);
+
+        await using var reader = await command.ExecuteReaderAsync(ct);
+        if (!await reader.ReadAsync(ct))
+        {
+            return null;
+        }
+
+        return new SmtpProfile(
+            reader.GetGuid(0),
+            reader.GetString(1),
+            reader.GetInt32(2),
+            reader.GetString(3),
+            reader.GetString(4),
+            reader.GetString(5),
+            reader.GetString(6),
+            reader.GetBoolean(7));
+    }
+
+    public async Task<IReadOnlyList<SmtpProfileSummary>> GetSmtpProfilesAsync(CancellationToken ct)
+    {
+        var result = new List<SmtpProfileSummary>();
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync(ct);
+
+        const string sql = """
+            select id, username, from_email, display_name
+            from mail_sender_smtp_profiles
+            order by display_name, from_email, id
+            """;
+
+        await using var command = new NpgsqlCommand(sql, connection);
+        await using var reader = await command.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            result.Add(new SmtpProfileSummary(
+                reader.GetGuid(0),
+                reader.GetString(1),
+                reader.GetString(2),
+                reader.GetString(3)));
+        }
+
+        return result;
+    }
+
+    public async Task CreateSmtpProfileAsync(SmtpProfile profile, CancellationToken ct)
+    {
+        var now = DateTime.UtcNow;
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync(ct);
+
+        const string sql = """
+            insert into mail_sender_smtp_profiles
+                (id, host, port, username, password, from_email, display_name, use_start_tls, created_at, updated_at)
+            values
+                (@id, @host, @port, @username, @password, @fromEmail, @displayName, @useStartTls, @now, @now)
+            on conflict (id) do update set
+                host = excluded.host,
+                port = excluded.port,
+                username = excluded.username,
+                password = excluded.password,
+                from_email = excluded.from_email,
+                display_name = excluded.display_name,
+                use_start_tls = excluded.use_start_tls,
+                updated_at = excluded.updated_at
+            """;
+
+        await using var command = new NpgsqlCommand(sql, connection);
+        command.Parameters.AddWithValue("id", profile.Id);
+        command.Parameters.AddWithValue("host", profile.Host);
+        command.Parameters.AddWithValue("port", profile.Port);
+        command.Parameters.AddWithValue("username", profile.User);
+        command.Parameters.AddWithValue("password", profile.Password);
+        command.Parameters.AddWithValue("fromEmail", profile.FromEmail);
+        command.Parameters.AddWithValue("displayName", profile.DisplayName);
+        command.Parameters.AddWithValue("useStartTls", profile.UseStartTls);
+        command.Parameters.AddWithValue("now", now);
+        await command.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task DeleteSmtpProfileAsync(Guid profileId, CancellationToken ct)
+    {
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync(ct);
+
+        const string sql = """
+            delete from mail_sender_smtp_profiles
+            where id = @id
+            """;
+
+        await using var command = new NpgsqlCommand(sql, connection);
+        command.Parameters.AddWithValue("id", profileId);
+        await command.ExecuteNonQueryAsync(ct);
     }
 
     public async Task MarkDeliveredAsync(Guid messageId, CancellationToken ct)

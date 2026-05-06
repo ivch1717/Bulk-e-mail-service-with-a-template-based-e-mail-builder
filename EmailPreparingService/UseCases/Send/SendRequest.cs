@@ -2,6 +2,7 @@ using System.Net.Mail;
 using System.Text.Json;
 using Infrastructure;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using UseCases.TemplateUtilities;
 
@@ -12,6 +13,7 @@ public record SendRequest(
     IFormFile table,
     string mappingJson,
     string subject,
+    Guid smtpId,
     bool tracking
         );
         
@@ -48,6 +50,12 @@ public class SendRequestHandler : ISendRequestHandler
     
     public async Task<SendResponse> Handle(SendRequest request)
     {
+        if (request.smtpId == Guid.Empty ||
+            !await _db.SmtpProfiles.AnyAsync(profile => profile.Id == request.smtpId))
+        {
+            throw new ArgumentException("SMTP profile is required.");
+        }
+
         Dictionary<string, string> mapping = JsonSerializer.Deserialize<Dictionary<string, string>>(request.mappingJson);
         ITable table;
         HashSet<string> columns = mapping.Values.ToHashSet();
@@ -75,7 +83,8 @@ public class SendRequestHandler : ISendRequestHandler
                     CreatedAt = DateTime.UtcNow,
                     Sent = false,
                     CampaignId = campaignId,
-                    Subject = request.subject
+                    Subject = request.subject,
+                    SmtpId = request.smtpId
                 });
             } catch (Exception) {}
             

@@ -48,31 +48,34 @@
   <mat-card-content>
     <h3>Настроенные аккаунты</h3>
 
-    @if (profiles.length === 0) {
+    @if (loadProfilesFailed) {
+      <p>Не удалось загрузить SMTP аккаунты</p>
+    } @else if (profiles.length === 0) {
       <p>Нет настроенных SMTP аккаунтов</p>
     } @else {
-      <table mat-table [dataSource]="profiles">
-        <ng-container matColumnDef="displayName">
-          <th mat-header-cell *matHeaderCellDef>Имя</th>
-          <td mat-cell *matCellDef="let p">{{ p.displayName }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="fromEmail">
-          <th mat-header-cell *matHeaderCellDef>Email</th>
-          <td mat-cell *matCellDef="let p">{{ p.fromEmail }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="delete">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let p">
-            <button mat-icon-button color="warn" (click)="delete(p.id)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <table class="profiles-table">
+        <thead>
+          <tr>
+            <th>Имя</th>
+            <th>Логин</th>
+            <th>Email</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of profiles; track p.id) {
+            <tr>
+              <td>{{ p.displayName }}</td>
+              <td>{{ p.user }}</td>
+              <td>{{ p.fromEmail }}</td>
+              <td class="actions">
+                <button mat-icon-button color="warn" (click)="delete(p.id)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
       </table>
     }
   </mat-card-content>

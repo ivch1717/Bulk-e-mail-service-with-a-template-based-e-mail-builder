@@ -54,6 +54,7 @@ export class Preview implements OnChanges, OnInit {
   ngOnInit() {
     this.http.get<{smtpProfiles: {id: string, fromEmail: string, displayName: string}[]}>('/api/smtp').subscribe(response => {
       this.smtpProfiles = response.smtpProfiles;
+      this.selectedSmtpId = this.smtpProfiles[0]?.id ?? null;
     });
   }
 

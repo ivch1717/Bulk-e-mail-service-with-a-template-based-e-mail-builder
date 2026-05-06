@@ -139,6 +139,19 @@ public sealed class RabbitMailConsumer : BackgroundService
                 throw new InvalidOperationException("messageId is required.");
             }
 
+            var outboxEmail = await _outboxRepository.GetOutboxEmailAsync(message.MessageId, serviceToken)
+                ?? throw new InvalidOperationException($"Outbox email {message.MessageId} was not found.");
+
+            message = message with
+            {
+                SmtpProfileId = message.SmtpProfileId == Guid.Empty
+                    ? outboxEmail.SmtpProfileId
+                    : message.SmtpProfileId,
+                To = string.IsNullOrWhiteSpace(message.To) ? outboxEmail.To : message.To,
+                HtmlBody = string.IsNullOrWhiteSpace(message.HtmlBody) ? outboxEmail.Html : message.HtmlBody,
+                Subject = string.IsNullOrWhiteSpace(message.Subject) ? outboxEmail.Subject : message.Subject
+            };
+
             if (string.IsNullOrWhiteSpace(message.To))
             {
                 throw new InvalidOperationException("to is required.");
@@ -158,7 +171,9 @@ public sealed class RabbitMailConsumer : BackgroundService
 
             try
             {
-                await smtpSender.SendAsync(message, serviceToken);
+                var smtpProfile = await ResolveSmtpProfileAsync(message, serviceToken);
+
+                await smtpSender.SendAsync(message, smtpProfile, serviceToken);
                 await _outboxRepository.MarkDeliveredAsync(message.MessageId, serviceToken);
 
                 await channel.BasicAckAsync(eventArgs.DeliveryTag, false, serviceToken);
@@ -191,7 +206,9 @@ public sealed class RabbitMailConsumer : BackgroundService
         }
         catch (Exception ex)
         {
-            if (message is null || message.MessageId == Guid.Empty || string.IsNullOrWhiteSpace(message.To))
+            if (message is null
+                || message.MessageId == Guid.Empty
+                || string.IsNullOrWhiteSpace(message.To))
             {
                 _logger.LogWarning(ex, "Dropping invalid mail message from queue.");
                 await channel.BasicAckAsync(eventArgs.DeliveryTag, false, serviceToken);
@@ -202,6 +219,31 @@ public sealed class RabbitMailConsumer : BackgroundService
             await channel.BasicNackAsync(eventArgs.DeliveryTag, false, requeue: true, serviceToken);
         }
     }
+
+    private async Task<SmtpProfile> ResolveSmtpProfileAsync(
+        EmailSendRequested message,
+        CancellationToken ct)
+    {
+        if (message.SmtpProfileId != Guid.Empty)
+        {
+            return await _outboxRepository.GetSmtpProfileAsync(message.SmtpProfileId, ct)
+                ?? throw new InvalidOperationException($"SMTP profile {message.SmtpProfileId} was not found.");
+        }
+
+        return new SmtpProfile(
+            Guid.Empty,
+            GetEnvVar("SMTP_HOST"),
+            int.Parse(GetEnvVar("SMTP_PORT", "587")),
+            GetEnvVar("SMTP_USER"),
+            GetEnvVar("SMTP_PASS"),
+            GetEnvVar("SMTP_FROM_EMAIL", GetEnvVar("SMTP_USER")),
+            GetEnvVar("SMTP_FROM_NAME", "MailSender"),
+            bool.Parse(GetEnvVar("SMTP_USE_STARTTLS", "true")));
+    }
+
+    private static string GetEnvVar(string key, string? defaultValue = null) =>
+        Environment.GetEnvironmentVariable(key) ?? defaultValue
+        ?? throw new InvalidOperationException($"{key} env var is required.");
 
     private async Task PublishToDeadLetterAsync(
         IChannel channel,

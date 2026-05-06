@@ -4,6 +4,7 @@ using UseCases.CreateSmtpProfile;
 using UseCases.DeleteSmtpProfile;
 using UseCases.ExtractTableHeaders;
 using UseCases.GetAllCampaigns;
+using UseCases.GetAllSmtpProfiles;
 using UseCases.GetCampaign;
 using UseCases.GetPreview;
 using UseCases.UploadTemplate;
@@ -25,13 +26,13 @@ public class Endpoints : ControllerBase
     private IGetCampaignRequestHandler _getCampaignRequestHandler;
     private ICreateSmtpProfileRequestHandler _createSmtpProfileRequestHandler;
     private IDeleteSmtpProfileRequestHandler _deleteSmtpProfileRequestHandler;
-    private IGetAllCampaignsRequestHandler _getAllSmtpProfileRequestHandler;
+    private IGetAllSmtpProfilesRequestHandler _getAllSmtpProfileRequestHandler;
     
     public Endpoints( IUploadTemplateRequestHandler uploadTemplateRequestHandler, IProcessEmailCreationRequestHandler processEmailCreationRequestHandler,
         IExtractTableHeadersRequestHandler extractTableHeadersRequestHandler, IGetPreviewRequestHandler getPreviewRequestHandler,
         ISendRequestHandler sendRequestHandler, ITrackOpenRequestHandler trackOpenRequestHandler, IGetAllCampaignsRequestHandler getAllCampaignsRequestHandler,
         IGetCampaignRequestHandler getCampaignRequestHandler, ICreateSmtpProfileRequestHandler createSmtpProfileRequestHandler,
-        IDeleteSmtpProfileRequestHandler deleteSmtpProfileRequestHandler, IGetAllCampaignsRequestHandler getAllSmtpProfileRequestHandler)
+        IDeleteSmtpProfileRequestHandler deleteSmtpProfileRequestHandler, IGetAllSmtpProfilesRequestHandler getAllSmtpProfileRequestHandler)
     {
         // _uploadDataRequestHandler = uploadDataRequestHandler;
         _uploadTemplateRequestHandler = uploadTemplateRequestHandler;
@@ -44,7 +45,7 @@ public class Endpoints : ControllerBase
         _getCampaignRequestHandler = getCampaignRequestHandler;
         _createSmtpProfileRequestHandler =  createSmtpProfileRequestHandler;
         _deleteSmtpProfileRequestHandler =  deleteSmtpProfileRequestHandler;
-        _getAllCampaignsRequestHandler =   getAllCampaignsRequestHandler;
+        _getAllSmtpProfileRequestHandler = getAllSmtpProfileRequestHandler;
     }
     
     // [HttpPost("UploadData")]
@@ -128,7 +129,14 @@ public class Endpoints : ControllerBase
     [HttpPost("api/Send")]
     public async Task<IActionResult> Send([FromForm] SendRequest request)
     {
-        return Ok(await _sendRequestHandler.Handle(request));
+        try
+        {
+            return Ok(await _sendRequestHandler.Handle(request));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpGet("api/track/open")]
@@ -161,22 +169,27 @@ public class Endpoints : ControllerBase
     }
 
     [HttpPost("api/smtp")]
-    public async Task<IActionResult> CreateSmptProfile([FromQuery] CreateSmtpProfileRequest request)
+    public async Task<IActionResult> CreateSmptProfile([FromBody] CreateSmtpProfileRequest request)
     {
         var respose = await _createSmtpProfileRequestHandler.HandleAsync(request);
-        return Ok(respose);
+        return respose.success ? Ok(respose) : BadRequest(respose);
     }
     
-    [HttpPost("api/smtp")]
-    public async Task<IActionResult> DeleteSmptProfile([FromQuery] Guid profileId)
+    [HttpDelete("api/smtp/{profileId:guid}")]
+    public async Task<IActionResult> DeleteSmptProfile(Guid profileId)
     {
         var response = await _deleteSmtpProfileRequestHandler.HandleAsync(profileId);
         return response ? Ok() : NotFound();
     }
 
+    [HttpGet("api/smtp")]
     public async Task<IActionResult> GetAllSmtpProfiles()
     {
-        var response = await  _getAllCampaignsRequestHandler.HandleAsync();
+        Response.Headers["Cache-Control"] = "no-store, no-cache, max-age=0";
+        Response.Headers["Pragma"] = "no-cache";
+        Response.Headers["Expires"] = "0";
+
+        var response = await _getAllSmtpProfileRequestHandler.HandleAsync();
         return Ok(response);
     }
 }

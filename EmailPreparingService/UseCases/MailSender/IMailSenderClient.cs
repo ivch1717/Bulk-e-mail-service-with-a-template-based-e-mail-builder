@@ -3,9 +3,19 @@ using UseCases.CreateSmtpProfile;
 
 public interface IMailSenderClient
 {
+    Task<IReadOnlyList<MailSenderSmtpProfile>> GetSmtpProfilesAsync();
     Task<Guid> CreateSmtpProfileAsync(CreateSmtpProfileRequest request);
     Task DeleteSmtpProfileAsync(Guid id);
 }
+
+public sealed record MailSenderSmtpProfilesResponse(List<MailSenderSmtpProfile> smtpProfiles);
+
+public sealed record MailSenderSmtpProfile(
+    Guid Id,
+    string User,
+    string FromEmail,
+    string DisplayName
+);
 
 public class MailSenderClient : IMailSenderClient
 {
@@ -14,6 +24,21 @@ public class MailSenderClient : IMailSenderClient
     public MailSenderClient(HttpClient http)
     {
         _http = http;
+    }
+
+    public async Task<IReadOnlyList<MailSenderSmtpProfile>> GetSmtpProfilesAsync()
+    {
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+        var response = await _http.GetAsync("/internal/smtp", cts.Token);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Mail sender returned {response.StatusCode}");
+        }
+
+        var result = await response.Content.ReadFromJsonAsync<MailSenderSmtpProfilesResponse>(cts.Token);
+        return result?.smtpProfiles ?? [];
     }
 
     public async Task<Guid> CreateSmtpProfileAsync(CreateSmtpProfileRequest request)
