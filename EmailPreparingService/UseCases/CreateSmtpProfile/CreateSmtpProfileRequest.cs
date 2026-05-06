@@ -34,15 +34,29 @@ public class CreateSmtpProfileRequestHandler : ICreateSmtpProfileRequestHandler
     
     public async Task<CreateSmtpProfileResponse> HandleAsync(CreateSmtpProfileRequest request)
     {
+        Guid? createdProfileId = null;
+
         try
         {
             var response = await _client.CreateSmtpProfileAsync(request);
-            _db.SmtpProfiles.AddAsync(new SmtpProfile{Id = response, DisplayEmail = request.fromEmail, DisplayName = request.displayName});
-            _db.SaveChangesAsync();
+            createdProfileId = response;
+            await _db.SmtpProfiles.AddAsync(new SmtpProfile{Id = response, DisplayEmail = request.fromEmail, DisplayName = request.displayName});
+            await _db.SaveChangesAsync();
             return new CreateSmtpProfileResponse(true);
         }
         catch (Exception)
         {
+            if (createdProfileId is { } profileId)
+            {
+                try
+                {
+                    await _client.DeleteSmtpProfileAsync(profileId);
+                }
+                catch
+                {
+                }
+            }
+
             return new CreateSmtpProfileResponse(false);
         }
     }

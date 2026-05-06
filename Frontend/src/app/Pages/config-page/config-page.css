@@ -11,3 +11,24 @@ mat-card {
 .form-row mat-form-field {
   flex: 1;
 }
+
+.profiles-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.profiles-table th,
+.profiles-table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  text-align: left;
+}
+
+.profiles-table th {
+  font-weight: 600;
+}
+
+.profiles-table .actions {
+  width: 48px;
+  text-align: right;
+}

@@ -2,5 +2,5 @@
 
 public interface ISmtpSender
 {
-    Task SendAsync(EmailSendRequested msg, CancellationToken ct);
+    Task SendAsync(EmailSendRequested msg, SmtpProfile smtpProfile, CancellationToken ct);
 }

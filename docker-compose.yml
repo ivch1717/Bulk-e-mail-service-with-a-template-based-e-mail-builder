@@ -1,6 +1,5 @@
 services:
   publisher:
-    container_name: publisher
     build:
       context: ./Publisher
       dockerfile: Dockerfile
@@ -14,6 +13,11 @@ services:
       RABBIT__HOST: rabbitmq
       RABBIT__USER: ${RABBITMQ_DEFAULT_USER:-guest}
       RABBIT__PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+      RABBIT__EXCHANGE: ${MAIL_SENDER_EXCHANGE:-mail.send}
+      RABBIT__QUEUE: ${MAIL_SENDER_QUEUE:-mail.send.q}
+      RABBIT__ROUTINGKEY: ${MAIL_SENDER_ROUTING_KEY:-send}
+      RABBIT__RETRYEXCHANGE: ${MAIL_SENDER_RETRY_EXCHANGE:-mail.send.retry}
+      RABBIT__RETRYROUTINGKEY: ${MAIL_SENDER_RETRY_ROUTING_KEY:-send.retry}
     restart: unless-stopped
   postgres:
     image: postgres:17
@@ -32,24 +36,23 @@ services:
       timeout: 5s
       retries: 10
     restart: unless-stopped
-  postgres-mail-sender:
+  postgres-mail-service:
     image: postgres:17
-    container_name: postgres-mail-sender
+    container_name: postgres-mail-service
     environment:
-      POSTGRES_DB: mailsender
+      POSTGRES_DB: mailservice
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
       - "5433:5432"
     volumes:
-      - pgdata-mail-sender:/var/lib/postgresql/data
+      - pgdata-mail-service:/var/lib/postgresql-mail-service/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d mailsender"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d emailservice"]
       interval: 5s
       timeout: 5s
       retries: 10
     restart: unless-stopped
-
   rabbitmq:
     image: rabbitmq:4-management
     container_name: rabbitmq
@@ -107,18 +110,17 @@ services:
     restart: unless-stopped
 
   mail-sender:
-    container_name: mail-sender
     build:
       context: ./MailSender
       dockerfile: Dockerfile
     init: true
     depends_on:
-      postgres-mail-sender:
+      postgres-mail-service:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
     environment:
-      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-emailservice};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      ConnectionStrings__Postgres: Host=postgres-mail-service;Port=5432;Database=${POSTGRES_DB:-mailservice};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
 
       RABBIT__HOST: rabbitmq
       RABBIT__PORT: "5672"
@@ -142,14 +144,6 @@ services:
       OUTBOX__DELIVERYLEASESECONDS: "${MAIL_SENDER_DELIVERY_LEASE_SECONDS:-120}"
       OUTBOX__RETRYDELAYSECONDS: "${MAIL_SENDER_RETRY_DELAY_SECONDS:-30}"
       OUTBOX__MAXDELIVERYATTEMPTS: "${MAIL_SENDER_MAX_DELIVERY_ATTEMPTS:-5}"
-
-      SMTP_HOST: ${SMTP_HOST:?SMTP_HOST is required}
-      SMTP_PORT: "${SMTP_PORT:-587}"
-      SMTP_USER: ${SMTP_USER:?SMTP_USER is required}
-      SMTP_PASS: ${SMTP_PASS:?SMTP_PASS is required}
-      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-MailSender}
-      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL:?SMTP_FROM_EMAIL is required}
-      SMTP_USE_STARTTLS: "${SMTP_USE_STARTTLS:-true}"
     restart: unless-stopped
   nginx:
     container_name: nginx
@@ -166,6 +160,6 @@ services:
     restart: unless-stopped
 
 volumes:
+  pgdata-mail-service:
   pgdata:
-  pgdata-mail-sender:
   rabbitmqdata:

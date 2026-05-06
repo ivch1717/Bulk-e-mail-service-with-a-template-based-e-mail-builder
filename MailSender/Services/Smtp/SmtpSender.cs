@@ -6,75 +6,31 @@ namespace MailSender;
 
 public sealed class SmtpSender : ISmtpSender, IAsyncDisposable
 {
-    private readonly SemaphoreSlim _lock = new(1, 1);
-    private SmtpClient? _client;
-
-    private readonly string _host = GetEnvVar("SMTP_HOST");
-    private readonly int _port = int.Parse(GetEnvVar("SMTP_PORT", "587"));
-    private readonly string _user = GetEnvVar("SMTP_USER");
-    private readonly string _pass = GetEnvVar("SMTP_PASS");
-    private readonly bool _startTls = bool.Parse(GetEnvVar("SMTP_USE_STARTTLS", "true"));
-
-    private readonly string? _defaultFromEmail = Environment.GetEnvironmentVariable("SMTP_FROM_EMAIL");
-    private readonly string? _defaultFromName  = Environment.GetEnvironmentVariable("SMTP_FROM_NAME");
-
-    private static string GetEnvVar(string key, string? def = null) =>
-        Environment.GetEnvironmentVariable(key) ?? def
-        ?? throw new InvalidOperationException($"{key} env var is required");
-
-    public async Task SendAsync(EmailSendRequested msg, CancellationToken ct)
+    public async Task SendAsync(EmailSendRequested msg, SmtpProfile smtpProfile, CancellationToken ct)
     {
-        var fromEmail = msg.FromEmail ?? _defaultFromEmail ?? _user;
-        var fromName  = msg.FromName  ?? _defaultFromName  ?? "MailSender";
-
         var m = new MimeMessage();
-        m.From.Add(new MailboxAddress(fromName, fromEmail));
+        m.From.Add(new MailboxAddress(smtpProfile.DisplayName, smtpProfile.FromEmail));
         m.To.Add(MailboxAddress.Parse(msg.To));
-        m.Subject = msg.Subject ?? "";
+        m.Subject = msg.Subject;
         m.Body = new BodyBuilder { HtmlBody = msg.HtmlBody ?? "" }.ToMessageBody();
         m.MessageId = $"<{msg.MessageId:D}@mailsender>";
         m.Headers.Add("X-Outbox-Id", msg.MessageId.ToString("D"));
+        m.Headers.Add("X-Smtp-Profile-Id", smtpProfile.Id.ToString("D"));
 
-        await _lock.WaitAsync(ct);
-        try
-        {
-            _client ??= new SmtpClient();
-            if (!_client.IsConnected)
-            {
-                var opt = _startTls ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto;
-                await _client.ConnectAsync(_host, _port, opt, ct);
-                await _client.AuthenticateAsync(_user, _pass, ct);
-            }
-            await _client.SendAsync(m, ct);
-        }
-        catch
-        {
-            if (_client is not null)
-            {
-                try { await _client.DisconnectAsync(true, ct); }
-                catch
-                {
-                    // ignored
-                }
+        using var client = new SmtpClient();
+        var options = smtpProfile.UseStartTls
+            ? SecureSocketOptions.StartTls
+            : SecureSocketOptions.Auto;
 
-                _client.Dispose();
-                _client = null;
-            }
-            throw;
-        }
-        finally
+        await client.ConnectAsync(smtpProfile.Host, smtpProfile.Port, options, ct);
+        if (!string.IsNullOrWhiteSpace(smtpProfile.User))
         {
-            _lock.Release();
+            await client.AuthenticateAsync(smtpProfile.User, smtpProfile.Password, ct);
         }
+
+        await client.SendAsync(m, ct);
+        await client.DisconnectAsync(true, ct);
     }
 
-    public async ValueTask DisposeAsync()
-    {
-        if (_client is not null)
-        {
-            try { await _client.DisconnectAsync(true); } catch { }
-            _client.Dispose();
-        }
-        _lock.Dispose();
-    }
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

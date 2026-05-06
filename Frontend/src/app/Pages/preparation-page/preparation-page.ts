@@ -81,6 +81,14 @@ export class PreparationPage {
   }
 
   onSendClick() {
+    if (!this.preview.selectedSmtpId) {
+      this.snackBar.open('Выберите SMTP аккаунт для отправки', 'Закрыть', {
+        duration: 3000,
+      });
+      return;
+    }
+    const smtpId = this.preview.selectedSmtpId;
+
     const ref = this.dialog.open(ConfirmDialogComponent, {
       data: { message: this.preview.subject ? 'Вы уверены, что хотите начать рассылку?' : 'Тема письма пустая, письмо с пустой темой может попасть в спам, все равно отправить?' },
       width: '350px'
@@ -94,6 +102,7 @@ export class PreparationPage {
       formData.append('table', this.table!);
       formData.append('mappingJson', JSON.stringify(Object.fromEntries(mapping)));
       formData.append('subject', this.preview.subject);
+      formData.append('smtpId', smtpId);
       formData.append('tracking', String(this.preview.tracking));
       this.http.post<{
         emailPreviews: { to: string, html: string }[],
