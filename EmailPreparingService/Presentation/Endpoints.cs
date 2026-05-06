@@ -24,9 +24,7 @@ public class Endpoints : ControllerBase
     private ITrackOpenRequestHandler _trackOpenRequestHandler;
     private IGetAllCampaignsRequestHandler _getAllCampaignsRequestHandler;
     private IGetCampaignRequestHandler _getCampaignRequestHandler;
-    private ICreateSmtpProfileRequestHandler _createSmtpProfileRequestHandler;
-    private IDeleteSmtpProfileRequestHandler _deleteSmtpProfileRequestHandler;
-    private IGetAllSmtpProfilesRequestHandler _getAllSmtpProfileRequestHandler;
+    
     
     public Endpoints( IUploadTemplateRequestHandler uploadTemplateRequestHandler, IProcessEmailCreationRequestHandler processEmailCreationRequestHandler,
         IExtractTableHeadersRequestHandler extractTableHeadersRequestHandler, IGetPreviewRequestHandler getPreviewRequestHandler,
@@ -43,9 +41,7 @@ public class Endpoints : ControllerBase
         _trackOpenRequestHandler =  trackOpenRequestHandler;
         _getAllCampaignsRequestHandler = getAllCampaignsRequestHandler;
         _getCampaignRequestHandler = getCampaignRequestHandler;
-        _createSmtpProfileRequestHandler =  createSmtpProfileRequestHandler;
-        _deleteSmtpProfileRequestHandler =  deleteSmtpProfileRequestHandler;
-        _getAllSmtpProfileRequestHandler = getAllSmtpProfileRequestHandler;
+       
     }
     
     // [HttpPost("UploadData")]
@@ -168,28 +164,4 @@ public class Endpoints : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost("api/smtp")]
-    public async Task<IActionResult> CreateSmptProfile([FromBody] CreateSmtpProfileRequest request)
-    {
-        var respose = await _createSmtpProfileRequestHandler.HandleAsync(request);
-        return respose.success ? Ok(respose) : BadRequest(respose);
-    }
-    
-    [HttpDelete("api/smtp/{profileId:guid}")]
-    public async Task<IActionResult> DeleteSmptProfile(Guid profileId)
-    {
-        var response = await _deleteSmtpProfileRequestHandler.HandleAsync(profileId);
-        return response ? Ok() : NotFound();
-    }
-
-    [HttpGet("api/smtp")]
-    public async Task<IActionResult> GetAllSmtpProfiles()
-    {
-        Response.Headers["Cache-Control"] = "no-store, no-cache, max-age=0";
-        Response.Headers["Pragma"] = "no-cache";
-        Response.Headers["Expires"] = "0";
-
-        var response = await _getAllSmtpProfileRequestHandler.HandleAsync();
-        return Ok(response);
-    }
 }
