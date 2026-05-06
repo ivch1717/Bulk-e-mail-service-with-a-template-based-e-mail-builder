@@ -1,4 +1,20 @@
 services:
+  publisher:
+    container_name: publisher
+    build:
+      context: ./Publisher
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=emailservice;Username=postgres;Password=postgres
+      RABBIT__HOST: rabbitmq
+      RABBIT__USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBIT__PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+    restart: unless-stopped
   postgres:
     image: postgres:17
     container_name: postgres
@@ -12,6 +28,23 @@ services:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d emailservice"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+  postgres-mail-sender:
+    image: postgres:17
+    container_name: postgres-mail-sender
+    environment:
+      POSTGRES_DB: mailsender
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata-mail-sender:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mailsender"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -80,7 +113,7 @@ services:
       dockerfile: Dockerfile
     init: true
     depends_on:
-      postgres:
+      postgres-mail-sender:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
@@ -134,4 +167,5 @@ services:
 
 volumes:
   pgdata:
+  pgdata-mail-sender:
   rabbitmqdata:
