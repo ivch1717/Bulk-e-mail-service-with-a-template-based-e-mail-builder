@@ -92,7 +92,7 @@ services:
       backend:
         condition: service_healthy
     environment:
-      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-emailservice};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      ConnectionStrings__Postgres: Host=postgres-mail-service;Port=5432;Database=${POSTGRES_DB:-mailservice};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
 
       RABBIT__HOST: rabbitmq
       RABBIT__PORT: "5672"

@@ -3,5 +3,5 @@ namespace MailSender;
 public sealed class PostgresOptions
 {
     public string ConnectionString { get; init; } =
-        "Host=postgres;Port=5432;Database=emailservice;Username=postgres;Password=postgres";
+        "Host=postgres-mail-service;Port=5432;Database=mailservice;Username=postgres;Password=postgres";
 }

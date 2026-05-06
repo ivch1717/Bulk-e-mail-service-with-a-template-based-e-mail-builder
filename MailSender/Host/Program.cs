@@ -13,15 +13,15 @@ builder.Services.AddSingleton(new PostgresOptions
     ConnectionString =
         builder.Configuration.GetConnectionString("Postgres")
         ?? builder.Configuration["Postgres:ConnectionString"]
-        ?? "Host=localhost;Port=5432;Database=emailservice;Username=postgres;Password=postgres"
+        ?? "Host=postgres-mail-service;Port=5432;Database=mailservice;Username=postgres;Password=postgres"
 });
 
 builder.Services.AddSingleton<IOutboxRepository, PostgresOutboxRepository>();
 builder.Services.AddTransient<ISmtpSender, SmtpSender>();
-if (builder.Configuration.GetValue("Outbox:PublishEnabled", false))
-{
-    builder.Services.AddHostedService<RabbitOutboxPublisher>();
-}
+// if (builder.Configuration.GetValue("Outbox:PublishEnabled", false))
+// {
+//     builder.Services.AddHostedService<RabbitOutboxPublisher>();
+// }
 builder.Services.AddHostedService<RabbitMailConsumer>();
 
 var app = builder.Build();

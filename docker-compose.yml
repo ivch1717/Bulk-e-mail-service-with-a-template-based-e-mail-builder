@@ -36,6 +36,23 @@ services:
       timeout: 5s
       retries: 10
     restart: unless-stopped
+  postgres-mail-service:
+    image: postgres:17
+    container_name: postgres-mail-service
+    environment:
+      POSTGRES_DB: mailservice
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata-mail-service:/var/lib/postgresql-mail-service/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d emailservice"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
   rabbitmq:
     image: rabbitmq:4-management
     container_name: rabbitmq
@@ -98,12 +115,12 @@ services:
       dockerfile: Dockerfile
     init: true
     depends_on:
-      postgres:
+      postgres-mail-service:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
     environment:
-      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-emailservice};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      ConnectionStrings__Postgres: Host=postgres-mail-service;Port=5432;Database=${POSTGRES_DB:-mailservice};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
 
       RABBIT__HOST: rabbitmq
       RABBIT__PORT: "5672"
@@ -143,5 +160,6 @@ services:
     restart: unless-stopped
 
 volumes:
+  pgdata-mail-service:
   pgdata:
   rabbitmqdata:

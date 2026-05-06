@@ -139,18 +139,10 @@ public sealed class RabbitMailConsumer : BackgroundService
                 throw new InvalidOperationException("messageId is required.");
             }
 
-            var outboxEmail = await _outboxRepository.GetOutboxEmailAsync(message.MessageId, serviceToken)
-                ?? throw new InvalidOperationException($"Outbox email {message.MessageId} was not found.");
-
-            message = message with
-            {
-                SmtpProfileId = message.SmtpProfileId == Guid.Empty
-                    ? outboxEmail.SmtpProfileId
-                    : message.SmtpProfileId,
-                To = string.IsNullOrWhiteSpace(message.To) ? outboxEmail.To : message.To,
-                HtmlBody = string.IsNullOrWhiteSpace(message.HtmlBody) ? outboxEmail.Html : message.HtmlBody,
-                Subject = string.IsNullOrWhiteSpace(message.Subject) ? outboxEmail.Subject : message.Subject
-            };
+            if (string.IsNullOrWhiteSpace(message.To))
+			{
+				throw new InvalidOperationException("to is required.");
+			}	
 
             if (string.IsNullOrWhiteSpace(message.To))
             {

@@ -4,9 +4,9 @@ public interface IOutboxRepository
 {
     Task InitializeAsync(CancellationToken ct);
 
-    Task<IReadOnlyList<OutboxEmail>> AcquirePublishBatchAsync(int batchSize, TimeSpan leaseDuration, CancellationToken ct);
+    // Task<IReadOnlyList<OutboxEmail>> AcquirePublishBatchAsync(int batchSize, TimeSpan leaseDuration, CancellationToken ct);
 
-    Task<OutboxEmail?> GetOutboxEmailAsync(Guid messageId, CancellationToken ct);
+    // Task<OutboxEmail?> GetOutboxEmailAsync(Guid messageId, CancellationToken ct);
 
     Task MarkPublishedAsync(Guid messageId, CancellationToken ct);
 

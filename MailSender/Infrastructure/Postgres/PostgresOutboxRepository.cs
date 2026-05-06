@@ -57,113 +57,113 @@ public sealed class PostgresOutboxRepository : IOutboxRepository
         await command.ExecuteNonQueryAsync(ct);
     }
 
-    public async Task<IReadOnlyList<OutboxEmail>> AcquirePublishBatchAsync(
-        int batchSize,
-        TimeSpan leaseDuration,
-        CancellationToken ct)
-    {
-        var now = DateTime.UtcNow;
-        var leaseUntil = now.Add(leaseDuration);
-        var normalizedBatchSize = Math.Max(1, batchSize);
-        var result = new List<OutboxEmail>(normalizedBatchSize);
+    // public async Task<IReadOnlyList<OutboxEmail>> AcquirePublishBatchAsync(
+    //     int batchSize,
+    //     TimeSpan leaseDuration,
+    //     CancellationToken ct)
+    // {
+    //     var now = DateTime.UtcNow;
+    //     var leaseUntil = now.Add(leaseDuration);
+    //     var normalizedBatchSize = Math.Max(1, batchSize);
+    //     var result = new List<OutboxEmail>(normalizedBatchSize);
+    //
+    //     await using var connection = new NpgsqlConnection(_connectionString);
+    //     await connection.OpenAsync(ct);
+    //
+    //     const string sql = """
+    //         with candidates as (
+    //             select o."Id", o."SmtpId", o."To", o."Html", o."Subject", o."CreatedAt"
+    //             from "OutboxEmails" o
+    //             left join mail_sender_state s on s.outbox_id = o."Id"
+    //             where o."Sent" = false
+    //               and o."SmtpId" <> '00000000-0000-0000-0000-000000000000'::uuid
+    //               and (
+    //                   s.outbox_id is null
+    //                   or (
+    //                       s.sent_at is null
+    //                       and s.dead_lettered_at is null
+    //                       and s.published_at is null
+    //                       and (s.publish_lease_until is null or s.publish_lease_until < @now)
+    //                   )
+    //               )
+    //             order by o."CreatedAt", o."Id"
+    //             limit @batchSize
+    //         ),
+    //         ensured as (
+    //             insert into mail_sender_state (outbox_id, created_at, updated_at)
+    //             select c."Id", @now, @now
+    //             from candidates c
+    //             on conflict (outbox_id) do nothing
+    //         ),
+    //         claimed as (
+    //             update mail_sender_state s
+    //             set publish_lease_until = @leaseUntil,
+    //                 publish_attempts = s.publish_attempts + 1,
+    //                 updated_at = @now
+    //             from candidates c
+    //             where s.outbox_id = c."Id"
+    //               and s.sent_at is null
+    //               and s.dead_lettered_at is null
+    //               and s.published_at is null
+    //               and (s.publish_lease_until is null or s.publish_lease_until < @now)
+    //             returning s.outbox_id
+    //         )
+    //         select c."Id", c."SmtpId", c."To", c."Html", c."Subject", c."CreatedAt"
+    //         from candidates c
+    //         join claimed cl on cl.outbox_id = c."Id"
+    //         order by c."CreatedAt", c."Id"
+    //         """;
+    //
+    //     await using var command = new NpgsqlCommand(sql, connection);
+    //     command.Parameters.AddWithValue("now", now);
+    //     command.Parameters.AddWithValue("leaseUntil", leaseUntil);
+    //     command.Parameters.AddWithValue("batchSize", normalizedBatchSize);
+    //
+    //     await using var reader = await command.ExecuteReaderAsync(ct);
+    //     while (await reader.ReadAsync(ct))
+    //     {
+    //         result.Add(new OutboxEmail(
+    //             reader.GetGuid(0),
+    //             reader.GetGuid(1),
+    //             reader.GetString(2),
+    //             reader.GetString(3),
+    //             reader.GetString(4),
+    //             reader.GetDateTime(5),
+    //             Sent: false));
+    //     }
+    //
+    //     return result;
+    // }
 
-        await using var connection = new NpgsqlConnection(_connectionString);
-        await connection.OpenAsync(ct);
-
-        const string sql = """
-            with candidates as (
-                select o."Id", o."SmtpId", o."To", o."Html", o."Subject", o."CreatedAt"
-                from "OutboxEmails" o
-                left join mail_sender_state s on s.outbox_id = o."Id"
-                where o."Sent" = false
-                  and o."SmtpId" <> '00000000-0000-0000-0000-000000000000'::uuid
-                  and (
-                      s.outbox_id is null
-                      or (
-                          s.sent_at is null
-                          and s.dead_lettered_at is null
-                          and s.published_at is null
-                          and (s.publish_lease_until is null or s.publish_lease_until < @now)
-                      )
-                  )
-                order by o."CreatedAt", o."Id"
-                limit @batchSize
-            ),
-            ensured as (
-                insert into mail_sender_state (outbox_id, created_at, updated_at)
-                select c."Id", @now, @now
-                from candidates c
-                on conflict (outbox_id) do nothing
-            ),
-            claimed as (
-                update mail_sender_state s
-                set publish_lease_until = @leaseUntil,
-                    publish_attempts = s.publish_attempts + 1,
-                    updated_at = @now
-                from candidates c
-                where s.outbox_id = c."Id"
-                  and s.sent_at is null
-                  and s.dead_lettered_at is null
-                  and s.published_at is null
-                  and (s.publish_lease_until is null or s.publish_lease_until < @now)
-                returning s.outbox_id
-            )
-            select c."Id", c."SmtpId", c."To", c."Html", c."Subject", c."CreatedAt"
-            from candidates c
-            join claimed cl on cl.outbox_id = c."Id"
-            order by c."CreatedAt", c."Id"
-            """;
-
-        await using var command = new NpgsqlCommand(sql, connection);
-        command.Parameters.AddWithValue("now", now);
-        command.Parameters.AddWithValue("leaseUntil", leaseUntil);
-        command.Parameters.AddWithValue("batchSize", normalizedBatchSize);
-
-        await using var reader = await command.ExecuteReaderAsync(ct);
-        while (await reader.ReadAsync(ct))
-        {
-            result.Add(new OutboxEmail(
-                reader.GetGuid(0),
-                reader.GetGuid(1),
-                reader.GetString(2),
-                reader.GetString(3),
-                reader.GetString(4),
-                reader.GetDateTime(5),
-                Sent: false));
-        }
-
-        return result;
-    }
-
-    public async Task<OutboxEmail?> GetOutboxEmailAsync(Guid messageId, CancellationToken ct)
-    {
-        await using var connection = new NpgsqlConnection(_connectionString);
-        await connection.OpenAsync(ct);
-
-        const string sql = """
-            select "Id", "SmtpId", "To", "Html", "Subject", "CreatedAt", "Sent"
-            from "OutboxEmails"
-            where "Id" = @id
-            """;
-
-        await using var command = new NpgsqlCommand(sql, connection);
-        command.Parameters.AddWithValue("id", messageId);
-
-        await using var reader = await command.ExecuteReaderAsync(ct);
-        if (!await reader.ReadAsync(ct))
-        {
-            return null;
-        }
-
-        return new OutboxEmail(
-            reader.GetGuid(0),
-            reader.GetGuid(1),
-            reader.GetString(2),
-            reader.GetString(3),
-            reader.GetString(4),
-            reader.GetDateTime(5),
-            reader.GetBoolean(6));
-    }
+    // public async Task<OutboxEmail?> GetOutboxEmailAsync(Guid messageId, CancellationToken ct)
+    // {
+    //     await using var connection = new NpgsqlConnection(_connectionString);
+    //     await connection.OpenAsync(ct);
+    //
+    //     const string sql = """
+    //         select "Id", "SmtpId", "To", "Html", "Subject", "CreatedAt", "Sent"
+    //         from "OutboxEmails"
+    //         where "Id" = @id
+    //         """;
+    //
+    //     await using var command = new NpgsqlCommand(sql, connection);
+    //     command.Parameters.AddWithValue("id", messageId);
+    //
+    //     await using var reader = await command.ExecuteReaderAsync(ct);
+    //     if (!await reader.ReadAsync(ct))
+    //     {
+    //         return null;
+    //     }
+    //
+    //     return new OutboxEmail(
+    //         reader.GetGuid(0),
+    //         reader.GetGuid(1),
+    //         reader.GetString(2),
+    //         reader.GetString(3),
+    //         reader.GetString(4),
+    //         reader.GetDateTime(5),
+    //         reader.GetBoolean(6));
+    // }
 
     public async Task MarkPublishedAsync(Guid messageId, CancellationToken ct)
     {
@@ -378,48 +378,72 @@ public sealed class PostgresOutboxRepository : IOutboxRepository
         command.Parameters.AddWithValue("id", profileId);
         await command.ExecuteNonQueryAsync(ct);
     }
-
+    
     public async Task MarkDeliveredAsync(Guid messageId, CancellationToken ct)
     {
         var now = DateTime.UtcNow;
 
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(ct);
-        await using var transaction = await connection.BeginTransactionAsync(ct);
-
-        const string markOutboxSql = """
-            update "OutboxEmails"
-            set "Sent" = true
-            where "Id" = @id and "Sent" = false
-            """;
-
-        await using (var outbox = new NpgsqlCommand(markOutboxSql, connection, transaction))
-        {
-            outbox.Parameters.AddWithValue("id", messageId);
-            await outbox.ExecuteNonQueryAsync(ct);
-        }
 
         const string markStateSql = """
-            update mail_sender_state
-            set sent_at = @now,
-                delivery_lease_until = null,
-                next_retry_at = null,
-                last_attempt_at = @now,
-                last_error = null,
-                updated_at = @now
-            where outbox_id = @id
-            """;
+                                    update mail_sender_state
+                                    set sent_at = @now,
+                                        delivery_lease_until = null,
+                                        next_retry_at = null,
+                                        last_attempt_at = @now,
+                                        last_error = null,
+                                        updated_at = @now
+                                    where outbox_id = @id
+                                    """;
 
-        await using (var state = new NpgsqlCommand(markStateSql, connection, transaction))
-        {
-            state.Parameters.AddWithValue("id", messageId);
-            state.Parameters.AddWithValue("now", now);
-            await state.ExecuteNonQueryAsync(ct);
-        }
-
-        await transaction.CommitAsync(ct);
+        await using var command = new NpgsqlCommand(markStateSql, connection);
+        command.Parameters.AddWithValue("id", messageId);
+        command.Parameters.AddWithValue("now", now);
+        await command.ExecuteNonQueryAsync(ct);
     }
 
+    // public async Task MarkDeliveredAsync(Guid messageId, CancellationToken ct)
+    // {
+    //     var now = DateTime.UtcNow;
+    //
+    //     await using var connection = new NpgsqlConnection(_connectionString);
+    //     await connection.OpenAsync(ct);
+    //     await using var transaction = await connection.BeginTransactionAsync(ct);
+    //
+    //     const string markOutboxSql = """
+    //         update "OutboxEmails"
+    //         set "Sent" = true
+    //         where "Id" = @id and "Sent" = false
+    //         """;
+    //
+    //     await using (var outbox = new NpgsqlCommand(markOutboxSql, connection, transaction))
+    //     {
+    //         outbox.Parameters.AddWithValue("id", messageId);
+    //         await outbox.ExecuteNonQueryAsync(ct);
+    //     }
+    //
+    //     const string markStateSql = """
+    //         update mail_sender_state
+    //         set sent_at = @now,
+    //             delivery_lease_until = null,
+    //             next_retry_at = null,
+    //             last_attempt_at = @now,
+    //             last_error = null,
+    //             updated_at = @now
+    //         where outbox_id = @id
+    //         """;
+    //
+    //     await using (var state = new NpgsqlCommand(markStateSql, connection, transaction))
+    //     {
+    //         state.Parameters.AddWithValue("id", messageId);
+    //         state.Parameters.AddWithValue("now", now);
+    //         await state.ExecuteNonQueryAsync(ct);
+    //     }
+    //
+    //     await transaction.CommitAsync(ct);
+    // }
+    //
     public async Task<DeliveryFailureResult> MarkDeliveryFailedAsync(
         Guid messageId,
         string error,
@@ -429,10 +453,10 @@ public sealed class PostgresOutboxRepository : IOutboxRepository
     {
         var now = DateTime.UtcNow;
         var nextRetryAt = now.Add(retryDelay);
-
+    
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(ct);
-
+    
         const string sql = """
             update mail_sender_state
             set delivery_lease_until = null,
@@ -451,14 +475,14 @@ public sealed class PostgresOutboxRepository : IOutboxRepository
             where outbox_id = @id
             returning delivery_attempts, dead_lettered_at is not null
             """;
-
+    
         await using var command = new NpgsqlCommand(sql, connection);
         command.Parameters.AddWithValue("id", messageId);
         command.Parameters.AddWithValue("error", error);
         command.Parameters.AddWithValue("now", now);
         command.Parameters.AddWithValue("nextRetryAt", nextRetryAt);
         command.Parameters.AddWithValue("maxAttempts", Math.Max(1, maxDeliveryAttempts));
-
+    
         await using var reader = await command.ExecuteReaderAsync(ct);
         if (await reader.ReadAsync(ct))
         {
@@ -466,7 +490,7 @@ public sealed class PostgresOutboxRepository : IOutboxRepository
                 reader.GetInt32(0),
                 reader.GetBoolean(1));
         }
-
+    
         return new DeliveryFailureResult(Math.Max(1, maxDeliveryAttempts), true);
     }
 
