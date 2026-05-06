@@ -17,10 +17,7 @@ public partial class UploadTemplateRequestHandler(ITemplateFactory templateFacto
     public UploadTemplateResponse Handle(UploadTemplateRequest request)
     {
         var template = templateFactory.Create(request.template, false);
-        HashSet<string> variables =
-        [
-            "email"
-        ];
+        HashSet<string> variables = ["email"];
         var templateVariables = GetVariables().Matches(template.ToString()!);
         
         foreach (var variable in templateVariables)

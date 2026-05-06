@@ -6,6 +6,10 @@ public class TemplateFactory : ITemplateFactory
 {
     public ITemplate Create(IFormFile file, bool tracking)
     {
+        if (file == null)
+        {
+            throw new ArgumentNullException(nameof(file), "Файл отсутствует.");
+        }
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
         return extension switch
         {
