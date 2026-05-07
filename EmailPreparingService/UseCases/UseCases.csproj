@@ -17,6 +17,8 @@
 
     <ItemGroup>
       <Folder Include="Preparation\" />
+      <Folder Include="SmtpProfile\" />
+      <Folder Include="Statistics\" />
     </ItemGroup>
 
 </Project>
