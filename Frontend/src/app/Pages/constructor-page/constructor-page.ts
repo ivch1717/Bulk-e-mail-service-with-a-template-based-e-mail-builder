@@ -5,6 +5,10 @@ import {Router} from '@angular/router';
 import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import {CdkScrollable} from '@angular/cdk/overlay';
 import {TemplateTransferService} from '../../Services/template-transfer/template-transfer';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 type Block = {
   id: number,
@@ -20,7 +24,11 @@ type Block = {
     HtmlBlock,
     CdkDropList,
     CdkDrag,
-    CdkScrollable
+    CdkScrollable,
+    MatButtonModule,
+    MatIconModule,
+    MatToolbarModule,
+    MatTooltipModule
   ],
   templateUrl: './constructor-page.html',
   styleUrl: './constructor-page.css',
