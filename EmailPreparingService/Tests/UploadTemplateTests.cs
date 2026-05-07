@@ -2,7 +2,6 @@
 using Moq;
 using UseCases.Preparation.UploadTemplate;
 using UseCases.TemplateUtilities;
-using UseCases.UploadTemplate;
 
 namespace Tests;
 
@@ -33,8 +32,8 @@ public class UploadTemplateTests
 
         var result = _handler.Handle(request);
 
-        Assert.Contains("name", result);
-        Assert.Contains("email", result);
+        Assert.Contains("name", result.variables);
+        Assert.Contains("email", result.variables);
     }
 
     [Fact]
@@ -45,8 +44,8 @@ public class UploadTemplateTests
 
         var result = _handler.Handle(request);
 
-        Assert.Single(result);
-        Assert.Contains("email", result);
+        Assert.Single(result.variables);
+        Assert.Contains("email", result.variables);
     }
 
     [Fact]
@@ -57,6 +56,6 @@ public class UploadTemplateTests
 
         var result = _handler.Handle(request);
 
-        Assert.Equal(2, result.Count);
+        Assert.Equal(2, result.variables.Count);
     }
 }
