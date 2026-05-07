@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using NPOI.POIFS.Crypt.Dsig;
 using UseCases.CreateSmtpProfile;
 using UseCases.DeleteSmtpProfile;
 using UseCases.GetAllCampaigns;
@@ -17,20 +16,26 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddUseCases(this IServiceCollection services)
     {
-        services.AddScoped<IUploadTemplateRequestHandler, UploadTemplateRequestHandler>();
+        // Factories.
         services.AddScoped<ITableFactory, TableFactory>();
+        services.AddScoped<ITemplateFactory, TemplateFactory>();
+        
+        // EmailPreparationEndpoints.
+        services.AddScoped<IUploadTemplateRequestHandler, UploadTemplateRequestHandler>();
         services.AddScoped<IExtractTableHeadersRequestHandler,  ExtractTableHeadersRequestHandler>();
         services.AddScoped<IGetPreviewRequestHandler,   GetPreviewRequestHandler>();
-        services.AddScoped<ITemplateFactory, TemplateFactory>();
         services.AddScoped<ISendRequestHandler, SendRequestHandler>();
+        
+        // StatisticsEndpoints.
         services.AddScoped<ITrackOpenRequestHandler, TrackOpenRequestHandler>();
         services.AddScoped<IGetAllCampaignsRequestHandler, GetAllCampaignsRequestHandler>();
         services.AddScoped<IGetCampaignRequestHandler, GetCampaignRequestHandler>();
         
-        //
+        // SmtpProfileEndpoints.
         services.AddScoped<ICreateSmtpProfileRequestHandler, CreateSmtpProfileRequestHandler>();
         services.AddScoped<IDeleteSmtpProfileRequestHandler, DeleteSmtpProfileRequestHandler>();
         services.AddScoped<IGetAllSmtpProfilesRequestHandler, GetAllSmtpProfilesRequestHandler>();
+        
         return services;
     }
 }
