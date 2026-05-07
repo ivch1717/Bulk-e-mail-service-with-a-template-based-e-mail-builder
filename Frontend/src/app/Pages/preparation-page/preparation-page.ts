@@ -118,9 +118,9 @@ export class PreparationPage {
     this.template = file;
     const formData = new FormData();
     formData.append('template', file);
-    this.http.post<string[]>('/api/preparation/upload-template', formData).subscribe({
+    this.http.post<{variables:string[]}>('/api/preparation/upload-template', formData).subscribe({
       next: (response) => {
-        this.variables = response;
+        this.variables = response.variables;
         if (this.variables.length === 1) {
           this.snackBar.open("В шаблоне нет переменных, возможно они обозначены неверно, если так и должно быть это сообщение можно проигнорировать", 'Закрыть', {
             duration: 5000,
@@ -148,9 +148,9 @@ export class PreparationPage {
     this.table = file;
     const formData = new FormData();
     formData.append('table', file);
-    this.http.post<string[]>('/api/preparation/extract-table-headers', formData).subscribe({
+    this.http.post<{headers: string[]}>('/api/preparation/extract-table-headers', formData).subscribe({
         next: (response) => {
-            this.headers = response;
+            this.headers = response.headers;
             this.cdr.detectChanges();
             },
         error: (error) => {
