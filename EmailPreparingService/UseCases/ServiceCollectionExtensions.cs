@@ -17,13 +17,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddUseCases(this IServiceCollection services)
     {
-        services.AddScoped<IAddressParser, AddressParser>();
-        services.AddScoped<ITemplateParser, TemplateParser>();
-        services.AddScoped<IDataParser, DataParser>();
-        // services.AddScoped<IUploadDataRequestHandler, UploadDataRequestHandler>();
         services.AddScoped<IUploadTemplateRequestHandler, UploadTemplateRequestHandler>();
-        services.AddScoped<ITableExtracter, TableExtracter>();
-        services.AddScoped<IProcessEmailCreationRequestHandler, ProcessEmailCreationRequestHandler>();
         services.AddScoped<ITableFactory, TableFactory>();
         services.AddScoped<IExtractTableHeadersRequestHandler,  ExtractTableHeadersRequestHandler>();
         services.AddScoped<IGetPreviewRequestHandler,   GetPreviewRequestHandler>();
@@ -32,6 +26,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITrackOpenRequestHandler, TrackOpenRequestHandler>();
         services.AddScoped<IGetAllCampaignsRequestHandler, GetAllCampaignsRequestHandler>();
         services.AddScoped<IGetCampaignRequestHandler, GetCampaignRequestHandler>();
+        
+        //
         services.AddScoped<ICreateSmtpProfileRequestHandler, CreateSmtpProfileRequestHandler>();
         services.AddScoped<IDeleteSmtpProfileRequestHandler, DeleteSmtpProfileRequestHandler>();
         services.AddScoped<IGetAllSmtpProfilesRequestHandler, GetAllSmtpProfilesRequestHandler>();
