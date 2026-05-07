@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Moq;
 using UseCases;
-using UseCases.GetPreview;
+using UseCases.Preparation.GetPreview;
+using UseCases.TableUtilities;
 using UseCases.TemplateUtilities;
 
 namespace Tests;

@@ -1,7 +1,7 @@
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Models;
-using UseCases.GetAllCampaigns;
+using UseCases.Statistics.GetAllCampaigns;
 
 namespace Tests;
 

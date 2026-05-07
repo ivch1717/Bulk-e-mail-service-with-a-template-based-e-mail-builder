@@ -1,12 +1,7 @@
 using Infrastructure;
-using Models;
+using UseCases.MailSender;
 
-namespace UseCases.DeleteSmtpProfile;
-
-public interface IDeleteSmtpProfileRequestHandler
-{
-    public Task<bool> HandleAsync(Guid profileId);
-}
+namespace UseCases.SmtpProfile.DeleteSmtpProfile;
 
 public class DeleteSmtpProfileRequestHandler : IDeleteSmtpProfileRequestHandler
 {

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using UseCases.CreateSmtpProfile;
-using UseCases.DeleteSmtpProfile;
-using UseCases.GetAllSmtpProfiles;
+using UseCases.SmtpProfile.CreateSmtpProfile;
+using UseCases.SmtpProfile.DeleteSmtpProfile;
+using UseCases.SmtpProfile.GetAllSmtpProfiles;
 
 namespace Presentation.Endpoints;
 

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
-namespace UseCases;
+namespace UseCases.TableUtilities;
 
 /// <summary>
 /// Обертка для работы с xlsx таблицами.

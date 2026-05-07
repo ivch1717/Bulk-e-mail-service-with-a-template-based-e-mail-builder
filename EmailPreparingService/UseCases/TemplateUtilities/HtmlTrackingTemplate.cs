@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
+using UseCases.TableUtilities;
 
 namespace UseCases.TemplateUtilities;
 

@@ -1,3 +1,5 @@
+using UseCases.TableUtilities;
+
 namespace UseCases.Preparation.ExtractTableHeaders;
 
 /// <summary>

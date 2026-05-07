@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace UseCases;
+namespace UseCases.TableUtilities;
 
 /// <summary>
 /// Интерфейс фабрики создания таблиц.

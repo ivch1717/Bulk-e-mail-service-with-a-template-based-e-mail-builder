@@ -2,7 +2,8 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Moq;
-using UseCases.DeleteSmtpProfile;
+using UseCases.MailSender;
+using UseCases.SmtpProfile.DeleteSmtpProfile;
 
 namespace Tests;
 

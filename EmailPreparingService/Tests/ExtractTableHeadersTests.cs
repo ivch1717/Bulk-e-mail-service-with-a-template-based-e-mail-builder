@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using UseCases;
 using UseCases.Preparation.ExtractTableHeaders;
+using UseCases.TableUtilities;
 
 namespace Tests;
 

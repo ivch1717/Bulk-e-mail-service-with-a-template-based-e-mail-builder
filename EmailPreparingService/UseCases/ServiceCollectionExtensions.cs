@@ -1,12 +1,15 @@
 using Microsoft.Extensions.DependencyInjection;
-using UseCases.CreateSmtpProfile;
-using UseCases.DeleteSmtpProfile;
-using UseCases.GetAllCampaigns;
-using UseCases.GetAllSmtpProfiles;
-using UseCases.GetCampaign;
-using UseCases.GetPreview;
 using UseCases.Preparation.ExtractTableHeaders;
+using UseCases.Preparation.GetPreview;
+using UseCases.Preparation.Send;
 using UseCases.Preparation.UploadTemplate;
+using UseCases.SmtpProfile.CreateSmtpProfile;
+using UseCases.SmtpProfile.DeleteSmtpProfile;
+using UseCases.SmtpProfile.GetAllSmtpProfiles;
+using UseCases.Statistics.GetAllCampaigns;
+using UseCases.Statistics.GetCampaign;
+using UseCases.Statistics.TrackOpen;
+using UseCases.TableUtilities;
 using UseCases.TemplateUtilities;
 using UploadTemplateRequestHandler = UseCases.Preparation.UploadTemplate.UploadTemplateRequestHandler;
 

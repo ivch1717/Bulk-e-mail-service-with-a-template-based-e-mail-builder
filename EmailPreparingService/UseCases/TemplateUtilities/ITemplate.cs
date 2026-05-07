@@ -1,3 +1,5 @@
+using UseCases.TableUtilities;
+
 namespace UseCases.TemplateUtilities;
 
 public interface ITemplate

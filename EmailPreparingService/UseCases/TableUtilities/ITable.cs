@@ -1,4 +1,4 @@
-namespace UseCases;
+namespace UseCases.TableUtilities;
 
 /// <summary>
 /// Обертка для работы с разными форматами таблиц.

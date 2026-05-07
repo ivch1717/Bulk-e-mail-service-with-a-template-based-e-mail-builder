@@ -1,7 +1,8 @@
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using UseCases.CreateSmtpProfile;
+using UseCases.MailSender;
+using UseCases.SmtpProfile.CreateSmtpProfile;
 
 namespace Tests;
 

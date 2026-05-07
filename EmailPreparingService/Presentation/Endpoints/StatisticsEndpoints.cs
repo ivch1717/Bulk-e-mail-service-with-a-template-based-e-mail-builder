@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using UseCases.GetAllCampaigns;
-using UseCases.GetCampaign;
+using UseCases.Statistics.GetAllCampaigns;
+using UseCases.Statistics.GetCampaign;
+using UseCases.Statistics.TrackOpen;
 
 namespace Presentation.Endpoints;
 

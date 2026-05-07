@@ -2,6 +2,7 @@ using Infrastructure;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using UseCases;
+using UseCases.MailSender;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddUseCases();

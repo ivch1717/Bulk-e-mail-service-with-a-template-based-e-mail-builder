@@ -1,17 +1,8 @@
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Models;
+using UseCases.MailSender;
 
-namespace UseCases.GetAllSmtpProfiles;
-
-public record SmtpProfileListItem(Guid id, string user, string fromEmail, string displayName);
-
-public record GetAllSmtpProfilesResponse(List<SmtpProfileListItem> smtpProfiles);
-
-public interface IGetAllSmtpProfilesRequestHandler
-{
-    public Task<GetAllSmtpProfilesResponse> HandleAsync();
-}
+namespace UseCases.SmtpProfile.GetAllSmtpProfiles;
 
 public class GetAllSmtpProfilesRequestHandler : IGetAllSmtpProfilesRequestHandler
 {
@@ -74,7 +65,7 @@ public class GetAllSmtpProfilesRequestHandler : IGetAllSmtpProfilesRequestHandle
                 continue;
             }
 
-            await _db.SmtpProfiles.AddAsync(new SmtpProfile
+            await _db.SmtpProfiles.AddAsync(new Models.SmtpProfile
             {
                 Id = profile.Id,
                 DisplayEmail = profile.FromEmail,
