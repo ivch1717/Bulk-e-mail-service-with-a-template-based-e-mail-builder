@@ -1,36 +1,13 @@
 services:
-  publisher:
-    build:
-      context: ./Publisher
-      dockerfile: Dockerfile
-    depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-    environment:
-      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=emailservice;Username=${POSTGRES_PREPARATION_USER};Password=${POSTGRES_PREPARATION_PASSWORD}
-      RABBIT__HOST: rabbitmq
-      RABBIT__USER: ${RABBITMQ_DEFAULT_USER:-guest}
-      RABBIT__PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
-      RABBIT__EXCHANGE: ${MAIL_SENDER_EXCHANGE:-mail.send}
-      RABBIT__QUEUE: ${MAIL_SENDER_QUEUE:-mail.send.q}
-      RABBIT__ROUTINGKEY: ${MAIL_SENDER_ROUTING_KEY:-send}
-      RABBIT__RETRYEXCHANGE: ${MAIL_SENDER_RETRY_EXCHANGE:-mail.send.retry}
-      RABBIT__RETRYROUTINGKEY: ${MAIL_SENDER_RETRY_ROUTING_KEY:-send.retry}
-    restart: unless-stopped
-
-  postgres:
+  postgres-email-preparation:
     image: postgres:17
-    container_name: postgres
+    container_name: postgres-email-preparation
     environment:
-      POSTGRES_DB: emailservice
+      POSTGRES_DB: emailpreparation
       POSTGRES_USER: ${POSTGRES_PREPARATION_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PREPARATION_PASSWORD}
-    ports:
-      - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata-email-preparation:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
@@ -38,17 +15,15 @@ services:
       retries: 10
     restart: unless-stopped
 
-  postgres-mail-service:
+  postgres-mail-sender:
     image: postgres:17
-    container_name: postgres-mail-service
+    container_name: postgres-mail-sender
     environment:
-      POSTGRES_DB: mailservice
+      POSTGRES_DB: mailsender
       POSTGRES_USER: ${POSTGRES_MAIL_SENDER_USER}
       POSTGRES_PASSWORD: ${POSTGRES_MAIL_SENDER_PASSWORD}
-    ports:
-      - "5433:5432"
     volumes:
-      - pgdata-mail-service:/var/lib/postgresql-mail-service/data
+      - pgdata-mail-sender:/var/lib/postgresql-mail-sender/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
@@ -62,10 +37,8 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
-    ports:
-      - "${RABBITMQ_PORT:-5672}:5672"
-      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
     volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - rabbitmqdata:/var/lib/rabbitmq
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
@@ -75,20 +48,6 @@ services:
       start_period: 5s
     restart: unless-stopped
 
-  backend:
-    container_name: backend
-    build:
-      context: ./EmailPreparingService
-      dockerfile: Dockerfile
-    environment:
-      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-emailservice};Username=${POSTGRES_PREPARATION_USER};Password=${POSTGRES_PREPARATION_PASSWORD}
-    # ports:
-    #   - "8080:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-
   letter-constructor:
     container_name: letter-constructor
     build:
@@ -96,20 +55,46 @@ services:
       dockerfile: ConstructorApi/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-    # ports:
-    #   - "5200:8080"
     restart: unless-stopped
 
-  frontend:
-    container_name: frontend
+  email-preparation:
+    container_name: email-preparation
     build:
-      context: ./Frontend
+      context: ./EmailPreparationService
       dockerfile: Dockerfile
-    # ports:
-    #   - "4200:4200"
+    environment:
+      ConnectionStrings__Postgres: Host=postgres-email-preparation;Port=5432;Database=emailpreparation;Username=${POSTGRES_PREPARATION_USER};Password=${POSTGRES_PREPARATION_PASSWORD}
     depends_on:
-      - backend
-      - letter-constructor
+      postgres-email-preparation:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  publisher:
+    build:
+      context: ./Publisher
+      dockerfile: Dockerfile
+    depends_on:
+      email-preparation:
+        condition: service_healthy
+      postgres-email-preparation:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__Postgres: Host=postgres-email-preparation;Port=5432;Database=emailpreparation;Username=${POSTGRES_PREPARATION_USER};Password=${POSTGRES_PREPARATION_PASSWORD}
+      RABBIT__HOST: rabbitmq
+      RABBIT__USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBIT__PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+      RABBIT__EXCHANGE: ${MAIL_SENDER_EXCHANGE:-mail.send}
+      RABBIT__QUEUE: ${MAIL_SENDER_QUEUE:-mail.send.q}
+      RABBIT__ROUTINGKEY: ${MAIL_SENDER_ROUTING_KEY:-send}
+      RABBIT__RETRYEXCHANGE: ${MAIL_SENDER_RETRY_EXCHANGE:-mail.send.retry}
+      RABBIT__RETRYROUTINGKEY: ${MAIL_SENDER_RETRY_ROUTING_KEY:-send.retry}
     restart: unless-stopped
 
   mail-sender:
@@ -118,12 +103,12 @@ services:
       dockerfile: Dockerfile
     init: true
     depends_on:
-      postgres-mail-service:
+      postgres-mail-sender:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
     environment:
-      ConnectionStrings__Postgres: Host=postgres-mail-service;Port=5432;Database=${POSTGRES_DB:-mailservice};Username=${POSTGRES_MAIL_SENDER_USER};Password=${POSTGRES_MAIL_SENDER_PASSWORD}
+      ConnectionStrings__Postgres: Host=postgres-mail-sender;Port=5432;Database=${POSTGRES_DB:-mailsender};Username=${POSTGRES_MAIL_SENDER_USER};Password=${POSTGRES_MAIL_SENDER_PASSWORD}
 
       RABBIT__HOST: rabbitmq
       RABBIT__PORT: "5672"
@@ -141,6 +126,7 @@ services:
       RABBIT__CONSUMERS: "${MAIL_SENDER_CONSUMERS:-5}"
       RABBIT__PREFETCH: "${MAIL_SENDER_PREFETCH:-20}"
 
+
       OUTBOX__BATCHSIZE: "${MAIL_SENDER_BATCH_SIZE:-200}"
       OUTBOX__POLLINTERVALMILLISECONDS: "${MAIL_SENDER_POLL_INTERVAL_MS:-500}"
       OUTBOX__PUBLISHLEASESECONDS: "${MAIL_SENDER_PUBLISH_LEASE_SECONDS:-30}"
@@ -148,6 +134,17 @@ services:
       OUTBOX__RETRYDELAYSECONDS: "${MAIL_SENDER_RETRY_DELAY_SECONDS:-30}"
       OUTBOX__MAXDELIVERYATTEMPTS: "${MAIL_SENDER_MAX_DELIVERY_ATTEMPTS:-5}"
     restart: unless-stopped
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - email-preparation
+      - letter-constructor
+    restart: unless-stopped
+
   nginx:
     container_name: nginx
     image: nginx:alpine
@@ -157,12 +154,12 @@ services:
       - ./ApiGateway/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./ApiGateway/.htpasswd:/etc/nginx/.htpasswd:ro
     depends_on:
-      - backend
+      - email-preparation
       - letter-constructor
       - frontend
     restart: unless-stopped
 
 volumes:
-  pgdata-mail-service:
-  pgdata:
+  pgdata-mail-sender:
+  pgdata-email-preparation:
   rabbitmqdata:

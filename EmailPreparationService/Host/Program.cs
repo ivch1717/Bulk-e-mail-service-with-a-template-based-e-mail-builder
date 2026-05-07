@@ -41,8 +41,7 @@ app.UseExceptionHandler(err => err.Run(async context =>
 
 app.MapControllers();
 
-app.MapGet("/healthz", () => Results.Ok(new { status = "ok" }));
-
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 if (app.Environment.IsDevelopment())
 {

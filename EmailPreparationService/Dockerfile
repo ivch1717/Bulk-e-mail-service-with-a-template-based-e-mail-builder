@@ -3,7 +3,10 @@ USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
-ENV ConnectionStrings__Postgres="Host=postgres;Port=5432;Database=emailservice;Username=postgres;Password=postgres"
+
+USER root
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+USER app 
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
