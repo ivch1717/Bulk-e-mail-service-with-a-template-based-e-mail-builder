@@ -5,10 +5,11 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {CdkDragHandle} from '@angular/cdk/drag-drop';
+import {MatIconModule} from '@angular/material/icon';
 
 @Component({
   selector: 'app-html-block',
-  imports: [FormsModule, CdkDragHandle],
+  imports: [FormsModule, CdkDragHandle, MatIconModule],
   templateUrl: './html-block.html',
   styleUrl: './html-block.css',
 })
