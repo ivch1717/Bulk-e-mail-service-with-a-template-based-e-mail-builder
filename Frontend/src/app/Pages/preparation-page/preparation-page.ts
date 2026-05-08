@@ -64,23 +64,67 @@ export class PreparationPage {
   onPreviewClick() {
     const mapping = this.dataInformation.getMapping();
     this.mapping = mapping;
+    if (mapping.size < this.variables.length) {
+      this.snackBar.open('Не все поля таблицы заполнены', 'Закрыть', { duration: 5000 });
+      return;
+    }
     const formData = new FormData();
     formData.append('template', this.template!);
     formData.append('table', this.table!);
 
     formData.append('count', '10');
     formData.append('mappingJson', JSON.stringify(Object.fromEntries(mapping)));
-    this.http.post<{emailPreviews: {to: string, html: string}[], nextRow: number, total: number}>('/api/preparation/get-preview', formData).subscribe(response => {
-      this.previews = response.emailPreviews;
-      this.nextFrom = response.nextRow;
-      this.total = response.total;
-      console.log(response)
-      this.cdr.detectChanges();
+    this.http.post<{emailPreviews: {to: string, html: string}[], nextRow: number, total: number}>('/api/preparation/get-preview', formData).subscribe({
+      next: (response) => {
+        this.previews = response.emailPreviews;
+        this.nextFrom = response.nextRow;
+        this.total = response.total;
+        console.log(response)
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        let message = error?.error?.error ?? 'Произошла ошибка';
+
+        if (!this.template && !this.table) {
+          message = 'Шаблон и таблица не загружены. ' + message;
+        } else if (!this.template) {
+          message = 'Шаблон не загружен. ' + message;
+        } else if (!this.table) {
+          message = 'Таблица не загружена. ' + message;
+        }
+
+        this.snackBar.open(message, 'Закрыть', { duration: 5000 });
+        this.cdr.detectChanges();
+      }
     });
 
   }
 
   onSendClick() {
+    let message1 = '';
+    if (!this.template && !this.table) {
+      message1 = 'Шаблон и таблица не загружены. ';
+    } else if (!this.template) {
+      message1 = 'Шаблон не загружен. ';
+    } else if (!this.table) {
+      message1 = 'Таблица не загружена. ';
+    }
+
+
+    if (message1 != '') {
+      this.snackBar.open(message1, 'Закрыть', { duration: 5000 });
+      return;
+    }
+    if (!this.preview) {
+      this.snackBar.open('Сначала загрузите превью', 'Закрыть', { duration: 5000 });
+      return;
+    }
+    this.cdr.detectChanges();
+    const mapping = this.dataInformation.getMapping();
+    if (mapping.size < this.variables.length) {
+      this.snackBar.open('Не все поля таблицы выбраны', 'Закрыть', { duration: 5000 });
+      return;
+    }
     if (!this.preview.selectedSmtpId) {
       this.snackBar.open('Выберите SMTP аккаунт для отправки', 'Закрыть', {
         duration: 3000,
@@ -107,8 +151,6 @@ export class PreparationPage {
     });
     ref.afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
-      const mapping = this.dataInformation.getMapping();
-      this.mapping = mapping;
       const formData = new FormData();
       formData.append('template', this.template!);
       formData.append('table', this.table!);
@@ -149,7 +191,7 @@ export class PreparationPage {
       error: (error) => {
         this.dataInformation.variables = [];
         this.templateUpload.file = null;
-        this.snackBar.open(error.error, 'Закрыть', {
+        this.snackBar.open(error.error.error, 'Закрыть', {
           duration: 5000,
         });
         this.cdr.detectChanges();
@@ -170,7 +212,7 @@ export class PreparationPage {
           this.dataInformation.headers = [];
           this.table = null;
           this.dataUpload.file = null;
-          this.snackBar.open(error.error, 'Закрыть', {
+          this.snackBar.open(error.error.error, 'Закрыть', {
             duration: 5000,
           });
           this.cdr.detectChanges();
