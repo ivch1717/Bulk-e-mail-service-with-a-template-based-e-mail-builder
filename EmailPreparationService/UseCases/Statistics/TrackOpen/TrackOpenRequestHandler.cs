@@ -20,6 +20,7 @@ public class TrackOpenRequestHandler : ITrackOpenRequestHandler
             CampaignId = request.CampaignId,
             Email = request.Email,
             OpenedAt = DateTime.UtcNow,
+            UserAgent = request.UserAgent,
         };
 
         await _dbContext.EmailOpenDatas.AddAsync(record);
