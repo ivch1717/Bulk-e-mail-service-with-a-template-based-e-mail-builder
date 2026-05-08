@@ -8,14 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<RabbitOptions>(builder.Configuration.GetSection("Rabbit"));
 builder.Services.Configure<OutboxProcessingOptions>(builder.Configuration.GetSection("Outbox"));
 
+var connectionString = builder.Configuration.GetConnectionString("Postgres")
+                       ?? throw new InvalidOperationException("Connection string 'Postgres' is not configured.");
+
 builder.Services.AddSingleton(new PostgresOptions
 {
-    ConnectionString =
-        builder.Configuration.GetConnectionString("Postgres")
-        ?? builder.Configuration["Postgres:ConnectionString"]
-        ?? "Host=postgres-mail-service;Port=5432;Database=mailservice;Username=postgres;Password=postgres"
+    ConnectionString = connectionString
 });
-
 builder.Services.AddSingleton<IOutboxRepository, PostgresOutboxRepository>();
 builder.Services.AddTransient<ISmtpSender, SmtpSender>();
 // if (builder.Configuration.GetValue("Outbox:PublishEnabled", false))

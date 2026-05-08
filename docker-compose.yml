@@ -35,8 +35,8 @@ services:
     image: rabbitmq:4-management
     container_name: rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - rabbitmqdata:/var/lib/rabbitmq
@@ -88,8 +88,8 @@ services:
     environment:
       ConnectionStrings__Postgres: Host=postgres-email-preparation;Port=5432;Database=emailpreparation;Username=${POSTGRES_PREPARATION_USER};Password=${POSTGRES_PREPARATION_PASSWORD}
       RABBIT__HOST: rabbitmq
-      RABBIT__USER: ${RABBITMQ_DEFAULT_USER:-guest}
-      RABBIT__PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+      RABBIT__USER: ${RABBITMQ_DEFAULT_USER}
+      RABBIT__PASS: ${RABBITMQ_DEFAULT_PASS}
       RABBIT__EXCHANGE: ${MAIL_SENDER_EXCHANGE:-mail.send}
       RABBIT__QUEUE: ${MAIL_SENDER_QUEUE:-mail.send.q}
       RABBIT__ROUTINGKEY: ${MAIL_SENDER_ROUTING_KEY:-send}
@@ -112,8 +112,8 @@ services:
 
       RABBIT__HOST: rabbitmq
       RABBIT__PORT: "5672"
-      RABBIT__USER: ${RABBITMQ_DEFAULT_USER:-guest}
-      RABBIT__PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+      RABBIT__USER: ${RABBITMQ_DEFAULT_USER}
+      RABBIT__PASS: ${RABBITMQ_DEFAULT_PASS}
       RABBIT__EXCHANGE: ${MAIL_SENDER_EXCHANGE:-mail.send}
       RABBIT__QUEUE: ${MAIL_SENDER_QUEUE:-mail.send.q}
       RABBIT__ROUTINGKEY: ${MAIL_SENDER_ROUTING_KEY:-send}

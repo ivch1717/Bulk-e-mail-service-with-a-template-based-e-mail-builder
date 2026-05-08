@@ -16,6 +16,8 @@ public class StatisticsEndpoints(
     [HttpGet("track/open")]
     public async Task<IActionResult> TrackOpen([FromQuery] TrackOpenRequest request)
     {
+        var userAgent = Request.Headers["User-Agent"].ToString();
+        request = request with { UserAgent = userAgent };
         var pixel = await trackOpenRequestHandler.HandleAsync(request);
         return File(pixel, "image/gif");
     }
