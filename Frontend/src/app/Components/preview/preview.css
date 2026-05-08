@@ -69,6 +69,8 @@ mat-card-header { display: flex; align-items: center; }
 .to { margin: 16px 0 8px; }
 
 .subject { width: 100%; margin: 8px 0; }
+.campaignName { width: 100%; margin: 8px 0; }
+
 
 mat-divider { margin: 16px 0; }
 

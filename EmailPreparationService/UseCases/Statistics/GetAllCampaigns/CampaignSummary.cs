@@ -1,3 +1,3 @@
 namespace UseCases.Statistics.GetAllCampaigns;
 
-public record CampaignSummary(Guid campaignId, int totalSent, int totalOpened);
+public record CampaignSummary(Guid campaignId, int totalSent, int totalOpened, string campaignName);

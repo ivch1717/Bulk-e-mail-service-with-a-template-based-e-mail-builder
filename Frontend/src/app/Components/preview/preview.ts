@@ -45,6 +45,7 @@ export class Preview implements OnChanges, OnInit {
   index: number = 0;
   currentPreview: {to: string; html: string} = {to: "", html: ""};
   subject: string = "";
+  campaignName: string = "";
 
   tracking: boolean = false;
 

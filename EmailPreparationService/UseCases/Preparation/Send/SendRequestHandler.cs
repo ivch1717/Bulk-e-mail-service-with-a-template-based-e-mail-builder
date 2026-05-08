@@ -32,6 +32,10 @@ public class SendRequestHandler : ISendRequestHandler
     
     public async Task<SendResponse> Handle(SendRequest request)
     {
+        if (request.subject.Length >= 256)
+        {
+            throw new ArgumentException($"Длина темы должна быть меньше 255 символов.");
+        }
         if (request.smtpId == Guid.Empty ||
             !await _db.SmtpProfiles.AnyAsync(profile => profile.Id == request.smtpId))
         {
@@ -65,6 +69,7 @@ public class SendRequestHandler : ISendRequestHandler
                     CreatedAt = DateTime.UtcNow,
                     Sent = false,
                     CampaignId = campaignId,
+                    CampaignName = request.campaignName,
                     Subject = request.subject,
                     SmtpId = request.smtpId
                 });

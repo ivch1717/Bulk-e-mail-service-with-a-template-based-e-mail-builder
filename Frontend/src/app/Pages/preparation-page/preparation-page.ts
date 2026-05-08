@@ -89,8 +89,20 @@ export class PreparationPage {
     }
     const smtpId = this.preview.selectedSmtpId;
 
+    let message: string;
+
+    if (!this.preview.subject && !this.preview.campaignName) {
+      message = 'Тема письма и название кампании пустые. Письмо может попасть в спам, а кампания будет идентифицирована по ID. Всё равно отправить?';
+    } else if (!this.preview.subject) {
+      message = 'Тема письма пустая. Письмо с пустой темой может попасть в спам. Всё равно отправить?';
+    } else if (!this.preview.campaignName) {
+      message = 'Название кампании пустое — в статистике она будет отображаться по ID. Всё равно отправить?';
+    } else {
+      message = 'Вы уверены, что хотите начать рассылку?';
+    }
+
     const ref = this.dialog.open(ConfirmDialogComponent, {
-      data: { message: this.preview.subject ? 'Вы уверены, что хотите начать рассылку?' : 'Тема письма пустая, письмо с пустой темой может попасть в спам, все равно отправить?' },
+      data: { message },
       width: '350px'
     });
     ref.afterClosed().subscribe(confirmed => {
@@ -104,6 +116,7 @@ export class PreparationPage {
       formData.append('subject', this.preview.subject);
       formData.append('smtpId', smtpId);
       formData.append('tracking', String(this.preview.tracking));
+      formData.append('campaignName', String(this.preview.campaignName));
       this.http.post<{
         emailPreviews: { to: string, html: string }[],
         nextRow: number,

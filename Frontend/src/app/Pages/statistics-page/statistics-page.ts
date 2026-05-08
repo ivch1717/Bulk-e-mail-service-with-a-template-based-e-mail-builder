@@ -16,6 +16,7 @@ interface CampaignSummary {
   campaignId: string;
   totalSent: number;
   totalOpened: number;
+  campaignName: string;
 }
 
 @Component({
@@ -38,7 +39,7 @@ interface CampaignSummary {
 export class StatisticsPage implements OnInit {
   campaigns: CampaignSummary[] = [];
   loading = true;
-  displayedColumns = ['campaignId', 'totalSent', 'totalOpened', 'openRate', 'expand'];
+  displayedColumns = ['campaignName', 'totalSent', 'totalOpened', 'openRate', 'expand'];
   searchId = '';
   expandedCampaignId: string | null = null;
 

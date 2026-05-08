@@ -10,9 +10,9 @@
 
       <table mat-table [dataSource]="filteredCampaigns" multiTemplateDataRows>
 
-        <ng-container matColumnDef="campaignId">
-          <th mat-header-cell *matHeaderCellDef>ID рассылки</th>
-          <td mat-cell *matCellDef="let c">{{ c.campaignId }}</td>
+        <ng-container matColumnDef="campaignName">
+          <th mat-header-cell *matHeaderCellDef>Название рассылки</th>
+          <td mat-cell *matCellDef="let c">{{ c.campaignName }}</td>
         </ng-container>
 
         <ng-container matColumnDef="totalSent">

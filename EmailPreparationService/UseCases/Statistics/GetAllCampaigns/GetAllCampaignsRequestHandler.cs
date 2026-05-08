@@ -25,13 +25,14 @@ public class GetAllCampaignsRequestHandler : IGetAllCampaignsRequestHandler
 
         var sent = await _db.OutboxEmails
             .GroupBy(e => e.CampaignId)
-            .Select(g => new { CampaignId = g.Key, TotalSent = g.Count() })
+            .Select(g => new { CampaignId = g.Key, TotalSent = g.Count(), CampaignName = g.FirstOrDefault().CampaignName })
             .ToListAsync();
 
         var summaries = sent.Select(s => new CampaignSummary(
             campaignId: s.CampaignId,
             totalSent: s.TotalSent,
-            totalOpened: opened.FirstOrDefault(o => o.CampaignId == s.CampaignId)?.TotalOpened ?? 0
+            totalOpened: opened.FirstOrDefault(o => o.CampaignId == s.CampaignId)?.TotalOpened ?? 0,
+            campaignName: s.CampaignName
         )).ToList();
 
         return new GetAllCampaignsResponse(summaries);

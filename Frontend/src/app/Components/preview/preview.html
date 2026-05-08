@@ -19,6 +19,11 @@
       <input matInput [(ngModel)]="subject" />
     </mat-form-field>
 
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="campaignName">
+      <mat-label>Название рассылки</mat-label>
+      <input matInput [(ngModel)]="campaignName" />
+    </mat-form-field>
+
     <mat-checkbox [checked]="tracking" (change)="onTrackingChange($event)">Отслеживать открытия</mat-checkbox>
 
     <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 100%; margin-top: 8px">

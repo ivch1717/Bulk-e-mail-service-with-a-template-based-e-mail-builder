@@ -13,4 +13,5 @@ public class OutboxEmail
     
     public string Subject { get; set; } = "";
 
+    public string CampaignName { get; set; } = "";
 }

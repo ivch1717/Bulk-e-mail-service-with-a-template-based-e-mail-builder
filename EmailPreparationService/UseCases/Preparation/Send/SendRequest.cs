@@ -8,5 +8,6 @@ public record SendRequest(
     string mappingJson,
     string subject,
     Guid smtpId,
-    bool tracking
+    bool tracking,
+    string campaignName
         );
