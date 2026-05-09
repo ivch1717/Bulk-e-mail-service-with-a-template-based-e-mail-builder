@@ -15,6 +15,22 @@ services:
       retries: 10
     restart: unless-stopped
 
+  postgres-letter-constructor:
+    image: postgres:17
+    container_name: postgres-letter-constructor
+    environment:
+      POSTGRES_DB: letterconstructor
+      POSTGRES_USER: ${POSTGRES_CONSTRUCTOR_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_CONSTRUCTOR_PASSWORD}
+    volumes:
+      - pgdata-letter-constructor:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
   postgres-mail-sender:
     image: postgres:17
     container_name: postgres-mail-sender
@@ -55,6 +71,10 @@ services:
       dockerfile: ConstructorApi/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Default: Host=postgres-letter-constructor;Port=5432;Database=letterconstructor;Username=${POSTGRES_CONSTRUCTOR_USER};Password=${POSTGRES_CONSTRUCTOR_PASSWORD}
+    depends_on:
+      postgres-letter-constructor:
+        condition: service_healthy
     restart: unless-stopped
 
   email-preparation:
@@ -162,4 +182,5 @@ services:
 volumes:
   pgdata-mail-sender:
   pgdata-email-preparation:
+  pgdata-letter-constructor:
   rabbitmqdata:

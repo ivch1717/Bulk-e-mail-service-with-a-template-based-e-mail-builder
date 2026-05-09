@@ -1,4 +1,4 @@
-namespace ConstructorEntities;
+namespace Entities;
 
 public class Block
 {

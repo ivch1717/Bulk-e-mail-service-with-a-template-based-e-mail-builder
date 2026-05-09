@@ -17,6 +17,13 @@ public static class ConstructorEndpoints
             .WithTags("Templates")
             .MapExportTemplate();
 
+        app.MapGroup("/files")
+            .WithTags("Files")
+            .MapAddFile()
+            .MapGetAllFiles()
+            .MapGetFileById()
+            .MapDeleteFileById();
+
         return app;
     }
 }
