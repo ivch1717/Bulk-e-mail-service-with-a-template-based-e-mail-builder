@@ -49,6 +49,11 @@ public class SendRequestHandler : ISendRequestHandler
         List<RowData> allRowData = table.GetData(columns, table.totalRows);
         ITemplate template = _templateFactory.Create(request.template, request.tracking);
         Guid campaignId = Guid.NewGuid();
+        _db.Campaigns.Add(new Campaign
+        {
+            CampaignId = campaignId,
+            CampaignName = request.campaignName,
+        });
         foreach (var rowData in allRowData)
         {
             try
@@ -69,7 +74,6 @@ public class SendRequestHandler : ISendRequestHandler
                     CreatedAt = DateTime.UtcNow,
                     Sent = false,
                     CampaignId = campaignId,
-                    CampaignName = request.campaignName,
                     Subject = request.subject,
                     SmtpId = request.smtpId
                 });

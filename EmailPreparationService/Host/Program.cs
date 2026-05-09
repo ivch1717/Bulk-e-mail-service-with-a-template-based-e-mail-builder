@@ -43,9 +43,4 @@ app.MapControllers();
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-} // TODO: убрать сваггер после написания фронта
 app.Run();

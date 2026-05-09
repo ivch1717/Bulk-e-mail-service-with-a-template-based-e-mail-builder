@@ -1,10 +1,13 @@
 namespace Models;
 
+/// <summary>
+/// Информация об открытии письма.
+/// </summary>
 public class EmailOpenData
 {
-    public Guid Id { get; set; }
-    public Guid CampaignId { get; set; }
-    public string Email { get; set; }
-    public DateTime OpenedAt { get; set; }
-    public string? UserAgent { get; set; }
+    public Guid Id { get; init; }
+    public Guid CampaignId { get; init; }
+    public string Email { get; init; } = "";
+    public DateTime OpenedAt { get; init; }
+    public string UserAgent { get; init; } = "";
 }

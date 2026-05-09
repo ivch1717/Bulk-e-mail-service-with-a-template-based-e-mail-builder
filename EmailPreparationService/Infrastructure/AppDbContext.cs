@@ -13,4 +13,6 @@ public class AppDbContext : DbContext
     public DbSet<EmailOpenData> EmailOpenDatas { get; set; }
     
     public DbSet<SmtpProfile> SmtpProfiles { get; set; }
+    
+    public DbSet<Campaign> Campaigns { get; set; }
 }
