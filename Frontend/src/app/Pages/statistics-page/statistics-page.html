@@ -4,8 +4,8 @@
   <mat-card>
     <mat-card-content>
       <mat-form-field appearance="outline" style="width: 100%">
-        <mat-label>Поиск по ID</mat-label>
-        <input matInput [(ngModel)]="searchId" placeholder="6b49c386...">
+        <mat-label>Поиск по названию</mat-label>
+        <input matInput [(ngModel)]="searchId">
       </mat-form-field>
 
       <table mat-table [dataSource]="filteredCampaigns" multiTemplateDataRows>

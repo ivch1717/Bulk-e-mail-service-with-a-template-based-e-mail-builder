@@ -64,6 +64,6 @@ export class StatisticsPage implements OnInit {
 
   get filteredCampaigns() {
     if (!this.searchId) return this.campaigns;
-    return this.campaigns.filter(c => c.campaignId.includes(this.searchId));
+    return this.campaigns.filter(c => c.campaignName.includes(this.searchId));
   }
 }
