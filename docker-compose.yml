@@ -18,6 +18,8 @@ services:
   postgres-letter-constructor:
     image: postgres:17
     container_name: postgres-letter-constructor
+    ports:
+      - "5435:5432"
     environment:
       POSTGRES_DB: letterconstructor
       POSTGRES_USER: ${POSTGRES_CONSTRUCTOR_USER}
