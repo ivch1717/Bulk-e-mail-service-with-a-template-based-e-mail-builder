@@ -17,7 +17,7 @@ public class XlsxTable : ITable
     /// <summary>
     /// Общее число строк первого листа.
     /// </summary>
-    public int totalRows => _sheet.LastRowNum;
+    public int totalRows => _sheet.LastRowNum + 1;
 
     public int CurrentRow { get; private set; }
 

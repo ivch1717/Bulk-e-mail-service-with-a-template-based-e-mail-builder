@@ -23,6 +23,19 @@ public class ExtractTableHeadersRequestHandler(ITableFactory tableFactory) : IEx
         for (var i = 0; i < table.totalRows; ++i)
         {
             var result = table.GetRow(i, skipEmpty: true);
+            
+            var duplicates = result
+                .GroupBy(h => h)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key)
+                .ToList();
+
+            if (duplicates.Count > 0)
+            { 
+                throw new ArgumentException(
+                    $"В заголовке таблицы есть дубликаты столбцов: {string.Join(", ", duplicates)}. Их необходимо убрать.");
+            }
+            
             if (result.Count != 0)
             {
                 return new ExtractTableHeadersResponse(result);
