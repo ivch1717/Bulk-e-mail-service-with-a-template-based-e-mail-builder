@@ -43,7 +43,7 @@ export class StatisticsPage implements OnInit {
   searchId = '';
   expandedCampaignId: string | null = null;
 
-  constructor(private http: HttpClient, private cdr : ChangeDetectorRef) {}
+  constructor(private http: HttpClient, public cdr : ChangeDetectorRef) {}
 
   ngOnInit() {
     this.http.get<{ campaignSummaries: CampaignSummary[] }>('/api/stats/campaigns').subscribe(response => {
@@ -64,6 +64,6 @@ export class StatisticsPage implements OnInit {
 
   get filteredCampaigns() {
     if (!this.searchId) return this.campaigns;
-    return this.campaigns.filter(c => c.campaignId.includes(this.searchId));
+    return this.campaigns.filter(c => c.campaignName.includes(this.searchId));
   }
 }

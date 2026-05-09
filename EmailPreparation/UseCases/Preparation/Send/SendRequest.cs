@@ -6,8 +6,8 @@ public record SendRequest(
     IFormFile template,
     IFormFile table,
     string mappingJson,
-    string subject,
+    string? subject,
     Guid smtpId,
     bool tracking,
-    string campaignName
+    string? campaignName
         );
