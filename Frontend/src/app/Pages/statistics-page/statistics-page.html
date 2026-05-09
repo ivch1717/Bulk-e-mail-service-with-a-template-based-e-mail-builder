@@ -5,7 +5,7 @@
     <mat-card-content>
       <mat-form-field appearance="outline" style="width: 100%">
         <mat-label>Поиск по названию</mat-label>
-        <input matInput [(ngModel)]="searchId">
+        <input matInput [(ngModel)]="searchId" (ngModelChange)="cdr.markForCheck()">
       </mat-form-field>
 
       <table mat-table [dataSource]="filteredCampaigns" multiTemplateDataRows>
