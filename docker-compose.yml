@@ -60,7 +60,7 @@ services:
   email-preparation:
     container_name: email-preparation
     build:
-      context: ./EmailPreparationService
+      context: ./EmailPreparation
       dockerfile: Dockerfile
     environment:
       ConnectionStrings__Postgres: Host=postgres-email-preparation;Port=5432;Database=emailpreparation;Username=${POSTGRES_PREPARATION_USER};Password=${POSTGRES_PREPARATION_PASSWORD}
