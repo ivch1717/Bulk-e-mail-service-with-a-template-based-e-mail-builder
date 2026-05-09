@@ -32,6 +32,10 @@ public class SendRequestHandler : ISendRequestHandler
     
     public async Task<SendResponse> Handle(SendRequest request)
     {
+        if (request.subject == null)
+        {
+            request = request with { subject = "" };
+        }
         if (request.subject.Length >= 256)
         {
             throw new ArgumentException($"Длина темы должна быть меньше 255 символов.");
