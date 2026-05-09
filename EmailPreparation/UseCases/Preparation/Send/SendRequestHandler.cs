@@ -52,7 +52,7 @@ public class SendRequestHandler : ISendRequestHandler
         _db.Campaigns.Add(new Campaign
         {
             CampaignId = campaignId,
-            CampaignName = request.campaignName,
+            CampaignName = string.IsNullOrWhiteSpace(request.campaignName) ? campaignId.ToString() : request.campaignName,
         });
         foreach (var rowData in allRowData)
         {
