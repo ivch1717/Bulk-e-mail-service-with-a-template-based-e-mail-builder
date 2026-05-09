@@ -9,5 +9,5 @@ public record SendRequest(
     string subject,
     Guid smtpId,
     bool tracking,
-    string campaignName
+    string? campaignName
         );
