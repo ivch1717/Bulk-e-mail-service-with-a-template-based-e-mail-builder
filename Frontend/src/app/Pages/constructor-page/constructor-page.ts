@@ -13,6 +13,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 type Block = {
   id: number,
   html: string,
+  name: string,
   isNew?: boolean,
   dropTick?: number,
   upTick?: number
@@ -32,6 +33,7 @@ type Block = {
   ],
   templateUrl: './constructor-page.html',
   styleUrl: './constructor-page.css',
+  standalone: true
 })
 export class ConstructorPage {
   constructor(
@@ -42,6 +44,7 @@ export class ConstructorPage {
   ) {}
 
   blocks: Block[] = [];
+  templateName: string = 'template';
   private nextId = 1;
   activeBlockId: number | null = null;
   dropAnimationTick = 0;
@@ -51,7 +54,7 @@ export class ConstructorPage {
     this.router.navigate(['/']);
   }
   addBlock() {
-    let newBlock: Block = { id: this.nextId++, html: '', isNew: true };
+    let newBlock: Block = { id: this.nextId++, html: '', name: 'block', isNew: true };
     this.blocks.push(newBlock);
 
     setTimeout(() => {
@@ -71,6 +74,7 @@ export class ConstructorPage {
     const newBlock: Block = {
       id: this.nextId++,
       html: '',
+      name: 'block',
       isNew: true,
       dropTick: undefined
     };
@@ -159,6 +163,41 @@ export class ConstructorPage {
     this.fileInput.nativeElement.click();
   }
 
+  @ViewChild('templateFileInput') templateFileInput!: ElementRef<HTMLInputElement>;
+  importTemplate() {
+    this.templateFileInput.nativeElement.click();
+  }
+
+  async onTemplateFileSelected(event?: Event) {
+    if (!event) return;
+
+    const input = event.target as HTMLInputElement | null;
+    if (!input || !input.files?.length) return;
+
+    const file = input.files[0];
+    const text = await file.text();
+    const d = text.split('<!-- block: ');
+    this.templateName = file.name.replace(/\.html?$/i, '');
+
+    this.blocks = [];
+    if (d.length > 1) {
+      for (let i = 1; i < d.length; i++) {
+        const separatorIndex = d[i].indexOf('-->');
+        const name = d[i].substring(0, separatorIndex).trim();
+        const html = d[i].substring(separatorIndex + 3).trim();
+        this.blocks.push({ id: this.nextId++, html, name, isNew: true });
+      }
+    } else {
+      this.blocks.push({ id: this.nextId++, html: text.trim(), name: "block", isNew: true });
+    }
+    this.cdr.detectChanges();
+    input.value = '';
+
+    setTimeout(() => {
+      this.blocks = this.blocks.map(b => ({ ...b, isNew: false }));
+    }, 450);
+  }
+
 
   exportBlock() {
     if (this.activeBlockId === null) return;
@@ -181,18 +220,24 @@ export class ConstructorPage {
 
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'block.html';
+      a.download = (block.name.trim() || 'block') + '.html';
       a.click();
 
       window.URL.revokeObjectURL(url);
     });
   }
 
+  onBlockNameChange(id: number, name: string) {
+    this.blocks = this.blocks.map(b =>
+      b.id === id ? { ...b, name } : b
+    );
+  }
+
   getTextTemplate(){
     let template: string = '';
     for (let i = 0; i < this.blocks.length; i++) {
       if (this.blocks[i].html.length > 0){
-        template += this.blocks[i].html + '\n';
+        template += `<!-- block: ${this.blocks[i].name} -->\n` + this.blocks[i].html + '\n';
       }
     }
     return template;
@@ -215,7 +260,7 @@ export class ConstructorPage {
 
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'template.html';
+      a.download = (this.templateName.trim() || 'template') + '.html';
       a.click();
 
       window.URL.revokeObjectURL(url);
@@ -255,7 +300,7 @@ export class ConstructorPage {
       { html: template },
       { responseType: 'blob' }
     ).subscribe(blob => {
-      const file = new File([blob], 'template.html', { type: 'text/html' });
+      const file = new File([blob], this.templateName, { type: 'text/html' });
 
       this.templateTransferService.templateFile = file;
       this.router.navigate(['/preparation']);
@@ -272,8 +317,9 @@ export class ConstructorPage {
 
     const file = input.files[0];
     const text = await file.text();
+    const name = file.name.replace(/\.html?$/i, '');
 
-    this.blocks = [...this.blocks, { id: this.nextId++, html: text, isNew: true }];
+    this.blocks = [...this.blocks, { id: this.nextId++, html: text, name: name, isNew: true }];
 
     this.cdr.detectChanges();
 

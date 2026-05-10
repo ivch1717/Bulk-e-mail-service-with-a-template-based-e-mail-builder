@@ -1,7 +1,16 @@
 <div class="block">
-  <div class="drag-handle" cdkDragHandle>
-    <mat-icon class="drag-icon">drag_indicator</mat-icon>
-    <span class="drag-label">Перетащить</span>
+  <div class="drag-handle">
+    <div class="drag-zone" cdkDragHandle>
+      <mat-icon class="drag-icon">drag_indicator</mat-icon>
+    </div>
+    <input
+      class="block-name"
+      [value]="name"
+      (input)="onNameInput($event)"
+      (pointerdown)="$event.stopPropagation()"
+      placeholder="block"
+    />
+    <div class="drag-spacer" cdkDragHandle></div>
   </div>
 
   <textarea class="code"

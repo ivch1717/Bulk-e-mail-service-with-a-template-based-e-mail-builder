@@ -50,6 +50,47 @@
   scrollbar-gutter: stable;
 }
 
+.template-title-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 16px 16px 12px;
+}
+
+.template-title {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  outline: none;
+
+  font-size: 24px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #4a148c;
+  text-align: center;
+  letter-spacing: 0.3px;
+
+  width: 700px;
+  padding: 4px 8px;
+  box-sizing: border-box;
+
+  transition: border-color 0.2s ease, background 0.2s ease;
+  cursor: text;
+}
+
+.template-title::placeholder {
+  color: #b39ddb;
+}
+
+.template-title:hover {
+  border-bottom-color: #b39ddb;
+}
+
+.template-title:focus {
+  border-bottom-color: #5e35b1;
+  background: rgba(94, 53, 177, 0.04);
+  border-radius: 6px 6px 0 0;
+}
+
 .blocks {
   display: flex;
   flex-direction: column;

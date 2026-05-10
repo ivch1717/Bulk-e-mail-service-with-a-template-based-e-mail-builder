@@ -9,13 +9,24 @@
       </button>
       <button mat-stroked-button (click)="importBlock()" matTooltip="Импортировать блок из файла">
         <mat-icon>file_upload</mat-icon>
-        Импорт
+        Импорт блока
       </button>
       <input
         #fileInput
         type="file"
-        accept=".html"
+        accept=".html,.htm,text/html"
         (change)="onFileSelected($event)"
+        hidden
+      />
+      <button mat-stroked-button (click)="importTemplate()" matTooltip="Импортировать шаблон из файла">
+        <mat-icon>drive_folder_upload</mat-icon>
+        Импорт шаблона
+      </button>
+      <input
+        #templateFileInput
+        type="file"
+        accept=".html,.htm,text/html"
+        (change)="onTemplateFileSelected($event)"
         hidden
       />
       <button mat-stroked-button (pointerdown)="exportTemplate()" matTooltip="Скачать готовый шаблон">
@@ -37,6 +48,15 @@
   </mat-toolbar>
 
   <div class="blocks-scroll" cdkScrollable>
+    <div class="template-title-wrap">
+      <input
+        class="template-title"
+        [value]="templateName"
+        (input)="templateName = $any($event.target).value"
+        placeholder="template"
+      />
+    </div>
+
     <div
       class="blocks"
       cdkDropList
@@ -58,8 +78,10 @@
             <app-html-block
               [id]="block.id"
               [text]="block.html"
+              [name]="block.name"
               (textChange)="onBlockHtmlChange(block.id, $event)"
               (focused)="activeBlockId = block.id"
+              (nameChange)="onBlockNameChange(block.id, $event)"
               (blurred)="activeBlockId = null">
             </app-html-block>
           </div>
