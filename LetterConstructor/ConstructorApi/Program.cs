@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using ConstructureInfrastructure;
 using ConstructorPresentation;
 using ConstructorUseCases.AddFile;
@@ -9,6 +10,11 @@ using ConstructorUseCases.GetFileById;
 using ConstructorUseCases.ImportBlock;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

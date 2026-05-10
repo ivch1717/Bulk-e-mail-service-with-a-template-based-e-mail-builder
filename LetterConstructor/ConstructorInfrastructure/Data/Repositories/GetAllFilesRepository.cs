@@ -9,7 +9,7 @@ internal sealed class GetAllFilesRepository(ConstructorDbContext db) : IGetAllFi
     {
         return db.HtmlFiles
             .OrderByDescending(x => x.CreatedAt)
-            .Select(x => new FileSummary(x.Id, x.Name, x.CreatedAt))
+            .Select(x => new FileSummary(x.Id, x.Name, x.CreatedAt, x.Type))
             .ToList();
     }
 }

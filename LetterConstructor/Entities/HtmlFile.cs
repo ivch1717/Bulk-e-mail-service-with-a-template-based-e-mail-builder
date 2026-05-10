@@ -1,4 +1,4 @@
-﻿namespace Entities;
+namespace Entities;
 
 public class HtmlFile
 {
@@ -6,8 +6,9 @@ public class HtmlFile
     public string Name { get; }
     public string Content { get; }
     public DateTime CreatedAt { get; }
+    public HtmlFileType Type { get; }
 
-    public HtmlFile(Guid id, string name, string content, DateTime createdAt)
+    public HtmlFile(Guid id, string name, string content, DateTime createdAt, HtmlFileType type)
     {
         if (id == Guid.Empty)
         {
@@ -33,5 +34,6 @@ public class HtmlFile
         Name = name;
         Content = content;
         CreatedAt = createdAt;
+        Type = type;
     }
 }

@@ -11,7 +11,8 @@ public static class DataMapper
             file.Id,
             file.Name,
             file.Content,
-            file.CreatedAt);
+            file.CreatedAt,
+            file.Type);
     }
 
     public static HtmlFile ToEntity(this HtmlFileDto dto)
@@ -20,6 +21,7 @@ public static class DataMapper
             dto.Id,
             dto.Name,
             dto.Content,
-            dto.CreatedAt);
+            dto.CreatedAt,
+            dto.Type);
     }
 }

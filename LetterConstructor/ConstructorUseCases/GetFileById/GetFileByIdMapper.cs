@@ -6,6 +6,6 @@ public static class GetFileByIdMapper
 {
     public static GetFileByIdResponse ToResponse(HtmlFile file)
     {
-        return new GetFileByIdResponse(file.Id, file.Name, file.Content, file.CreatedAt);
+        return new GetFileByIdResponse(file.Id, file.Name, file.Content, file.CreatedAt, file.Type);
     }
 }

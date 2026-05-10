@@ -18,7 +18,8 @@ public sealed class ConstructorDbContext(DbContextOptions<ConstructorDbContext> 
             builder.Property(x => x.Name).IsRequired();
             builder.Property(x => x.Content).IsRequired();
             builder.Property(x => x.CreatedAt).IsRequired();
-            
+            builder.Property(x => x.Type).IsRequired().HasConversion<string>();
+
             builder.HasIndex(x => x.Name).IsUnique();
         });
     }

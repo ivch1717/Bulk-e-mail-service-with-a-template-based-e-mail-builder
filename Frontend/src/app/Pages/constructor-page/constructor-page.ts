@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ElementRef, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {HtmlBlock} from '../../Components/html-block/html-block';
 import { HttpClient } from '@angular/common/http';
 import {Router} from '@angular/router';
@@ -9,6 +9,8 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {FilesSidebar} from '../../Components/files-sidebar/files-sidebar';
+import {FilesService, FileSummary} from '../../Services/files/files';
 
 type Block = {
   id: number,
@@ -29,18 +31,20 @@ type Block = {
     MatButtonModule,
     MatIconModule,
     MatToolbarModule,
-    MatTooltipModule
+    MatTooltipModule,
+    FilesSidebar
   ],
   templateUrl: './constructor-page.html',
   styleUrl: './constructor-page.css',
   standalone: true
 })
-export class ConstructorPage {
+export class ConstructorPage implements OnInit {
   constructor(
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
     private router: Router,
-    private templateTransferService: TemplateTransferService
+    private templateTransferService: TemplateTransferService,
+    private filesService: FilesService
   ) {}
 
   blocks: Block[] = [];
@@ -49,6 +53,124 @@ export class ConstructorPage {
   activeBlockId: number | null = null;
   dropAnimationTick = 0;
   upAnimationTick = 0;
+
+  files: FileSummary[] = [];
+  filesLoading = false;
+
+  ngOnInit() {
+    this.loadFiles();
+  }
+
+  loadFiles() {
+    this.filesLoading = true;
+    this.filesService.getAllFiles().subscribe({
+      next: (response) => {
+        this.files = response.files;
+        this.filesLoading = false;
+      },
+      error: (err) => {
+        console.error('Не удалось загрузить файлы', err);
+        this.filesLoading = false;
+      }
+    });
+  }
+
+  saveTemplateToDb() {
+    const template = this.getTextTemplate();
+    if (template === '') {
+      alert('Шаблон пустой, нечего сохранять');
+      return;
+    }
+
+    const name = this.templateName.trim() || 'template';
+
+    this.filesService.addFile(name, template, 'Template').subscribe({
+      next: () => this.loadFiles(),
+      error: (err) => {
+        if (err.status === 409) {
+          alert('Шаблон с таким именем уже существует');
+        } else {
+          alert('Не удалось сохранить шаблон');
+          console.error(err);
+        }
+      }
+    });
+  }
+
+  saveBlockToDb() {
+    if (this.activeBlockId === null) return;
+
+    const block = this.blocks.find(b => b.id === this.activeBlockId);
+    if (!block) return;
+
+    if (block.html.length === 0) {
+      alert('Блок пустой, нечего сохранять');
+      return;
+    }
+
+    const name = block.name.trim() || 'block';
+
+    this.filesService.addFile(name, block.html, 'Block').subscribe({
+      next: () => this.loadFiles(),
+      error: (err) => {
+        if (err.status === 409) {
+          alert('Файл с таким именем уже существует');
+        } else {
+          alert('Не удалось сохранить файл');
+          console.error(err);
+        }
+      }
+    });
+  }
+
+  onFileLoad(file: FileSummary) {
+    this.filesService.getFileById(file.id).subscribe({
+      next: (details) => {
+        if (details.type === 'Template') {
+          this.templateName = details.name;
+          const d = details.content.split('<!-- block: ');
+
+          this.blocks = [];
+          if (d.length > 1) {
+            for (let i = 1; i < d.length; i++) {
+              const separatorIndex = d[i].indexOf('-->');
+              const name = d[i].substring(0, separatorIndex).trim();
+              const html = d[i].substring(separatorIndex + 3).trim();
+              this.blocks.push({ id: this.nextId++, html, name, isNew: true });
+            }
+          } else {
+            this.blocks.push({ id: this.nextId++, html: details.content.trim(), name: details.name, isNew: true });
+          }
+        } else {
+          this.blocks = [
+            ...this.blocks,
+            { id: this.nextId++, html: details.content, name: details.name, isNew: true }
+          ];
+        }
+        this.cdr.detectChanges();
+
+        setTimeout(() => {
+          this.blocks = this.blocks.map(b => ({ ...b, isNew: false }));
+        }, 450);
+      },
+      error: (err) => {
+        alert('Не удалось загрузить файл');
+        console.error(err);
+      }
+    });
+  }
+
+  onFileDelete(file: FileSummary) {
+    if (!confirm(`Удалить файл "${file.name}"?`)) return;
+
+    this.filesService.deleteFile(file.id).subscribe({
+      next: () => this.loadFiles(),
+      error: (err) => {
+        alert('Не удалось удалить файл');
+        console.error(err);
+      }
+    });
+  }
 
   back(){
     this.router.navigate(['/']);
@@ -300,7 +422,7 @@ export class ConstructorPage {
       { html: template },
       { responseType: 'blob' }
     ).subscribe(blob => {
-      const file = new File([blob], this.templateName, { type: 'text/html' });
+      const file = new File([blob], (this.templateName.trim() || 'template') + '.html', { type: 'text/html' });
 
       this.templateTransferService.templateFile = file;
       this.router.navigate(['/preparation']);

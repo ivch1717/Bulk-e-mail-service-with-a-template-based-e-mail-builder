@@ -47,72 +47,106 @@
     </div>
   </mat-toolbar>
 
-  <div class="blocks-scroll" cdkScrollable>
-    <div class="template-title-wrap">
-      <input
-        class="template-title"
-        [value]="templateName"
-        (input)="templateName = $any($event.target).value"
-        placeholder="template"
-      />
+  <div class="content">
+    <div class="sidebar-wrap">
+      <button
+        class="save-template-btn"
+        mat-flat-button
+        color="primary"
+        matTooltip="Сохранить шаблон в базу"
+        (click)="saveTemplateToDb()">
+        <mat-icon>save</mat-icon>
+        Сохранить шаблон
+      </button>
+      <app-files-sidebar
+        [files]="files"
+        [loading]="filesLoading"
+        (fileLoad)="onFileLoad($event)"
+        (fileDelete)="onFileDelete($event)">
+      </app-files-sidebar>
     </div>
 
-    <div
-      class="blocks"
-      cdkDropList
-      cdkDropListOrientation="vertical"
-      [cdkDropListData]="blocks"
-      (cdkDropListDropped)="drop($event)"
-    >
-      @for (block of blocks; track block.id) {
-        <div
-          class="block-row"
-          [class.block-row-new]="block.isNew"
-          [class.block-row-drop]="block.dropTick === dropAnimationTick"
-          [class.block-row-up]="block.upTick === upAnimationTick">
+    <div class="blocks-scroll" cdkScrollable>
+      <div class="template-title-wrap">
+        <input
+          class="template-title"
+          [value]="templateName"
+          (input)="templateName = $any($event.target).value"
+          placeholder="template"
+        />
+      </div>
+
+      <div
+        class="blocks"
+        cdkDropList
+        cdkDropListOrientation="vertical"
+        [cdkDropListData]="blocks"
+        (cdkDropListDropped)="drop($event)"
+      >
+        @for (block of blocks; track block.id) {
           <div
-            class="block-wrapper"
-            cdkDrag
-            cdkDragLockAxis="y"
-          >
-            <app-html-block
-              [id]="block.id"
-              [text]="block.html"
-              [name]="block.name"
-              (textChange)="onBlockHtmlChange(block.id, $event)"
-              (focused)="activeBlockId = block.id"
-              (nameChange)="onBlockNameChange(block.id, $event)"
-              (blurred)="activeBlockId = null">
-            </app-html-block>
-          </div>
+            class="block-row"
+            [class.block-row-new]="block.isNew"
+            [class.block-row-drop]="block.dropTick === dropAnimationTick"
+            [class.block-row-up]="block.upTick === upAnimationTick">
 
-          @if (activeBlockId === block.id) {
-            <div class="block-actions">
-              <button
-                mat-mini-fab
-                color="warn"
-                matTooltip="Удалить блок"
-                (pointerdown)="$event.preventDefault(); deleteBlock()">
-                <mat-icon>delete</mat-icon>
-              </button>
-              <button
-                mat-mini-fab
-                color="accent"
-                matTooltip="Экспортировать блок"
-                (pointerdown)="$event.preventDefault(); exportBlock()">
-                <mat-icon>file_download</mat-icon>
-              </button>
-              <button
-                mat-mini-fab
-                color="primary"
-                matTooltip="Добавить блок ниже"
-                (pointerdown)="$event.preventDefault(); addNextBlock()">
-                <mat-icon>add</mat-icon>
-              </button>
+            @if (activeBlockId === block.id) {
+              <div class="block-save-action">
+                <button
+                  mat-mini-fab
+                  color="primary"
+                  matTooltip="Сохранить блок в базу"
+                  (pointerdown)="$event.preventDefault(); saveBlockToDb()">
+                  <mat-icon>save</mat-icon>
+                </button>
+              </div>
+            }
+
+            <div
+              class="block-wrapper"
+              cdkDrag
+              cdkDragLockAxis="y"
+            >
+              <app-html-block
+                [id]="block.id"
+                [text]="block.html"
+                [name]="block.name"
+                (textChange)="onBlockHtmlChange(block.id, $event)"
+                (focused)="activeBlockId = block.id"
+                (nameChange)="onBlockNameChange(block.id, $event)"
+                (blurred)="activeBlockId = null">
+              </app-html-block>
             </div>
-          }
-        </div>
-      }
+
+            @if (activeBlockId === block.id) {
+              <div class="block-actions">
+                <button
+                  mat-mini-fab
+                  color="warn"
+                  matTooltip="Удалить блок"
+                  (pointerdown)="$event.preventDefault(); deleteBlock()">
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <button
+                  mat-mini-fab
+                  color="accent"
+                  matTooltip="Экспортировать блок"
+                  (pointerdown)="$event.preventDefault(); exportBlock()">
+                  <mat-icon>file_download</mat-icon>
+                </button>
+                <button
+                  mat-mini-fab
+                  color="primary"
+                  matTooltip="Добавить блок ниже"
+                  (pointerdown)="$event.preventDefault(); addNextBlock()">
+                  <mat-icon>add</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
     </div>
+
   </div>
 </div>
