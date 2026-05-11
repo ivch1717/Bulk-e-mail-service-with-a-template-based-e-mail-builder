@@ -7,9 +7,11 @@ namespace UseCases.TemplateUtilities;
 public class HtmlTrackingTemplate : ITemplate
 {
     private string _text = "";
+    
+    private static string ip = Environment.GetEnvironmentVariable("IP");
 
-    private const string trackingTemplate =
-        $"<img src=\"http://77.105.168.143/api/track/open?campaignId=[[campaignId]]&email=[[email]]\" width=\"1\" height=\"1\" style=\"display:none\" alt=\"\" />";
+    private static string trackingTemplate =
+        $"<img src=\"http://{ip}/api/track/open?campaignId=[[campaignId]]&email=[[email]]\" width=\"1\" height=\"1\" style=\"display:none\" alt=\"\" />";
     public HtmlTrackingTemplate(IFormFile file)
     {
         using var reader = new StreamReader(file.OpenReadStream());
