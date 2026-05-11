@@ -1,6 +1,6 @@
-<h2 mat-dialog-title>Подтверждение</h2>
+<h2 mat-dialog-title>{{ data.title || 'Подтверждение' }}</h2>
 <mat-dialog-content>{{ data.message }}</mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Отмена</button>
-  <button mat-flat-button color="primary" [mat-dialog-close]="true">Отправить</button>
+  <button mat-button mat-dialog-close>{{ data.cancelText || 'Отмена' }}</button>
+  <button mat-flat-button color="primary" [mat-dialog-close]="true">{{ data.confirmText || 'Подтвердить' }}</button>
 </mat-dialog-actions>

@@ -11,6 +11,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {FilesSidebar} from '../../Components/files-sidebar/files-sidebar';
 import {FilesService, FileSummary} from '../../Services/files/files';
+import {DialogService} from '../../Services/dialog/dialog';
 
 type Block = {
   id: number,
@@ -44,7 +45,8 @@ export class ConstructorPage implements OnInit {
     private cdr: ChangeDetectorRef,
     private router: Router,
     private templateTransferService: TemplateTransferService,
-    private filesService: FilesService
+    private filesService: FilesService,
+    private dialogService: DialogService
   ) {}
 
   blocks: Block[] = [];
@@ -78,7 +80,7 @@ export class ConstructorPage implements OnInit {
   saveTemplateToDb() {
     const template = this.getTextTemplate();
     if (template === '') {
-      alert('Шаблон пустой, нечего сохранять');
+      this.dialogService.warning('Шаблон пустой, нечего сохранять');
       return;
     }
 
@@ -88,9 +90,9 @@ export class ConstructorPage implements OnInit {
       next: () => this.loadFiles(),
       error: (err) => {
         if (err.status === 409) {
-          alert('Шаблон с таким именем уже существует');
+          this.dialogService.warning('Шаблон с таким именем уже существует');
         } else {
-          alert('Не удалось сохранить шаблон');
+          this.dialogService.error('Не удалось сохранить шаблон');
           console.error(err);
         }
       }
@@ -104,7 +106,7 @@ export class ConstructorPage implements OnInit {
     if (!block) return;
 
     if (block.html.length === 0) {
-      alert('Блок пустой, нечего сохранять');
+      this.dialogService.warning('Блок пустой, нечего сохранять');
       return;
     }
 
@@ -114,9 +116,9 @@ export class ConstructorPage implements OnInit {
       next: () => this.loadFiles(),
       error: (err) => {
         if (err.status === 409) {
-          alert('Файл с таким именем уже существует');
+          this.dialogService.warning('Файл с таким именем уже существует');
         } else {
-          alert('Не удалось сохранить файл');
+          this.dialogService.error('Не удалось сохранить файл');
           console.error(err);
         }
       }
@@ -154,19 +156,25 @@ export class ConstructorPage implements OnInit {
         }, 450);
       },
       error: (err) => {
-        alert('Не удалось загрузить файл');
+        this.dialogService.error('Не удалось загрузить файл');
         console.error(err);
       }
     });
   }
 
-  onFileDelete(file: FileSummary) {
-    if (!confirm(`Удалить файл "${file.name}"?`)) return;
+  async onFileDelete(file: FileSummary) {
+    const ok = await this.dialogService.confirm(
+      `Удалить файл "${file.name}"?`,
+      'Подтверждение удаления',
+      'Удалить',
+      'Отмена'
+    );
+    if (!ok) return;
 
     this.filesService.deleteFile(file.id).subscribe({
       next: () => this.loadFiles(),
       error: (err) => {
-        alert('Не удалось удалить файл');
+        this.dialogService.error('Не удалось удалить файл');
         console.error(err);
       }
     });
@@ -328,7 +336,7 @@ export class ConstructorPage implements OnInit {
     if (!block) return;
 
     if (block.html.length == 0){
-      alert('Блок пустой')
+      this.dialogService.warning('Блок пустой');
       return;
     }
 
@@ -368,7 +376,7 @@ export class ConstructorPage implements OnInit {
   exportTemplate(){
     let template: string = this.getTextTemplate()
     if (template === '') {
-      alert("Ошибка, шаблон пустой")
+      this.dialogService.warning("Шаблон пустой");
       return;
     }
 
@@ -392,7 +400,7 @@ export class ConstructorPage implements OnInit {
   viewTemplate(){
     let template: string = this.getTextTemplate()
     if (template === '') {
-      alert("Ошибка, шаблон пустой")
+      this.dialogService.warning("Шаблон пустой");
       return;
     }
 
@@ -413,7 +421,7 @@ export class ConstructorPage implements OnInit {
   sendTemplate(){
     let template: string = this.getTextTemplate()
     if (template === '') {
-      alert("Ошибка, шаблон пустой")
+      this.dialogService.warning("Шаблон пустой");
       return;
     }
 

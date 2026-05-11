@@ -1,0 +1,55 @@
+.alert-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0 12px;
+}
+
+.alert-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #4a148c;
+}
+
+.alert-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.alert-info .alert-icon {
+  color: #5e35b1;
+}
+
+.alert-warning .alert-icon {
+  color: #f57c00;
+}
+
+.alert-warning .alert-title {
+  color: #e65100;
+}
+
+.alert-error .alert-icon {
+  color: #d32f2f;
+}
+
+.alert-error .alert-title {
+  color: #c62828;
+}
+
+.alert-success .alert-icon {
+  color: #2e7d32;
+}
+
+.alert-success .alert-title {
+  color: #1b5e20;
+}
+
+.alert-message {
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.75);
+  padding-top: 4px !important;
+  padding-bottom: 16px !important;
+}

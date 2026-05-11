@@ -1,0 +1,10 @@
+<div class="alert-header" [class]="'alert-' + type">
+  <mat-icon class="alert-icon">{{ icon }}</mat-icon>
+  <h2 class="alert-title">{{ data.title || defaultTitle }}</h2>
+</div>
+<mat-dialog-content class="alert-message">{{ data.message }}</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-flat-button color="primary" [mat-dialog-close]="true">
+    {{ data.buttonText || 'Ок' }}
+  </button>
+</mat-dialog-actions>
